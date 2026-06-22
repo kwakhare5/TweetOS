@@ -1,0 +1,242 @@
+'use client'
+
+import { useState } from 'react'
+import { useProfileStore } from '@/store/useProfileStore'
+import { saveProfile } from '@/lib/storage'
+
+interface ProfileModalProps {
+  isOpen: boolean
+  onClose: () => void
+}
+
+export default function ProfileModal({ isOpen, onClose }: ProfileModalProps) {
+  const { profile, updateProfile } = useProfileStore()
+  const [name, setName] = useState(profile.name)
+  const [twitterHandle, setTwitterHandle] = useState(profile.twitterHandle)
+  const [niche, setNiche] = useState(profile.niche)
+  const [tone, setTone] = useState(profile.voice.tone)
+  const [writingStyle, setWritingStyle] = useState(profile.voice.writingStyle)
+  
+  // Lists
+  const [avoidList, setAvoidList] = useState(profile.voice.avoidList)
+  const [newAvoidItem, setNewAvoidItem] = useState('')
+  const [exampleTweets, setExampleTweets] = useState(profile.voice.exampleTweets)
+  const [newExampleItem, setNewExampleItem] = useState('')
+
+  if (!isOpen) return null
+
+  function handleAddAvoid() {
+    if (!newAvoidItem.trim()) return
+    setAvoidList([...avoidList, newAvoidItem.trim()])
+    setNewAvoidItem('')
+  }
+
+  function handleRemoveAvoid(index: number) {
+    setAvoidList(avoidList.filter((_, i) => i !== index))
+  }
+
+  function handleAddExample() {
+    if (!newExampleItem.trim()) return
+    setExampleTweets([...exampleTweets, newExampleItem.trim()])
+    setNewExampleItem('')
+  }
+
+  function handleRemoveExample(index: number) {
+    setExampleTweets(exampleTweets.filter((_, i) => i !== index))
+  }
+
+  function handleSave() {
+    const updated = {
+      name,
+      twitterHandle,
+      niche,
+      voice: {
+        tone,
+        writingStyle,
+        avoidList,
+        exampleTweets
+      }
+    }
+    updateProfile(updated)
+    
+    // Save to localstorage as fallback or database if available
+    localStorage.setItem('tweetos_profile', JSON.stringify({ ...profile, ...updated }))
+    
+    // Auto sync to DB if user auth is wired in the future (currently using localStorage cache for localhost simplicity)
+    onClose()
+  }
+
+  return (
+    <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+      <div className="glass-panel w-full max-w-2xl max-h-[85vh] rounded-xl overflow-hidden flex flex-col animate-in fade-in zoom-in-95 duration-200">
+        
+        {/* Header */}
+        <div className="px-6 py-4 border-b border-white/5 flex items-center justify-between">
+          <h2 className="text-lg font-bold tracking-tight text-[var(--text)]">Voice Profile Settings</h2>
+          <button 
+            onClick={onClose} 
+            className="text-[var(--text-muted)] hover:text-[var(--text)] transition-colors text-xl font-semibold leading-none p-1"
+          >
+            ×
+          </button>
+        </div>
+
+        {/* Scrollable Body */}
+        <div className="flex-1 overflow-y-auto p-6 space-y-6">
+          
+          {/* Section 1: Basic Identity */}
+          <div className="space-y-4">
+            <h3 className="text-xs uppercase tracking-wider text-[var(--text-muted)] font-semibold">Identity & Niche</h3>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <label className="block text-xs text-[var(--text-muted)] mb-1">Name</label>
+                <input
+                  type="text"
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
+                  className="glass-input w-full px-3 py-2 bg-transparent"
+                />
+              </div>
+              <div>
+                <label className="block text-xs text-[var(--text-muted)] mb-1">Twitter Handle</label>
+                <input
+                  type="text"
+                  value={twitterHandle}
+                  onChange={(e) => setTwitterHandle(e.target.value)}
+                  className="glass-input w-full px-3 py-2 bg-transparent"
+                />
+              </div>
+            </div>
+            <div>
+              <label className="block text-xs text-[var(--text-muted)] mb-1">Niche / Target Topics</label>
+              <input
+                type="text"
+                value={niche}
+                onChange={(e) => setNiche(e.target.value)}
+                className="glass-input w-full px-3 py-2 bg-transparent"
+                placeholder="e.g. Pune CS student, building products in public, learning AI mechanics"
+              />
+            </div>
+          </div>
+
+          <hr className="border-white/5" />
+
+          {/* Section 2: Voice Settings */}
+          <div className="space-y-4">
+            <h3 className="text-xs uppercase tracking-wider text-[var(--text-muted)] font-semibold">Voice & Tone</h3>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <label className="block text-xs text-[var(--text-muted)] mb-1">Tone Profile</label>
+                <input
+                  type="text"
+                  value={tone}
+                  onChange={(e) => setTone(e.target.value)}
+                  className="glass-input w-full px-3 py-2 bg-transparent"
+                  placeholder="e.g. punchy, casual, direct, slightly chaotic"
+                />
+              </div>
+              <div>
+                <label className="block text-xs text-[var(--text-muted)] mb-1">Writing Style</label>
+                <input
+                  type="text"
+                  value={writingStyle}
+                  onChange={(e) => setWritingStyle(e.target.value)}
+                  className="glass-input w-full px-3 py-2 bg-transparent"
+                  placeholder="e.g. lower-case, brief fragments, no fluff, tech-heavy"
+                />
+              </div>
+            </div>
+          </div>
+
+          <hr className="border-white/5" />
+
+          {/* Section 3: Word Avoid List */}
+          <div className="space-y-4">
+            <h3 className="text-xs uppercase tracking-wider text-[var(--text-muted)] font-semibold">Avoid List (Corporate/Influencer Words)</h3>
+            <div className="flex gap-2">
+              <input
+                type="text"
+                placeholder="e.g. excited, leverage, game-changer"
+                value={newAvoidItem}
+                onChange={(e) => setNewAvoidItem(e.target.value)}
+                onKeyDown={(e) => e.key === 'Enter' && handleAddAvoid()}
+                className="glass-input flex-1 px-3 py-2 bg-transparent"
+              />
+              <button onClick={handleAddAvoid} className="glass-button px-4">
+                Add
+              </button>
+            </div>
+            <div className="flex flex-wrap gap-2 mt-2">
+              {avoidList.map((word, i) => (
+                <span 
+                  key={i} 
+                  className="inline-flex items-center gap-1.5 px-2.5 py-1 bg-white/[0.03] hover:bg-white/[0.06] border border-white/5 rounded-full text-xs text-[var(--text-muted)] transition-colors"
+                >
+                  {word}
+                  <button 
+                    onClick={() => handleRemoveAvoid(i)} 
+                    className="hover:text-[var(--fail)] font-bold text-[10px]"
+                  >
+                    ×
+                  </button>
+                </span>
+              ))}
+              {avoidList.length === 0 && (
+                <span className="text-xs text-[var(--text-muted)] italic">No blocked words configured.</span>
+              )}
+            </div>
+          </div>
+
+          <hr className="border-white/5" />
+
+          {/* Section 4: Example Tweets */}
+          <div className="space-y-4">
+            <h3 className="text-xs uppercase tracking-wider text-[var(--text-muted)] font-semibold">Example Voice Targets (Tweets to match)</h3>
+            <div className="space-y-3">
+              <div className="flex gap-2">
+                <textarea
+                  placeholder="Paste a tweet that matches your ideal voice..."
+                  value={newExampleItem}
+                  onChange={(e) => setNewExampleItem(e.target.value)}
+                  className="glass-input flex-1 h-20 bg-transparent text-xs font-mono"
+                />
+                <button onClick={handleAddExample} className="glass-button px-4 self-end">
+                  Add Target
+                </button>
+              </div>
+              <div className="space-y-2 mt-2 max-h-48 overflow-y-auto pr-1">
+                {exampleTweets.map((tweet, i) => (
+                  <div 
+                    key={i} 
+                    className="p-3 bg-white/[0.02] border border-white/5 rounded-lg flex items-start gap-3 group text-xs text-[var(--text)]"
+                  >
+                    <span className="font-mono text-[var(--text-muted)]">#{i+1}</span>
+                    <p className="flex-1 font-mono leading-relaxed whitespace-pre-wrap">{tweet}</p>
+                    <button 
+                      onClick={() => handleRemoveExample(i)} 
+                      className="opacity-0 group-hover:opacity-100 hover:text-[var(--fail)] transition-opacity text-sm font-semibold p-1"
+                    >
+                      Delete
+                    </button>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+        {/* Footer */}
+        <div className="px-6 py-4 border-t border-white/5 flex items-center justify-end gap-3">
+          <button onClick={onClose} className="glass-button px-4 py-2 bg-transparent text-[var(--text-muted)] border-transparent hover:bg-white/[0.02]">
+            Cancel
+          </button>
+          <button onClick={handleSave} className="glass-button px-5 py-2 bg-[var(--accent)] hover:bg-[var(--accent-hover)] text-white border-transparent">
+            Save Voice Profile
+          </button>
+        </div>
+
+      </div>
+    </div>
+  )
+}
