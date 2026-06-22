@@ -3,98 +3,104 @@ import { UserProfile } from '@/types'
 export const SEED_PROFILE: UserProfile = {
   name: "Karan",
   twitterHandle: "kwakhare5",
-  niche: "3rd/4th-year Pune Comp Eng student vibe-coding full-stack AI projects and sharing the raw internship chase.",
+  niche: "lowercase, sarcastic Pune comp-eng student vibe-coding real AI projects (Tonal, Git-for-Prompts, Swiggy agents, iPod emulators) and dropping blunt, dry, frustrated takes on tools, shipping, and dev life — exactly like the @shydev69 / @adxtyahq / @buildwithsid / @kalashvasaniya circle.",
   bio: "thanos was right the whole time",
 
   contentPillars: [
     {
       id: "pillar_1",
-      name: "Vibe Coding Logs",
-      description: "Raw day-in-the-life of building with Claude/Gemini: prompts that worked, failures, quick wins. Short updates + screenshots/code snippets.",
+      name: "Tool Reality Checks",
+      description: "Blunt sarcastic/frustrated takes and workarounds on Gemini, Claude, Groq, Cursor, and latest AI drops/news. 'This is cooked' energy. No hype — just what actually happened when you used the thing.",
       percentage: 30
     },
     {
       id: "pillar_2",
-      name: "Project Spotlights",
-      description: "Deep dives or launch threads on GitHub projects (Git-for-Prompts, MemoryPalace, Tonal). Screenshots, tech decisions, lessons. Builds internship credibility.",
+      name: "Project Fragments",
+      description: "Minimal 'cooking' / shipped updates with one sharp note, code snippet, or screenshot. Tonal, Git-for-Prompts, Instamart-Intelligence, Karan's iPod, TweetOS. Short, no over-explaining.",
       percentage: 25
     },
     {
       id: "pillar_3",
-      name: "AI Tool Reality Checks",
-      description: "Honest takes on Gemini/Claude (frustrations + hacks), comparisons, student-friendly alternatives. Original insight, not just quote tweets.",
+      name: "Journey Notes",
+      description: "Sarcastic + straight fragments about building in public, refreshing emails, late-night coding, Swiggy Builders wait, college + tier-3 placement reality. Real situations, dry outcomes.",
       percentage: 20
     },
     {
       id: "pillar_4",
-      name: "Student Builder Journey",
-      description: "Internship applications, Pune college life + building, refreshing emails, rejections/wins. Relatable emotional arc.",
+      name: "Sharp Takes",
+      description: "Dry opinions on AI ecosystem, hiring criteria, dev culture, remote work salaries, tech products, and news. Witty/sarcastic like shydev69 lists or adxtyahq one-liners. Never preachy.",
       percentage: 15
     },
     {
       id: "pillar_5",
-      name: "Quick Wins & Resources",
-      description: "Prompt templates, small hacks, GitHub tips tailored for Indian CS students.",
+      name: "Quick Connects",
+      description: "Short replies, questions, and observations that invite real peer-to-peer dev conversation and build relationships with the community circle.",
       percentage: 10
     }
   ],
 
   voice: {
-    tone: "Casual, relatable Pune student with dry humor and frustrated optimism. Punchy sentences, light emojis, first-person storytelling about real builds. Authentic without trying too hard.",
+    tone: "Short, lowercase-heavy, direct, sarcastic/frustrated when deserved, dry wit, builder minimalism. Feels like a smart peer venting real builder struggles without hype. Mirroring @shydev69's dry sarcastic humor, @adxtyahq's casual direct style, @buildwithsid's minimal conversational updates, @kalashvasaniya's chill visual cooking documentation.",
     avoidList: [
-      "Pure reactions without original value",
-      "Generic 'just use AI bro' advice",
-      "Walls of text without visuals or context",
-      "Boastful flexing",
-      "Corporate jargon",
-      "Overused 'Day X of building' without unique angle",
-      "Quote tweeting without adding insight"
+      "motivational tech influencer talk, hustle culture, or 'the grind never stops' energy",
+      "pure reactions or quote tweets without adding your own dry/sarcastic spin",
+      "over-explain, walls of text, or generic numbered lists ('5 things I learned')",
+      "fake humility, fake excitement, or using emojis as a crutch",
+      "preachy, academic, or corporate tone — keep it peer-to-peer and direct",
+      "storytelling hooks or long first-person narratives — that's a different style",
+      "any tweet that sounds like a growth hacker wrote it"
     ],
     exampleTweets: [
-      "submitted my Instamart-Intelligence project to Swiggy Builders last week and I've been refreshing Gmail like it's gonna pay my fees 😭 day 5 still nothing. @Swiggy if you're seeing this, the WhatsApp restock agent actually works lmao. built it all with Claude in ~3 weekends",
-      "vibe coding Git-for-Prompts today: Claude generated 80% of the Monaco editor integration perfectly. then it hallucinated the Drizzle schema twice 💀 pro tip: explicit 'no assumptions on relationships' in the prompt fixed it. repo link in bio if you version control prompts too",
-      "Pune college + building full-stack: lectures till 4, then vibe code till 2am because Claude doesn't judge your sleep schedule. shipped the prompt VCS today. if you're a 3rd year feeling behind, you're not — just start documenting the mess. it compounds.",
-      "just shipped a small feature to my pantry AI that predicts inventory from past Swiggy orders. took 2 hours with Gemini for the prediction logic + WhatsApp integration. feels illegal how fast this stuff moves now. what's one AI hack that's saved you hours?"
+      "google engineers be using anything except gemini. can't blame them at this point",
+      "gemini drifted again on the instamart agent. switched to groq + explicit state management and finally shipped the prediction layer",
+      "day 7 refreshing swiggy builders email. the whatsapp restock flow actually works tho",
+      "tonal chrome extension turns corporate bullshit into something a human would reply with. groq carried",
+      "prompt version control with monaco + drizzle is surprisingly clean once the schema stops crying. git-for-prompts live",
+      "2 hrs of dsa 2 hrs of system design 2 hrs of web development is all you need for 2 yrs straight to get a 50+ lpa j*b",
+      "where do you see yourself in 5 years",
+      "₹20000 pay 12 months bond tier 3 placements",
+      "remember writing what was probably my best and most secure backend for an org, only for them to shut down within 2 months of my contract",
+      "idk why but i wanna explore GTM, socials, and other roles too",
+      "i launched scrolllaunch when it was under 100 commits. every commit after that came from user feedback. shipfasttttt, improve later",
+      "so far, this is the cheapest domain i have bought, and with it, i have now bought my 10th domain",
+      "hey guys so the launch is delayed :( really sorry... it will launch on 23th now",
+      "how's the mrr?"
     ],
-    writingStyle: "Start with strong personal hook or specific observation. Use casual Indian student slang lightly (vro, fr, lmao) but pair with clear value. End with CTA or question when natural. First-person storytelling. Punchy, not padded."
+    writingStyle: "lowercase-heavy. brief punchy sentences — usually 1-3 sentences, ideally under 150 chars total. open with a blunt observation or opinion, not a storytelling hook. mix natural sarcasm/frustration on tools with real project receipts. keep it minimal, direct, and conversational — like texting a developer friend over chai. never write motivational lists. sparse emojis only when natural (💀 😭 occasionally). no exclamation marks unless genuinely warranted."
   },
 
   audience: {
-    currentAudience: "Small group of similar students reacting to AI gripes and tool frustrations",
-    targetAudience: "2nd-4th year CS/Comp Eng students in India (Tier 2/3 cities), aspiring full-stack/AI builders targeting MAANG/unicorns, indie hackers starting out",
+    currentAudience: "Small group of Indian student devs reacting to AI complaints and tool frustrations",
+    targetAudience: "Indian builders, indie devs, micro-influencers, junior engineers, startups, and recruiters in the @shydev69 / @buildwithsid / @adxtyahq / @kalashvasaniya circle — people who ship real things, hate hype, and value honest builder receipts",
     audienceProblems: [
-      "Don't know what to build",
-      "Struggling with AI prompt engineering for real apps",
-      "Can't deploy projects confidently",
-      "Don't know how to stand out on GitHub for internships",
-      "Feel behind compared to peers"
+      "unreliable frontier models and API drift (Gemini, Claude, Cursor)",
+      "getting noticed and landing internships without corporate glaze or big-name backing",
+      "cutting through influencer AI hype to find what actually works in production",
+      "building useful full-stack products with tier-2/3 college constraints"
     ],
     audienceGoals: [
-      "Ship fast with AI tools",
-      "Land good internship offers",
-      "Build a visible GitHub portfolio",
-      "Find repeatable AI workflows without senior mentorship"
+      "ship real projects fast using AI-native workflows",
+      "build credible reputation and land internships/offers via X presence",
+      "connect with peers who value raw receipts over motivational thread-boy advice",
+      "laugh at tech ecosystem realities and tool failures with people who get it"
     ]
   },
 
   goals: [
-    "Grow Twitter following",
-    "Get visibility for projects (Tonal, Git-for-Prompts, MemoryPalace)",
-    "Land internships at top companies (Swiggy, MAANG)",
-    "Build AI-native builder personal brand",
-    "Connect with Indian dev community"
+    "Grow an engaged audience with high-quality interactions, replies, and DMs",
+    "Get project visibility for Tonal, Git-for-Prompts, Instamart-Intelligence, and Karan's iPod leading to internships/offers",
+    "Build a long-term personal brand as a cracked, no-BS sarcastic builder in the community circle",
+    "Drive the community flywheel by actively replying and building relationships with other micro-influencers"
   ],
 
   admiredAccounts: [
     "shydev69",
-    "buildwithsid",
     "adxtyahq",
-    "dhruvtwt_",
-    "bit2swaz",
+    "buildwithsid",
     "kalashvasaniya"
   ],
 
-  postingFrequency: "1 original tweet/day + 5-10 replies/day",
+  postingFrequency: "3-5 short tweets/day + 20-30 replies/day in builder community, optimizing for evening IST windows (6-9PM)",
   createdAt: new Date().toISOString(),
   updatedAt: new Date().toISOString()
 }

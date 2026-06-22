@@ -45,3 +45,8 @@ Grok is stateless, so "Grok Packets" are full text bundles carrying all context 
 - **Lucide SVG Icons Visual System**: Replaced all emoji indicators across the interface with high-quality, professional Lucide SVG icons (`FileText`, `Zap`, `PenTool`, `Terminal`, `User`, `Sparkles`, `TrendingUp`, `Clipboard`, `Check`, `Info`, `FileEdit`, `AlertTriangle`).
 - **Stateless AI Hand-off**: Integrated quick-actions to copy structured critique/trending prompts for Grok validation, making Grok effectively part of the AI loop despite having no direct API integration.
 - **Audited & Pruned Codebase**: Conducted a repository-wide ponytail/vibe-code audit. Cleaned up and deleted 6 completely unused components and stores (`DraftCard`, `TargetAccountsList`, `ReplyGenerator`, `EngagementLogList`, `useEngagementStore`, `engagement.ts`) to reduce maintenance overhead by ~735 lines while maintaining 100% compilation and lint compliance.
+
+## Target Sub-Niche & Profile Updates
+- **Niche**: Lowercase, sarcastic Pune comp-eng student vibe-coding real AI projects and dropping blunt, dry, frustrated takes on tools, shipping, and dev life — exactly like the `@shydev69` / `@adxtyahq` / `@buildwithsid` / `@kalashvasaniya` circle.
+- **Content Pillars**: Tool Reality Checks (30%), Project Fragments (25%), Journey Notes (20%), Sharp Takes (15%), Quick Connects (10%).
+- **Voice**: Lowercase-heavy, direct, sarcastic/frustrated when deserved, dry wit, short dense sentences.
