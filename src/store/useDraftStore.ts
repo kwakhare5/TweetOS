@@ -1,4 +1,5 @@
 import { create } from 'zustand'
+import { persist } from 'zustand/middleware'
 import { TweetDraft, BrainDumpSession } from '@/types'
 
 interface DraftStore {
@@ -10,17 +11,24 @@ interface DraftStore {
   addSession: (session: BrainDumpSession) => void
 }
 
-export const useDraftStore = create<DraftStore>((set) => ({
-  drafts: [],
-  sessions: [],
-  setDrafts: (drafts) => set({ drafts }),
-  addDraft: (draft) => set((state) => ({ drafts: [draft, ...state.drafts] })),
-  updateDraft: (id, partial) =>
-    set((state) => ({
-      drafts: state.drafts.map((d) =>
-        d.id === id ? { ...d, ...partial, updatedAt: new Date().toISOString() } : d
-      ),
-    })),
-  addSession: (session) =>
-    set((state) => ({ sessions: [session, ...state.sessions] })),
-}))
+export const useDraftStore = create<DraftStore>()(
+  persist(
+    (set) => ({
+      drafts: [],
+      sessions: [],
+      setDrafts: (drafts) => set({ drafts }),
+      addDraft: (draft) => set((state) => ({ drafts: [draft, ...state.drafts] })),
+      updateDraft: (id, partial) =>
+        set((state) => ({
+          drafts: state.drafts.map((d) =>
+            d.id === id ? { ...d, ...partial, updatedAt: new Date().toISOString() } : d
+          ),
+        })),
+      addSession: (session) =>
+        set((state) => ({ sessions: [session, ...state.sessions] })),
+    }),
+    {
+      name: 'tweetos-draft-storage',
+    }
+  )
+)

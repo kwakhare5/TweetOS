@@ -280,3 +280,31 @@ RESPOND ONLY IN JSON (no markdown fences, no preamble):
 }
 `
 
+// ─── VOICE PROFILE EXTRACTOR ──────────────────────────────────────────────────
+
+export const VOICE_EXTRACTOR_PROMPT = (rawInput: string) => `You are a Twitter voice and profile analyst.
+Your job is to read the raw input text below (which might contain the user's bio, list of draft tweets, descriptions of writing style, or general background info) and extract structured voice profile settings.
+
+RAW INPUT TEXT:
+"""
+${rawInput}
+"""
+
+Please parse and structure this info into a clean JSON object matching the schema below.
+If a value is not provided in the text, infer smart, realistic default values based on the rest of the text, but tailor them to Pune CS student/builder context if it matches.
+
+JSON SCHEMA:
+{
+  "name": "string (the user's name, default to 'Karan')",
+  "twitterHandle": "string (the user's Twitter handle without '@', default to 'kwakhare5')",
+  "niche": "string (1-sentence description of user's niche, target topics, and identity)",
+  "tone": "string (2-4 adjectives describing the tone, e.g. punchy, casual, developer-focused)",
+  "writingStyle": "string (description of writing rules, e.g. lower-case, brief fragments, no fluff)",
+  "avoidList": ["string (corporate, influencer, or fluff words to avoid, at least 3 items)"],
+  "exampleTweets": ["string (ideal tweets in the user's voice, extract from text if provided, otherwise write 3 realistic examples that match the voice/niche)"]
+}
+
+RESPONSE FORMAT:
+Return ONLY a valid JSON object matching the schema above. Do not include markdown code block syntax (like \`\`\`json), explanations, or preambles.
+`
+

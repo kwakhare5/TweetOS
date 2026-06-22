@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect } from 'react'
 import AppShell from '@/components/layout/AppShell'
 import { useDraftStore } from '@/store/useDraftStore'
 import { useProfileStore } from '@/store/useProfileStore'
@@ -17,19 +17,20 @@ import {
 import { generateDraftPacket, generateTrendingPacket } from '@/lib/grok-packager'
 import { TweetDraft, AlgorithmScore, MomentType, DumpMode } from '@/types'
 import ScoreCard from '@/components/scorer/ScoreCard'
-
-// SVG Icons
-const PlusIcon = () => (
-  <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" strokeWidth="2" stroke="currentColor">
-    <path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
-  </svg>
-)
-
-const SparklesIcon = () => (
-  <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" strokeWidth="2" stroke="currentColor">
-    <path strokeLinecap="round" strokeLinejoin="round" d="M9.813 15.904L9 21l-.813-5.096L3 15l5.187-.813L9 9l.813 5.187L15 15l-5.187.813zM18 10.5l-.563 2.25L15 13l2.437.25.563 2.25.563-2.25L21 13l-2.437-.25-.563-2.25z" />
-  </svg>
-)
+import { 
+  Plus, 
+  Terminal, 
+  User, 
+  Zap, 
+  Sparkles, 
+  TrendingUp, 
+  FileText, 
+  Clipboard, 
+  Check, 
+  Info, 
+  PenTool, 
+  FileEdit
+} from 'lucide-react'
 
 export default function WorkspacePage() {
   // Stores
@@ -73,6 +74,7 @@ export default function WorkspacePage() {
   // Load drafts if none on mount
   useEffect(() => {
     if (drafts.length > 0 && !activeDraft) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setActiveDraft(drafts[0])
     }
   }, [drafts, activeDraft])
@@ -81,6 +83,7 @@ export default function WorkspacePage() {
   useEffect(() => {
     if (activeDraft) {
       const calculated = scoreTweet(activeDraft.content, activeDraft.isThread)
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setScore(calculated)
       updateDraft(activeDraft.id, { algorithmScore: calculated })
     } else {
@@ -304,7 +307,7 @@ Result Notes: ${e.performanceNote}
         mode: 'trending',
         focusAreas: [],
         customRequest: ''
-      })
+      }, entries)
       navigator.clipboard.writeText(packet)
       triggerToast('Trending Radar Packet copied! Paste into Grok.')
       return
@@ -319,7 +322,7 @@ Result Notes: ${e.performanceNote}
         dumpMode,
         customRequest: 'Standard validation feedback'
       }
-      textToCopy = generateDraftPacket(profile, [activeDraft], config)
+      textToCopy = generateDraftPacket(profile, [activeDraft], config, entries)
     }
     navigator.clipboard.writeText(textToCopy)
     triggerToast(type === 'grok' ? 'Grok Critique Packet copied!' : 'Raw tweet copied!')
@@ -373,9 +376,10 @@ Result Notes: ${e.performanceNote}
           </div>
           <button 
             onClick={handleCreateDraft}
-            className="glass-button px-4 py-2 bg-[var(--accent)] hover:bg-[var(--accent-hover)] text-white font-bold text-xs border-transparent"
+            className="glass-button px-4 py-2 bg-[var(--accent)] hover:bg-[var(--accent-hover)] text-white font-bold text-xs border-transparent flex items-center gap-1.5 cursor-pointer shadow-md transition-all duration-200 hover:scale-[1.02]"
           >
-            <PlusIcon /> Write Draft
+            <Plus className="w-4 h-4" />
+            <span>Write Draft</span>
           </button>
         </div>
 
@@ -386,123 +390,203 @@ Result Notes: ${e.performanceNote}
           <div className="lg:col-span-5 flex flex-col gap-4">
             
             {/* Tabs selector */}
-            <div className="flex bg-[#111111]/80 p-1 rounded-lg border border-white/5">
+            <div className="flex bg-[#111111]/80 p-1 rounded-lg border border-white/5 overflow-x-auto">
               <button 
                 onClick={() => setActiveTab('drafts')}
-                className={`flex-1 text-xs py-2 rounded-md font-semibold transition-colors ${
-                  activeTab === 'drafts' ? 'bg-white/[0.06] text-white' : 'text-[var(--text-muted)] hover:text-white'
+                className={`flex-1 min-w-[80px] text-xs sm:text-sm py-2 rounded-md font-semibold transition-all duration-200 flex items-center justify-center gap-1.5 cursor-pointer ${
+                  activeTab === 'drafts' ? 'bg-white/[0.06] text-white' : 'text-[var(--text-muted)] hover:text-white hover:bg-white/[0.01]'
                 }`}
               >
-                Drafts ({drafts.length})
+                <FileText className="w-3.5 h-3.5 text-blue-400" />
+                <span>Drafts ({drafts.length})</span>
               </button>
               <button 
                 onClick={() => setActiveTab('dump')}
-                className={`flex-1 text-xs py-2 rounded-md font-semibold transition-colors ${
-                  activeTab === 'dump' ? 'bg-white/[0.06] text-white' : 'text-[var(--text-muted)] hover:text-white'
+                className={`flex-1 min-w-[80px] text-xs sm:text-sm py-2 rounded-md font-semibold transition-all duration-200 flex items-center justify-center gap-1.5 cursor-pointer ${
+                  activeTab === 'dump' ? 'bg-white/[0.06] text-white' : 'text-[var(--text-muted)] hover:text-white hover:bg-white/[0.01]'
                 }`}
               >
-                Brain Dump
+                <Zap className="w-3.5 h-3.5 text-amber-400" />
+                <span>Dump</span>
               </button>
               <button 
                 onClick={() => setActiveTab('workshop')}
-                className={`flex-1 text-xs py-2 rounded-md font-semibold transition-colors ${
-                  activeTab === 'workshop' ? 'bg-white/[0.06] text-white' : 'text-[var(--text-muted)] hover:text-white'
+                className={`flex-1 min-w-[80px] text-xs sm:text-sm py-2 rounded-md font-semibold transition-all duration-200 flex items-center justify-center gap-1.5 cursor-pointer ${
+                  activeTab === 'workshop' ? 'bg-white/[0.06] text-white' : 'text-[var(--text-muted)] hover:text-white hover:bg-white/[0.01]'
                 }`}
               >
-                Workshop
+                <PenTool className="w-3.5 h-3.5 text-violet-400" />
+                <span>Workshop</span>
               </button>
             </div>
 
             {/* Drafts Tab View */}
             {activeTab === 'drafts' && (
-              <div className="flex flex-col gap-2 max-h-[60vh] overflow-y-auto pr-1">
-                {drafts.map(d => {
-                  const isActive = activeDraft?.id === d.id
-                  const snippet = d.content.trim() ? d.content.slice(0, 80) + (d.content.length > 80 ? '...' : '') : 'Empty draft...'
-                  return (
-                    <div 
-                      key={d.id}
-                      onClick={() => setActiveDraft(d)}
-                      className={`p-3 rounded-lg border transition-all duration-200 cursor-pointer ${
-                        isActive 
-                          ? 'bg-white/[0.05] border-[var(--accent)] shadow-md' 
-                          : 'bg-[#111111]/45 border-white/5 hover:border-white/10'
-                      }`}
-                    >
-                      <div className="flex justify-between items-start gap-2">
-                        <span className="text-[9px] uppercase font-bold text-[var(--text-muted)] px-1.5 py-0.5 bg-white/[0.02] border border-white/5 rounded font-mono">
-                          {d.pillarId}
-                        </span>
-                        {d.algorithmScore?.overall > 0 && (
-                          <span className="text-[10px] text-zinc-400 font-mono">
-                            Score: {d.algorithmScore.overall}/100
-                          </span>
-                        )}
-                      </div>
-                      <p className="text-xs font-mono text-zinc-200 mt-2 line-clamp-2 leading-relaxed">
-                        {snippet}
+              <div className="flex flex-col gap-4">
+                {/* Interactive Workflow Guide */}
+                <div className="glass-panel p-4 rounded-xl border border-white/5 bg-white/[0.01] hover:bg-white/[0.02] transition-colors duration-200">
+                  <div className="flex items-start gap-3">
+                    <div className="w-8 h-8 rounded-lg bg-[var(--accent)]/10 text-[var(--accent)] flex items-center justify-center font-bold shrink-0 mt-0.5 border border-[var(--accent)]/25">
+                      <Info className="w-4 h-4" />
+                    </div>
+                    <div className="flex-1">
+                      <h4 className="text-sm font-bold text-white tracking-wide">Drafts Dashboard</h4>
+                      <p className="text-xs text-[var(--text-muted)] leading-relaxed mt-1">
+                        Select any draft below to analyze its virality potential. Check the dynamic ScoreCard on the right to optimize hooks, formatting, and CTAs before posting.
                       </p>
                     </div>
-                  )
-                })}
-                {drafts.length === 0 && (
-                  <div className="text-center py-10 text-xs text-[var(--text-muted)]">
-                    No drafts. Click "+ Write Draft" above to begin.
                   </div>
-                )}
+                </div>
+
+                {/* Drafts List */}
+                <div className="flex flex-col gap-2 max-h-[50vh] overflow-y-auto pr-1">
+                  {drafts.map(d => {
+                    const isActive = activeDraft?.id === d.id
+                    const snippet = d.content.trim() ? d.content.slice(0, 80) + (d.content.length > 80 ? '...' : '') : 'Empty draft...'
+                    return (
+                      <div 
+                        key={d.id}
+                        onClick={() => setActiveDraft(d)}
+                        className={`p-3 rounded-lg border transition-all duration-200 cursor-pointer ${
+                          isActive 
+                            ? 'bg-white/[0.05] border-[var(--accent)] shadow-md' 
+                            : 'bg-[#111111]/45 border-white/5 hover:border-white/10'
+                        }`}
+                      >
+                        <div className="flex justify-between items-start gap-2">
+                          <span className="text-[11px] uppercase font-semibold text-[var(--text-muted)] px-1.5 py-0.5 bg-white/[0.02] border border-white/5 rounded">
+                            {d.pillarId}
+                          </span>
+                          {d.algorithmScore?.overall > 0 && (
+                            <span className="text-xs text-zinc-300 font-medium">
+                              Score: {d.algorithmScore.overall}/100
+                            </span>
+                          )}
+                        </div>
+                        <p className="text-sm text-zinc-200 mt-2 line-clamp-2 leading-relaxed">
+                          {snippet}
+                        </p>
+                      </div>
+                    )
+                  })}
+                  {drafts.length === 0 && (
+                    <div className="text-center py-10 text-sm text-[var(--text-muted)]">
+                      {"No drafts. Click \"+ Write Draft\" above to begin."}
+                    </div>
+                  )}
+                </div>
               </div>
             )}
 
             {/* Brain Dump Tab View */}
             {activeTab === 'dump' && (
-              <div className="glass-panel p-4 rounded-xl flex flex-col gap-4">
-                <div className="space-y-1">
-                  <h3 className="text-xs font-bold text-white uppercase tracking-wider">Raw Dump</h3>
-                  <p className="text-[10px] text-[var(--text-muted)] leading-relaxed">
-                    Dump anything. AI adapts to the mode you pick.
+              <div className="glass-panel p-5 rounded-xl flex flex-col gap-5 border border-white/5">
+                <div className="border-b border-white/5 pb-3">
+                  <h3 className="text-sm font-bold text-white uppercase tracking-wider flex items-center gap-2">
+                    <Zap className="w-4 h-4 text-amber-400 shrink-0" />
+                    <span>Brain Dump Extractor</span>
+                  </h3>
+                  <p className="text-xs text-[var(--text-muted)] mt-1">
+                    Convert raw thoughts and daily observations into structured tweet drafts instantly.
                   </p>
                 </div>
 
-                {/* Mode Selector */}
-                <div className="flex bg-black/40 p-0.5 rounded-lg border border-white/5 text-[10px]">
-                  {(['dev', 'personal', 'shitpost'] as DumpMode[]).map(m => (
-                    <button
-                      key={m}
-                      onClick={() => setDumpMode(m)}
-                      className={`flex-1 py-1.5 rounded-md font-bold uppercase tracking-wide transition-colors ${
-                        dumpMode === m
-                          ? 'bg-white/[0.08] text-white'
-                          : 'text-[var(--text-muted)] hover:text-white'
-                      }`}
-                    >
-                      {m === 'dev' ? '⚡ Dev' : m === 'personal' ? '🙋 Personal' : '💀 Shit Post'}
-                    </button>
-                  ))}
+                <div className="space-y-5">
+                  {/* Step 1: Pick Mode */}
+                  <div className="flex gap-3">
+                    <div className="w-6 h-6 rounded-full bg-[var(--accent)] text-white text-xs flex items-center justify-center font-bold shrink-0 mt-0.5">1</div>
+                    <div className="flex-1 space-y-2">
+                      <span className="text-xs font-bold text-white uppercase tracking-wider">Select Style Mode</span>
+                      <p className="text-[11px] text-[var(--text-muted)] leading-relaxed">
+                        Choose the generation persona targeting Pune engineering, tech updates, or meme culture.
+                      </p>
+                      <div className="flex bg-black/40 p-0.5 rounded-lg border border-white/5 text-xs mt-1.5">
+                        {(['dev', 'personal', 'shitpost'] as DumpMode[]).map(m => (
+                          <button
+                            key={m}
+                            onClick={() => setDumpMode(m)}
+                            className={`flex-1 py-1.5 rounded-md font-bold uppercase tracking-wide transition-all duration-200 flex items-center justify-center gap-1.5 cursor-pointer ${
+                              dumpMode === m
+                                ? 'bg-white/[0.08] text-white shadow-inner'
+                                : 'text-[var(--text-muted)] hover:text-white hover:bg-white/[0.02]'
+                            }`}
+                          >
+                            {m === 'dev' ? (
+                              <>
+                                <Terminal className="w-3.5 h-3.5 text-blue-400" />
+                                <span>Dev</span>
+                              </>
+                            ) : m === 'personal' ? (
+                              <>
+                                <User className="w-3.5 h-3.5 text-emerald-400" />
+                                <span>Personal</span>
+                              </>
+                            ) : (
+                              <>
+                                <Zap className="w-3.5 h-3.5 text-purple-400" />
+                                <span>Shitpost</span>
+                              </>
+                            )}
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Step 2: Input Raw Text */}
+                  <div className="flex gap-3">
+                    <div className="w-6 h-6 rounded-full bg-[var(--accent)] text-white text-xs flex items-center justify-center font-bold shrink-0 mt-0.5">2</div>
+                    <div className="flex-1 space-y-2">
+                      <span className="text-xs font-bold text-white uppercase tracking-wider">Dump Your Thoughts</span>
+                      <p className="text-[11px] text-[var(--text-muted)] leading-relaxed">
+                        {"Write a paragraph about what you're working on, learning, or venting about."}
+                      </p>
+                      <textarea
+                        placeholder={
+                          dumpMode === 'dev'
+                            ? 'e.g. spent 4hrs fighting TS types, Swiggy webhook kept throwing union error...'
+                            : dumpMode === 'personal'
+                            ? 'e.g. woke up late, skipped breakfast, still somehow managed to attend the 8am lecture...'
+                            : 'e.g. bro placement season starts tmrw and I still cant reverse a linked list 💀'
+                        }
+                        value={dumpText}
+                        onChange={(e) => setDumpText(e.target.value)}
+                        className="glass-input w-full h-36 p-3 bg-transparent text-sm font-sans leading-relaxed focus:border-[var(--accent)] transition-all duration-200"
+                      />
+                    </div>
+                  </div>
+
+                  {/* Step 3: Run Extractor */}
+                  <div className="flex gap-3">
+                    <div className="w-6 h-6 rounded-full bg-[var(--accent)] text-white text-xs flex items-center justify-center font-bold shrink-0 mt-0.5">3</div>
+                    <div className="flex-1 space-y-2.5">
+                      <span className="text-xs font-bold text-white uppercase tracking-wider">Generate Draft Options</span>
+                      <p className="text-[11px] text-[var(--text-muted)] leading-relaxed">
+                        Extract raw ideas into algorithmic tweets matching past library winners.
+                      </p>
+                      <button
+                        onClick={handleExtractFromDump}
+                        disabled={dumpLoading || !dumpText.trim()}
+                        className="glass-button w-full py-2.5 bg-[var(--accent)] hover:bg-[var(--accent-hover)] text-white text-sm font-bold border-transparent flex items-center justify-center gap-2 cursor-pointer shadow-md disabled:cursor-not-allowed"
+                      >
+                        {dumpLoading ? (
+                          <>
+                            <span className="animate-spin inline-block w-4 h-4 border-2 border-white/50 border-t-transparent rounded-full" />
+                            <span>Extracting Ideas...</span>
+                          </>
+                        ) : (
+                          <>
+                            <Sparkles className="w-4 h-4 text-amber-300" />
+                            <span>Extract Drafts</span>
+                          </>
+                        )}
+                      </button>
+                    </div>
+                  </div>
                 </div>
 
-                <textarea
-                  placeholder={
-                    dumpMode === 'dev'
-                      ? 'e.g. spent 4hrs fighting TS types, Swiggy webhook kept throwing union error...'
-                      : dumpMode === 'personal'
-                      ? 'e.g. woke up late, skipped breakfast, still somehow managed to attend the 8am lecture...'
-                      : 'e.g. bro placement season starts tmrw and I still cant reverse a linked list 💀'
-                  }
-                  value={dumpText}
-                  onChange={(e) => setDumpText(e.target.value)}
-                  className="glass-input w-full h-44 p-3 bg-transparent text-xs font-mono"
-                />
-
-                <button
-                  onClick={handleExtractFromDump}
-                  disabled={dumpLoading || dumpText.trim().length < 15}
-                  className="glass-button w-full py-2.5 bg-[var(--accent)] hover:bg-[var(--accent-hover)] text-white text-xs font-bold border-transparent"
-                >
-                  {dumpLoading ? 'Extracting Ideas...' : 'Extract Drafts 🔮'}
-                </button>
-
                 {dumpError && (
-                  <p className="text-xs text-[var(--fail)] bg-[var(--fail)]/5 border border-[var(--fail)]/20 p-2.5 rounded-lg">
+                  <p className="text-sm text-[var(--fail)] bg-[var(--fail)]/5 border border-[var(--fail)]/20 p-2.5 rounded-lg">
                     {dumpError}
                   </p>
                 )}
@@ -511,139 +595,187 @@ Result Notes: ${e.performanceNote}
 
             {/* Workshop Tab View */}
             {activeTab === 'workshop' && (
-              <div className="glass-panel p-4 rounded-xl flex flex-col gap-4">
-                <div className="space-y-1">
-                  <h3 className="text-xs font-bold text-white uppercase tracking-wider">AI Refining Workshop</h3>
-                  <p className="text-[10px] text-[var(--text-muted)]">
-                    Run specialized prompts on your active draft. Select a tool below:
+              <div className="glass-panel p-5 rounded-xl flex flex-col gap-5 border border-white/5">
+                <div className="border-b border-white/5 pb-3">
+                  <h3 className="text-sm font-bold text-white uppercase tracking-wider flex items-center gap-2">
+                    <PenTool className="w-4 h-4 text-violet-400 shrink-0" />
+                    <span>Refinement Workshop</span>
+                  </h3>
+                  <p className="text-xs text-[var(--text-muted)] mt-1">
+                    Apply copywriting formulas to test angles, construct threads, or tighten copy.
                   </p>
                 </div>
 
                 {activeDraft?.content.trim() ? (
-                  <div className="flex flex-col gap-3">
-                    <div className="grid grid-cols-2 gap-2 text-center text-xs">
-                      <button 
-                        onClick={() => handleRunWorkshopTool('hooks')}
-                        className={`glass-button py-2 ${workshopTool === 'hooks' ? 'bg-white/[0.08]' : ''}`}
-                      >
-                        Hook Variations
-                      </button>
-                      <button 
-                        onClick={() => handleRunWorkshopTool('variations')}
-                        className={`glass-button py-2 ${workshopTool === 'variations' ? 'bg-white/[0.08]' : ''}`}
-                      >
-                        Generate Angles
-                      </button>
-                      <button 
-                        onClick={() => handleRunWorkshopTool('tighten')}
-                        className={`glass-button py-2 ${workshopTool === 'tighten' ? 'bg-white/[0.08]' : ''}`}
-                      >
-                        Tighten Copy
-                      </button>
-                      <button 
-                        onClick={() => handleRunWorkshopTool('thread')}
-                        className={`glass-button py-2 ${workshopTool === 'thread' ? 'bg-white/[0.08]' : ''}`}
-                      >
-                        Build Thread
-                      </button>
+                  <div className="space-y-5">
+                    {/* Step 1: Select Active Draft */}
+                    <div className="flex gap-3">
+                      <div className="w-6 h-6 rounded-full bg-[var(--accent)] text-white text-xs flex items-center justify-center font-bold shrink-0 mt-0.5">1</div>
+                      <div className="flex-1 space-y-1">
+                        <span className="text-xs font-bold text-white uppercase tracking-wider block">Active Target Loaded</span>
+                        <p className="text-[11px] text-zinc-300 line-clamp-1 italic font-mono bg-white/[0.02] border border-white/5 px-2 py-1 rounded">
+                          &ldquo;{activeDraft.content.trim()}&rdquo;
+                        </p>
+                      </div>
                     </div>
 
-                    {/* Workshop Tool Outputs */}
-                    {workshopLoading && (
-                      <div className="py-8 flex flex-col items-center justify-center gap-2 text-xs text-[var(--text-muted)]">
-                        <span className="animate-spin inline-block w-5 h-5 border-2 border-white/50 border-t-transparent rounded-full" />
-                        Analyzing and writing options...
-                      </div>
-                    )}
-
-                    {workshopError && (
-                      <p className="text-xs text-[var(--fail)] bg-[var(--fail)]/5 border border-[var(--fail)]/20 p-3 rounded">
-                        {workshopError}
-                      </p>
-                    )}
-
-                    {/* Hook Results rendering */}
-                    {hookResults.length > 0 && (
-                      <div className="space-y-2 mt-2 max-h-60 overflow-y-auto pr-1">
-                        <span className="text-[10px] font-bold text-[var(--text-muted)] uppercase tracking-wide">Select hook to apply:</span>
-                        {hookResults.map((h, i) => (
-                          <div 
-                            key={i}
-                            onClick={() => {
-                              const lines = activeDraft.content.split('\n')
-                              lines[0] = h.text
-                              applyWorkshopContent(lines.join('\n'))
-                            }}
-                            className="p-2.5 bg-white/[0.02] hover:bg-white/[0.05] border border-white/5 rounded-lg text-xs cursor-pointer font-mono text-zinc-300"
-                          >
-                            <p className="font-bold text-[10px] text-[var(--accent)] capitalize mb-0.5">{h.technique}</p>
-                            <p>{h.text}</p>
-                          </div>
-                        ))}
-                      </div>
-                    )}
-
-                    {/* Variation Results rendering */}
-                    {variationResults.length > 0 && (
-                      <div className="space-y-2 mt-2 max-h-60 overflow-y-auto pr-1">
-                        <span className="text-[10px] font-bold text-[var(--text-muted)] uppercase tracking-wide">Select variation to apply:</span>
-                        {variationResults.map((v, i) => (
-                          <div 
-                            key={i}
-                            onClick={() => applyWorkshopContent(v.text)}
-                            className="p-2.5 bg-white/[0.02] hover:bg-white/[0.05] border border-white/5 rounded-lg text-xs cursor-pointer font-mono text-zinc-300"
-                          >
-                            <p className="font-bold text-[10px] text-[var(--accent)] capitalize mb-0.5">{v.angle} angle</p>
-                            <p className="line-clamp-3">{v.text}</p>
-                          </div>
-                        ))}
-                      </div>
-                    )}
-
-                    {/* Tighten Copy Result */}
-                    {tightenResult && (
-                      <div className="space-y-2 mt-2">
-                        <span className="text-[10px] font-bold text-[var(--text-muted)] uppercase tracking-wide">Tightened Draft:</span>
-                        <div className="p-3 bg-white/[0.02] border border-white/5 rounded-lg text-xs font-mono text-zinc-300">
-                          <p>{tightenResult}</p>
+                    {/* Step 2: Choose Refinement Action */}
+                    <div className="flex gap-3">
+                      <div className="w-6 h-6 rounded-full bg-[var(--accent)] text-white text-xs flex items-center justify-center font-bold shrink-0 mt-0.5">2</div>
+                      <div className="flex-1 space-y-2">
+                        <span className="text-xs font-bold text-white uppercase tracking-wider block">Choose AI Tool</span>
+                        <p className="text-[11px] text-[var(--text-muted)] mb-2">
+                          Click a tool to run specific prompts on the draft loaded above.
+                        </p>
+                        
+                        <div className="grid grid-cols-2 gap-2 text-center text-sm">
                           <button 
-                            onClick={() => applyWorkshopContent(tightenResult)}
-                            className="glass-button w-full mt-3 py-1 text-[10px] bg-[var(--accent)] text-white hover:bg-[var(--accent-hover)] border-transparent"
+                            onClick={() => handleRunWorkshopTool('hooks')}
+                            className={`glass-button py-2 transition-all duration-200 cursor-pointer ${
+                              workshopTool === 'hooks' ? 'bg-white/[0.08] border-[var(--accent)] text-white' : 'text-zinc-300'
+                            }`}
                           >
-                            Apply Tightened Draft
+                            Hook Variations
+                          </button>
+                          <button 
+                            onClick={() => handleRunWorkshopTool('variations')}
+                            className={`glass-button py-2 transition-all duration-200 cursor-pointer ${
+                              workshopTool === 'variations' ? 'bg-white/[0.08] border-[var(--accent)] text-white' : 'text-zinc-300'
+                            }`}
+                          >
+                            Generate Angles
+                          </button>
+                          <button 
+                            onClick={() => handleRunWorkshopTool('tighten')}
+                            className={`glass-button py-2 transition-all duration-200 cursor-pointer ${
+                              workshopTool === 'tighten' ? 'bg-white/[0.08] border-[var(--accent)] text-white' : 'text-zinc-300'
+                            }`}
+                          >
+                            Tighten Copy
+                          </button>
+                          <button 
+                            onClick={() => handleRunWorkshopTool('thread')}
+                            className={`glass-button py-2 transition-all duration-200 cursor-pointer ${
+                              workshopTool === 'thread' ? 'bg-white/[0.08] border-[var(--accent)] text-white' : 'text-zinc-300'
+                            }`}
+                          >
+                            Build Thread
                           </button>
                         </div>
                       </div>
-                    )}
+                    </div>
 
-                    {/* Thread Results rendering */}
-                    {threadResults.length > 0 && (
-                      <div className="space-y-2 mt-2 max-h-60 overflow-y-auto pr-1">
-                        <span className="text-[10px] font-bold text-[var(--text-muted)] uppercase tracking-wide">Thread Structure:</span>
-                        <div className="p-3 bg-white/[0.02] border border-white/5 rounded-lg flex flex-col gap-2">
-                          {threadResults.map((tweet) => (
-                            <div key={tweet.number} className="text-xs font-mono text-zinc-300">
-                              <span className="font-bold text-[var(--accent)]">{tweet.number}/</span> {tweet.content}
+                    {/* Step 3: Review & Apply */}
+                    <div className="flex gap-3">
+                      <div className="w-6 h-6 rounded-full bg-[var(--accent)] text-white text-xs flex items-center justify-center font-bold shrink-0 mt-0.5">3</div>
+                      <div className="flex-1 space-y-2">
+                        <span className="text-xs font-bold text-white uppercase tracking-wider block">Apply Generation</span>
+                        <p className="text-[11px] text-[var(--text-muted)]">
+                          Review results below. Tapping a generated option replaces or formats the active editor.
+                        </p>
+
+                        {/* Tool Results Rendering */}
+                        <div className="mt-2">
+                          {workshopLoading && (
+                            <div className="py-6 flex flex-col items-center justify-center gap-2 text-xs text-[var(--text-muted)]">
+                              <span className="animate-spin inline-block w-5 h-5 border-2 border-white/50 border-t-transparent rounded-full" />
+                              <span>Analyzing and writing options...</span>
                             </div>
-                          ))}
-                          <button 
-                            onClick={() => applyWorkshopContent(
-                              threadResults.map(t => t.content).join('\n\n'), 
-                              true, 
-                              threadResults.map(t => t.content)
-                            )}
-                            className="glass-button w-full mt-2 py-1 text-[10px] bg-[var(--accent)] text-white border-transparent"
-                          >
-                            Apply Multi-Tweet Thread
-                          </button>
+                          )}
+
+                          {workshopError && (
+                            <p className="text-sm text-[var(--fail)] bg-[var(--fail)]/5 border border-[var(--fail)]/20 p-3 rounded">
+                              {workshopError}
+                            </p>
+                          )}
+
+                          {/* Hook Results rendering */}
+                          {hookResults.length > 0 && (
+                            <div className="space-y-2 max-h-60 overflow-y-auto pr-1">
+                              {hookResults.map((h, i) => (
+                                <div 
+                                  key={i}
+                                  onClick={() => {
+                                    const lines = activeDraft.content.split('\n')
+                                    lines[0] = h.text
+                                    applyWorkshopContent(lines.join('\n'))
+                                  }}
+                                  className="p-2.5 bg-white/[0.02] hover:bg-white/[0.05] border border-white/5 rounded-lg text-sm cursor-pointer text-zinc-300 leading-relaxed font-sans transition-all duration-200 group"
+                                >
+                                  <p className="font-bold text-[10px] text-[var(--accent)] uppercase tracking-wide mb-1 group-hover:text-white transition-colors">{h.technique}</p>
+                                  <p>{h.text}</p>
+                                </div>
+                              ))}
+                            </div>
+                          )}
+
+                          {/* Variation Results rendering */}
+                          {variationResults.length > 0 && (
+                            <div className="space-y-2 max-h-60 overflow-y-auto pr-1">
+                              {variationResults.map((v, i) => (
+                                <div 
+                                  key={i}
+                                  onClick={() => applyWorkshopContent(v.text)}
+                                  className="p-2.5 bg-white/[0.02] hover:bg-white/[0.05] border border-white/5 rounded-lg text-sm cursor-pointer text-zinc-300 leading-relaxed font-sans transition-all duration-200 group"
+                                >
+                                  <p className="font-bold text-[10px] text-[var(--accent)] uppercase tracking-wide mb-1 group-hover:text-white transition-colors">{v.angle} angle</p>
+                                  <p className="line-clamp-3">{v.text}</p>
+                                </div>
+                              ))}
+                            </div>
+                          )}
+
+                          {/* Tighten Copy Result */}
+                          {tightenResult && (
+                            <div className="p-3 bg-white/[0.02] border border-white/5 rounded-lg text-sm text-zinc-300 leading-relaxed font-sans space-y-3">
+                              <p>{tightenResult}</p>
+                              <button 
+                                onClick={() => applyWorkshopContent(tightenResult)}
+                                className="glass-button w-full py-1.5 text-xs bg-[var(--accent)] text-white hover:bg-[var(--accent-hover)] border-transparent flex items-center justify-center gap-1.5 cursor-pointer shadow-md"
+                              >
+                                <Check className="w-3.5 h-3.5" />
+                                <span>Apply Tightened Draft</span>
+                              </button>
+                            </div>
+                          )}
+
+                          {/* Thread Results rendering */}
+                          {threadResults.length > 0 && (
+                            <div className="p-3 bg-white/[0.02] border border-white/5 rounded-lg flex flex-col gap-3">
+                              <div className="space-y-2 max-h-48 overflow-y-auto pr-1">
+                                {threadResults.map((tweet) => (
+                                  <div key={tweet.number} className="text-sm text-zinc-300 leading-relaxed font-sans flex gap-2">
+                                    <span className="font-bold text-[var(--accent)]">{tweet.number}/</span>
+                                    <span className="flex-1">{tweet.content}</span>
+                                  </div>
+                                ))}
+                              </div>
+                              <button 
+                                onClick={() => applyWorkshopContent(
+                                  threadResults.map(t => t.content).join('\n\n'), 
+                                  true, 
+                                  threadResults.map(t => t.content)
+                                )}
+                                className="glass-button w-full py-1.5 text-xs bg-[var(--accent)] text-white hover:bg-[var(--accent-hover)] border-transparent flex items-center justify-center gap-1.5 cursor-pointer shadow-md"
+                              >
+                                <Check className="w-3.5 h-3.5" />
+                                <span>Apply Multi-Tweet Thread</span>
+                              </button>
+                            </div>
+                          )}
+
+                          {!workshopLoading && !hookResults.length && !variationResults.length && !tightenResult && !threadResults.length && (
+                            <div className="text-xs text-[var(--text-muted)] italic py-2">
+                              No active generation. Click one of the buttons in Step 2.
+                            </div>
+                          )}
                         </div>
                       </div>
-                    )}
-
+                    </div>
                   </div>
                 ) : (
-                  <div className="text-center py-8 text-xs text-[var(--text-muted)] italic">
-                    Select a draft and write text to use the workshop tools.
+                  <div className="text-center py-10 text-xs text-[var(--text-muted)] italic">
+                    Select or write a draft on the right to start working.
                   </div>
                 )}
               </div>
@@ -663,14 +795,14 @@ Result Notes: ${e.performanceNote}
                   {/* Category Pillar & Thread mode */}
                   <div className="flex justify-between items-center gap-3">
                     <div className="flex items-center gap-2">
-                      <span className="text-[10px] text-[var(--text-muted)] font-bold uppercase tracking-wider">Content Pillar:</span>
+                      <span className="text-xs text-[var(--text-muted)] font-bold uppercase tracking-wider">Content Pillar:</span>
                       <select
                         value={activeDraft.pillarId}
                         onChange={(e) => {
                           setActiveDraft({ ...activeDraft, pillarId: e.target.value })
                           updateDraft(activeDraft.id, { pillarId: e.target.value })
                         }}
-                        className="text-xs bg-black border border-white/5 rounded px-2 py-1 outline-none text-zinc-300 cursor-pointer"
+                        className="text-sm bg-black border border-white/5 rounded px-2.5 py-1.5 outline-none text-zinc-200 cursor-pointer"
                       >
                         {profile.contentPillars.map(p => (
                           <option key={p.id} value={p.name}>{p.name}</option>
@@ -678,7 +810,7 @@ Result Notes: ${e.performanceNote}
                       </select>
                     </div>
 
-                    <label className="flex items-center gap-2 cursor-pointer text-xs">
+                    <label className="flex items-center gap-2 cursor-pointer text-sm font-medium">
                       <input 
                         type="checkbox"
                         checked={activeDraft.isThread}
@@ -696,25 +828,25 @@ Result Notes: ${e.performanceNote}
                         placeholder="What are we building today? Write draft..."
                         value={activeDraft.content}
                         onChange={(e) => handleContentChange(e.target.value)}
-                        className="w-full min-h-[160px] bg-transparent text-sm font-mono p-1 resize-none outline-none border-transparent focus:outline-none whitespace-pre-wrap leading-relaxed text-zinc-100"
+                        className="w-full min-h-[180px] bg-transparent text-base font-sans p-1 resize-none outline-none border-transparent focus:outline-none whitespace-pre-wrap leading-relaxed text-zinc-100"
                       />
                     </div>
                   ) : (
                     <div className="space-y-4 max-h-[35vh] overflow-y-auto pr-1">
                       {(activeDraft.threadTweets || []).map((tText, idx) => (
                         <div key={idx} className="flex gap-3 items-start border-l-2 border-white/5 pl-3 focus-within:border-[var(--accent)]">
-                          <span className="font-mono text-xs font-semibold text-[var(--accent)] mt-2 shrink-0">{idx + 1}/</span>
+                          <span className="text-sm font-bold text-[var(--accent)] mt-2 shrink-0">{idx + 1}/</span>
                           <textarea
                             value={tText}
                             onChange={(e) => handleThreadTweetChange(idx, e.target.value)}
                             placeholder={idx === 0 ? "Thread hook tweet..." : "Next thread point..."}
                             rows={3}
-                            className="w-full bg-transparent text-xs font-mono p-1 resize-none outline-none focus:outline-none whitespace-pre-wrap leading-relaxed text-zinc-200"
+                            className="w-full bg-transparent text-sm font-sans p-1 resize-none outline-none focus:outline-none whitespace-pre-wrap leading-relaxed text-zinc-200"
                           />
                           {idx > 1 && (
                             <button 
                               onClick={() => handleRemoveThreadTweet(idx)}
-                              className="text-xs text-[var(--fail)] hover:text-red-400 p-1 shrink-0"
+                              className="text-sm text-[var(--fail)] hover:text-red-400 p-1 shrink-0 font-bold text-lg"
                             >
                               ×
                             </button>
@@ -723,7 +855,7 @@ Result Notes: ${e.performanceNote}
                       ))}
                       <button 
                         onClick={handleAddThreadTweet}
-                        className="glass-button py-1.5 px-3 text-xs w-full justify-center"
+                        className="glass-button py-1.5 px-3 text-sm w-full justify-center"
                       >
                         + Add Tweet to Thread
                       </button>
@@ -731,8 +863,8 @@ Result Notes: ${e.performanceNote}
                   )}
 
                   {/* Scorer feedback details */}
-                  <div className="flex justify-between items-center text-xs border-t border-white/5 pt-3">
-                    <span className={`font-mono text-[10px] ${
+                  <div className="flex justify-between items-center text-sm border-t border-white/5 pt-3">
+                    <span className={`text-xs font-semibold ${
                       activeDraft.content.length > 280 ? 'text-[var(--fail)] font-bold' : 'text-[var(--text-muted)]'
                     }`}>
                       {activeDraft.content.length} / 280
@@ -741,31 +873,35 @@ Result Notes: ${e.performanceNote}
                     <div className="flex gap-2 flex-wrap justify-end">
                       <button 
                         onClick={() => handleClipboardAction('trending')}
-                        className="glass-button px-3 py-1.5 text-[10px] bg-transparent text-[var(--text-muted)]"
+                        className="glass-button px-3 py-1.5 text-xs bg-transparent text-[var(--text-muted)] flex items-center gap-1 cursor-pointer transition-colors duration-200 hover:text-white"
                         title="Generate a Trending Radar packet to paste into Grok"
                       >
-                        🌊 Trending
+                        <TrendingUp className="w-3.5 h-3.5 text-sky-400" />
+                        <span>Trending</span>
                       </button>
                       <button 
                         onClick={() => handleClipboardAction('grok')}
                         disabled={!activeDraft.content.trim()}
-                        className="glass-button px-3 py-1.5 text-[10px] bg-transparent text-[var(--text-muted)]"
+                        className="glass-button px-3 py-1.5 text-xs bg-transparent text-[var(--text-muted)] flex items-center gap-1 cursor-pointer transition-colors duration-200 hover:text-white disabled:opacity-50 disabled:cursor-not-allowed"
                       >
-                        Grok Packet
+                        <Clipboard className="w-3.5 h-3.5 text-amber-400" />
+                        <span>Grok Packet</span>
                       </button>
                       <button 
                         onClick={() => handleClipboardAction('raw')}
                         disabled={!activeDraft.content.trim()}
-                        className="glass-button px-3 py-1.5 text-[10px] bg-transparent"
+                        className="glass-button px-3 py-1.5 text-xs bg-transparent text-zinc-300 flex items-center gap-1 cursor-pointer transition-colors duration-200 hover:text-white disabled:opacity-50 disabled:cursor-not-allowed"
                       >
-                        Copy Raw
+                        <Clipboard className="w-3.5 h-3.5" />
+                        <span>Copy Raw</span>
                       </button>
                       <button 
                         onClick={handleMarkAsPosted}
                         disabled={!activeDraft.content.trim() || activeDraft.content.length > 280}
-                        className="glass-button px-3.5 py-1.5 text-[10px] bg-[var(--accent)] hover:bg-[var(--accent-hover)] text-white border-transparent"
+                        className="glass-button px-3.5 py-1.5 text-xs bg-[var(--accent)] hover:bg-[var(--accent-hover)] text-white border-transparent flex items-center gap-1 cursor-pointer transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed font-semibold"
                       >
-                        Mark Posted
+                        <Check className="w-3.5 h-3.5" />
+                        <span>Mark Posted</span>
                       </button>
                     </div>
                   </div>
@@ -779,11 +915,13 @@ Result Notes: ${e.performanceNote}
 
               </div>
             ) : (
-              <div className="glass-panel p-10 rounded-xl text-center flex flex-col items-center justify-center gap-2">
-                <span className="text-3xl">📝</span>
-                <h3 className="text-sm font-bold text-white">No active draft selected</h3>
-                <p className="text-xs text-[var(--text-muted)] max-w-sm leading-relaxed">
-                  Start writing a new draft by tapping "+ Write Draft" at the top right, or enter raw thoughts in the Brain Dump tab.
+              <div className="glass-panel p-12 rounded-xl text-center flex flex-col items-center justify-center gap-3 border border-white/5">
+                <div className="w-12 h-12 rounded-full bg-white/[0.02] border border-white/5 flex items-center justify-center text-[var(--text-muted)] mb-1">
+                  <FileEdit className="w-6 h-6" />
+                </div>
+                <h3 className="text-base font-bold text-white">No active draft selected</h3>
+                <p className="text-sm text-[var(--text-muted)] max-w-sm leading-relaxed">
+                  {"Start writing a new draft by tapping \"+ Write Draft\" at the top right, or enter raw thoughts in the Brain Dump tab."}
                 </p>
               </div>
             )}
@@ -795,7 +933,10 @@ Result Notes: ${e.performanceNote}
         {/* Global Toast Alert */}
         {toast && (
           <div className="fixed bottom-4 right-4 z-50 glass-panel px-4 py-2.5 rounded-lg text-xs text-white shadow-xl animate-in fade-in slide-in-from-bottom-5 duration-200">
-            ✓ {toast}
+            <span className="flex items-center gap-1.5">
+              <Check className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
+              <span>{toast}</span>
+            </span>
           </div>
         )}
 

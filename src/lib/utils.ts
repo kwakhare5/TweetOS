@@ -19,7 +19,7 @@ export function getPostingWindowStatus(): PostingWindow {
   const utcHours = now.getUTCHours()
   const utcMinutes = now.getUTCMinutes()
   
-  let istMinutes = utcMinutes + 30
+  const istMinutes = utcMinutes + 30
   let istHour = utcHours + 5 + Math.floor(istMinutes / 60)
   istHour = istHour % 24
   

@@ -1,5 +1,7 @@
 'use client'
 
+import { AlertTriangle } from 'lucide-react'
+
 export default function GlobalError({
   error,
   reset,
@@ -9,8 +11,8 @@ export default function GlobalError({
 }) {
   return (
     <div className="flex min-h-screen items-center justify-center bg-[var(--bg)] p-4">
-      <div className="max-w-sm w-full p-6 bg-[var(--surface)] border border-[var(--fail)]/30 rounded-xl flex flex-col gap-4 text-center">
-        <span className="text-3xl">💀</span>
+      <div className="max-w-sm w-full p-6 bg-[var(--surface)] border border-[var(--fail)]/30 rounded-xl flex flex-col gap-4 text-center items-center">
+        <AlertTriangle className="w-10 h-10 text-[var(--fail)] shrink-0 animate-pulse" />
         <div>
           <h2 className="text-sm font-bold text-[var(--fail)]">Something went wrong</h2>
           <p className="text-xs text-[var(--text-muted)] mt-1 font-mono break-all">{error.message}</p>

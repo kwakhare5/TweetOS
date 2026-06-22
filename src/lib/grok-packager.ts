@@ -1,9 +1,38 @@
-import { UserProfile, TweetDraft, DraftPacketConfig, EngagementPacketConfig, TrendingPacketConfig } from '@/types'
+import { UserProfile, TweetDraft, DraftPacketConfig, EngagementPacketConfig, TrendingPacketConfig, LibraryEntry } from '@/types'
 
 const DUMP_MODE_LABEL: Record<string, string> = {
   dev: 'Dev / AI Content',
   personal: 'Personal Life',
   shitpost: 'Shit Post / Chaos'
+}
+
+/**
+ * Formats top 5 recent posted tweets and their performance notes.
+ */
+function formatPastPerformance(entries: LibraryEntry[] | undefined): string {
+  if (!entries || entries.length === 0) return ''
+  
+  const targets = [...entries]
+    .filter(e => e.postedAt && e.performanceNote && e.performanceNote.trim())
+    .sort((a, b) => new Date(b.postedAt!).getTime() - new Date(a.postedAt!).getTime())
+    .slice(0, 5)
+
+  if (targets.length === 0) return ''
+
+  return `
+═══ FEEDBACK LOOP: PAST PERFORMANCE & LEARNINGS ═══
+Here are my top ${targets.length} recently posted tweets and their actual real-world performance feedback. Learn from this data and do not repeat style/content errors mentioned here.
+
+${targets.map((e, i) => {
+  const content = e.isThread && e.threadTweets ? e.threadTweets.map((t, n) => `${n + 1}/ ${t}`).join('\n') : e.tweet
+  return `[Past Tweet #${i + 1}]
+Tweet:
+"${content}"
+Original Scorer Rating: ${e.algorithmScore?.overall ?? 'N/A'}/100
+Performance Notes: ${e.performanceNote}
+`
+}).join('\n')}
+`.trim() + '\n\n'
 }
 
 /**
@@ -13,10 +42,12 @@ const DUMP_MODE_LABEL: Record<string, string> = {
 export function generateDraftPacket(
   profile: UserProfile,
   drafts: TweetDraft[],
-  config: DraftPacketConfig
+  config: DraftPacketConfig,
+  libraryEntries?: LibraryEntry[]
 ): string {
   const dateStr = new Date().toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' })
   const modeLabel = DUMP_MODE_LABEL[config.dumpMode ?? 'dev']
+  const performanceSection = formatPastPerformance(libraryEntries)
 
   return `
 ═══════════════════════════════════════
@@ -49,7 +80,7 @@ ${profile.voice.exampleTweets.map((t, i) => `${i + 1}. "${t}"`).join('\n\n')}
 
 Hard constraint: 280 chars max per tweet (free X account).
 
-═══ CONTENT TYPE THIS SESSION ═══
+${performanceSection}═══ CONTENT TYPE THIS SESSION ═══
 ${modeLabel}
 ${config.dumpMode === 'shitpost' ? '→ These are meant to be raw, chaotic, or funny. Not polished. Do not over-optimize.' : ''}
 ${config.dumpMode === 'personal' ? '→ These are personal/life tweets — not dev content. Judge them on relatability and voice, not technical specificity.' : ''}
@@ -93,9 +124,11 @@ ALWAYS DO:
  */
 export function generateEngagementPacket(
   profile: UserProfile,
-  config: EngagementPacketConfig
+  config: EngagementPacketConfig,
+  libraryEntries?: LibraryEntry[]
 ): string {
   const dateStr = new Date().toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' })
+  const performanceSection = formatPastPerformance(libraryEntries)
   
   return `
 ═══════════════════════════════════════
@@ -112,7 +145,7 @@ Projects I've shipped: Tonal (Chrome extension for tone translation), Git-for-Pr
 My value-add in replies: Real student build experience, specific AI tool failures and fixes, Indian builder context, vibe coding workflows
 Audience I'm targeting: ${profile.audience.targetAudience}
 
-═══ FIND ME TWEETS TO REPLY TO ═══
+${performanceSection}═══ FIND ME TWEETS TO REPLY TO ═══
 
 Check recent tweets (last 24-48 hours) from these accounts:
 ${config.targetAccounts.map(h => `• @${h.replace(/^@/, '')}`).join('\n')}
@@ -174,9 +207,11 @@ ${config.customRequest ? `EXTRA: ${config.customRequest}` : ''}
  */
 export function generateTrendingPacket(
   profile: UserProfile,
-  config: TrendingPacketConfig
+  config: TrendingPacketConfig,
+  libraryEntries?: LibraryEntry[]
 ): string {
   const dateStr = new Date().toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' })
+  const performanceSection = formatPastPerformance(libraryEntries)
 
   return `
 ═══════════════════════════════════════
@@ -196,7 +231,7 @@ Projects: Tonal, Git-for-Prompts, MemoryPalace
 
 I tweet from the lens of: Pune CS student building with AI, chasing internships, sharing raw build logs and honest takes.
 
-═══ FOCUS AREAS FOR TODAY ═══
+${performanceSection}═══ FOCUS AREAS FOR TODAY ═══
 ${config.focusAreas.length > 0
   ? config.focusAreas.map(a => `• ${a}`).join('\n')
   : `• AI tools and LLMs (Claude, Gemini, GPT, Grok)\n• Indie hacking / building in public\n• Indian tech / startup scene\n• CS student life / placements / internships\n• Vibe coding, AI workflows, shipping fast`

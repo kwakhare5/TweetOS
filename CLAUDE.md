@@ -8,16 +8,16 @@
 ## 1. PROJECT IDENTITY
 
 **Name:** TweetOS
-**Goal:** Personal Twitter growth system — drafts tweets in Karan's voice, scores them against X algorithm signals, generates smart replies, and packages everything for Grok validation.
+**Goal:** Personal Twitter growth system — drafts tweets in Karan's voice, scores them against X algorithm signals, helps him find engagement opportunities, and packages everything for Grok validation.
 
 **AI POINTER:** If you need database schemas, business logic, prompt templates, or third-party API details, you MUST autonomously read `ARCHITECTURE.md`. Do not guess.
 
 ## 2. TECH STACK
 
-- **Frontend:** Next.js 15 (App Router), TypeScript, Tailwind CSS v4, shadcn/ui
+- **Frontend:** Next.js 15 (App Router), TypeScript, Tailwind CSS v4, shadcn/ui, lucide-react
 - **Backend:** Supabase (Postgres + Auth)
 - **AI:** Google Gemini 2.5 Flash via `@google/genai`
-- **State:** Zustand
+- **State:** Zustand (with persist middleware)
 - **Hosting:** Vercel
 
 ## 3. LOCAL ARCHITECTURE RULES
@@ -29,6 +29,8 @@
 5. **280-char limit is a HARD FAIL in scorer, not a weak signal.** Enforce at UI level too (live counter everywhere).
 6. **Mobile-first.** Bottom tab bar is primary nav. Sidebar = desktop only.
 7. **Seed profile auto-loads on first login** (`src/data/seedProfile.ts`) — never show empty state on first run.
+8. **UI Aesthetic:** Use Lucide icons (no emojis), glassmorphic panels, and consistent dark mode gradients.
+9. **Inline Tutorials:** No separate tutorial pages; onboarding instructions are integrated directly into the UI.
 
 ## 4. AI COMMAND CHEAT SHEET
 
@@ -51,22 +53,14 @@ _Autonomously updated by the AI whenever it encounters a project-specific error,
 - Next.js 16: `middleware.ts` is deprecated — renamed to `proxy.ts`, function name must be `proxy` not `middleware`.
 - Supabase `createBrowserClient` validates URL immediately at instantiation — guard with placeholder URL when env vars are missing or invalid (e.g. starting with placeholder text like `your_supabase_project_url`) at build/SSR/runtime.
 - `storage.ts` must lazy-init Supabase client inside functions (not module-level `const db = createClient()`) to avoid prerender failures.
-- Engagement data (target accounts, log) uses local Zustand state only until auth is wired — same pattern as brain-dump page (userId === null guard).
-- `src/lib/engagement.ts` owns temperature logic and seed fn. Never inline in components.
 - In TSX text nodes, raw `<` and `>` characters break Turbopack builds. Always use `&lt;` and `&gt;` or `{ '<' }` and `{ '>' }`.
+- Do not add duplicate or excessive state management files for unused features. E.g., standalone `engagement` state has been pruned in favor of streamlined page-level and grok-based interactions.
+- Avoid using emojis in the UI; use `lucide-react` icons for a cleaner, professional look.
 
 ## 6. CURRENT BUILD PHASE
 
-Phase 8 ✅ DONE — UI Consolidation & Polish (Localhost)
-- All loading.tsx / error.tsx files added per Next.js App Router convention
-- Browser notification permission requested on dashboard mount
-- IST posting window notifications fire when status goes green (no repeat per window)
-- Local .env.local set with: GEMINI_API_KEY, SUPABASE_URL, SUPABASE_ANON_KEY
-- Consolidated 8 routes into 3 unified glassmorphic views: Workspace (`/`), Engage Hub (`/engage`), and Analytics & Archive (`/analytics`)
-- Added Settings profile modal toggled from sidebar
-- Implemented closed-loop feedback learning from posted library entries
-- Deleted Vercel configuration files, targeted localhost execution only
-- Implemented 3 Brain Dump modes (Dev, Personal, Shitpost) for tailored draft extraction
-- Added one-click Trending Radar and Engagement Packets for stateless Grok validation
-
-
+Phase 9 ✅ DONE — Cleanup & UI Modernization
+- Pruned unused files (TargetAccountsList, ReplyGenerator, EngagementLogList, etc.) to minimize codebase size.
+- Migrated all UI components to use high-quality Lucide icons instead of emojis.
+- Replaced standalone Tutorial tabs with inline onboarding flows across Drafts, Dump, and Workshop areas.
+- Consolidated views to use glass-panel CSS for a professional, premium aesthetic.

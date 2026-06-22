@@ -1,4 +1,5 @@
 import { create } from 'zustand'
+import { persist } from 'zustand/middleware'
 import { UserProfile } from '@/types'
 import { SEED_PROFILE } from '@/data/seedProfile'
 
@@ -8,11 +9,18 @@ interface ProfileStore {
   updateProfile: (partial: Partial<UserProfile>) => void
 }
 
-export const useProfileStore = create<ProfileStore>((set) => ({
-  profile: SEED_PROFILE,
-  setProfile: (profile) => set({ profile }),
-  updateProfile: (partial) =>
-    set((state) => ({
-      profile: { ...state.profile, ...partial, updatedAt: new Date().toISOString() },
-    })),
-}))
+export const useProfileStore = create<ProfileStore>()(
+  persist(
+    (set) => ({
+      profile: SEED_PROFILE,
+      setProfile: (profile) => set({ profile }),
+      updateProfile: (partial) =>
+        set((state) => ({
+          profile: { ...state.profile, ...partial, updatedAt: new Date().toISOString() },
+        })),
+    }),
+    {
+      name: 'tweetos-profile-storage',
+    }
+  )
+)

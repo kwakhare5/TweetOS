@@ -1,6 +1,8 @@
 'use client'
 
+import React from 'react'
 import { AlgorithmScore, SignalScore } from '@/types'
+import { Flame, ThumbsUp, AlertTriangle, XCircle, Rocket, ArrowRight, HelpCircle } from 'lucide-react'
 
 interface ScoreCardProps {
   score: AlgorithmScore
@@ -20,28 +22,33 @@ export default function ScoreCard({ score }: ScoreCardProps) {
     suggestions
   } = score
 
-  // Determine overall status and color
+  // Determine overall status, color, and icon
   let statusText = 'Draft Not Scored'
   let statusColor = 'text-[var(--text-muted)]'
   let overallGradient = 'from-zinc-500 to-zinc-700'
+  let StatusIcon: React.ComponentType<{ className?: string }> = HelpCircle
 
   if (overall > 0 || suggestions.length > 0 || length.score > 0) {
     if (overall >= 80) {
-      statusText = 'Viral Potential 🔥'
+      statusText = 'Viral Potential'
       statusColor = 'text-[var(--pass)]'
       overallGradient = 'from-emerald-500 via-teal-500 to-cyan-500'
+      StatusIcon = Flame
     } else if (overall >= 65) {
-      statusText = 'Solid Draft 👍'
+      statusText = 'Solid Draft'
       statusColor = 'text-[var(--accent)]'
       overallGradient = 'from-blue-500 to-indigo-500'
+      StatusIcon = ThumbsUp
     } else if (overall >= 40) {
-      statusText = 'Needs Work ⚠️'
+      statusText = 'Needs Work'
       statusColor = 'text-[var(--warn)]'
       overallGradient = 'from-amber-500 to-orange-500'
+      StatusIcon = AlertTriangle
     } else {
-      statusText = 'Fail / Truncated ❌'
+      statusText = 'Fail / Truncated'
       statusColor = 'text-[var(--fail)]'
       overallGradient = 'from-red-500 to-rose-600'
+      StatusIcon = XCircle
     }
   }
 
@@ -76,16 +83,17 @@ export default function ScoreCard({ score }: ScoreCardProps) {
           <div className={`absolute inset-2 rounded-full bg-gradient-to-tr ${overallGradient} opacity-20 blur-md`} />
           <div className="flex flex-col items-center justify-center z-10">
             <span className="text-4xl font-extrabold font-mono tracking-tight text-white">{overall}</span>
-            <span className="text-[10px] uppercase tracking-wider text-[var(--text-muted)]">/ 100</span>
+            <span className="text-xs uppercase tracking-wider text-[var(--text-muted)] font-semibold mt-0.5">/ 100</span>
           </div>
         </div>
 
         <div className="text-center sm:text-left flex-1">
-          <p className="text-[11px] font-semibold tracking-wider text-[var(--text-muted)] uppercase mb-1">Algorithm Score</p>
-          <h2 className={`text-2xl font-bold tracking-tight ${statusColor} transition-colors duration-300`}>
-            {statusText}
+          <p className="text-xs font-bold tracking-wider text-[var(--text-muted)] uppercase mb-1">Algorithm Score</p>
+          <h2 className={`text-2xl font-bold tracking-tight ${statusColor} transition-colors duration-300 flex items-center justify-center sm:justify-start gap-2`}>
+            <StatusIcon className="w-6 h-6 shrink-0" />
+            <span>{statusText}</span>
           </h2>
-          <p className="text-xs text-[var(--text-muted)] mt-1.5 leading-relaxed max-w-sm">
+          <p className="text-sm text-[var(--text-muted)] mt-1.5 leading-relaxed max-w-sm">
             {overall >= 80 
               ? 'Excellent formatting, high hook appeal, and solid structural bait. Organic reach multiplier active.' 
               : overall >= 65 
@@ -99,7 +107,7 @@ export default function ScoreCard({ score }: ScoreCardProps) {
 
       {/* 8 Signals Checklist */}
       <div className="flex flex-col gap-3.5">
-        <h3 className="text-xs font-bold uppercase tracking-widest text-[var(--text-muted)]">Signal Metrics</h3>
+        <h3 className="text-sm font-bold uppercase tracking-widest text-[var(--text-muted)]">Signal Metrics</h3>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
           {signals.map((sig, idx) => (
             <div 
@@ -109,13 +117,13 @@ export default function ScoreCard({ score }: ScoreCardProps) {
               <div className="flex justify-between items-center mb-1">
                 <span className="text-xs font-semibold text-white/95">{sig.name}</span>
                 <div className="flex items-center gap-2">
-                  <span className="text-xs font-mono text-[var(--text-muted)]">{sig.val.score}/10</span>
-                  <span className={`text-[10px] font-bold px-2 py-0.5 rounded border ${getBadgeStyles(sig.val.label)}`}>
+                  <span className="text-xs font-semibold font-mono text-[var(--text-muted)]">{sig.val.score}/10</span>
+                  <span className={`text-xs font-bold px-2 py-0.5 rounded border ${getBadgeStyles(sig.val.label)}`}>
                     {sig.val.label}
                   </span>
                 </div>
               </div>
-              <p className="text-[11px] text-[var(--text-muted)] leading-relaxed group-hover:text-zinc-300 transition-colors duration-200">
+              <p className="text-xs text-[var(--text-muted)] leading-relaxed group-hover:text-zinc-200 transition-colors duration-200">
                 {sig.val.reason}
               </p>
             </div>
@@ -125,20 +133,20 @@ export default function ScoreCard({ score }: ScoreCardProps) {
 
       {/* Recommendations & Fixes */}
       <div className="pt-4 border-t border-[var(--border)]">
-        <h3 className="text-xs font-bold uppercase tracking-widest text-[var(--text-muted)] mb-3">Improvement Roadmap</h3>
+        <h3 className="text-sm font-bold uppercase tracking-widest text-[var(--text-muted)] mb-3">Improvement Roadmap</h3>
         {suggestions.length > 0 ? (
-          <ul className="flex flex-col gap-2">
+          <ul className="flex flex-col gap-2.5">
             {suggestions.map((sug, i) => (
-              <li key={i} className="flex items-start gap-2.5 text-xs text-zinc-300 leading-relaxed">
-                <span className="text-[var(--warn)] mt-0.5 select-none font-bold">➔</span>
+              <li key={i} className="flex items-start gap-2.5 text-sm text-zinc-200 leading-relaxed">
+                <ArrowRight className="w-3.5 h-3.5 text-[var(--warn)] mt-1 shrink-0" />
                 <span>{sug}</span>
               </li>
             ))}
           </ul>
         ) : (
           <div className="flex items-center gap-3 p-3 rounded-lg bg-emerald-500/5 border border-emerald-500/10 text-emerald-400">
-            <span className="text-lg">🚀</span>
-            <span className="text-xs font-semibold">Perfect score! No algorithmic warnings detected. Ready to post.</span>
+            <Rocket className="w-4 h-4 shrink-0" />
+            <span className="text-sm font-semibold">Perfect score! No algorithmic warnings detected. Ready to post.</span>
           </div>
         )}
       </div>

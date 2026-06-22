@@ -2,7 +2,9 @@
 
 import { useState } from 'react'
 import { useProfileStore } from '@/store/useProfileStore'
-import { saveProfile } from '@/lib/storage'
+import { geminiJSON } from '@/lib/gemini'
+import { VOICE_EXTRACTOR_PROMPT } from '@/lib/prompts'
+import { Sparkles, Wand2, Check } from 'lucide-react'
 
 interface ProfileModalProps {
   isOpen: boolean
@@ -22,6 +24,49 @@ export default function ProfileModal({ isOpen, onClose }: ProfileModalProps) {
   const [newAvoidItem, setNewAvoidItem] = useState('')
   const [exampleTweets, setExampleTweets] = useState(profile.voice.exampleTweets)
   const [newExampleItem, setNewExampleItem] = useState('')
+
+  // AI Extractor states
+  const [rawTextDump, setRawTextDump] = useState('')
+  const [isExtracting, setIsExtracting] = useState(false)
+  const [extractError, setExtractError] = useState<string | null>(null)
+  const [modalToast, setModalToast] = useState<string | null>(null)
+
+  function triggerModalToast(msg: string) {
+    setModalToast(msg)
+    setTimeout(() => setModalToast(null), 3000)
+  }
+
+  async function handleAutoExtract() {
+    if (!rawTextDump.trim()) return
+    setIsExtracting(true)
+    setExtractError(null)
+    try {
+      const result = await geminiJSON<{
+        name: string
+        twitterHandle: string
+        niche: string
+        tone: string
+        writingStyle: string
+        avoidList: string[]
+        exampleTweets: string[]
+      }>(VOICE_EXTRACTOR_PROMPT(rawTextDump))
+
+      if (result.name) setName(result.name)
+      if (result.twitterHandle) setTwitterHandle(result.twitterHandle)
+      if (result.niche) setNiche(result.niche)
+      if (result.tone) setTone(result.tone)
+      if (result.writingStyle) setWritingStyle(result.writingStyle)
+      if (result.avoidList) setAvoidList(result.avoidList)
+      if (result.exampleTweets) setExampleTweets(result.exampleTweets)
+
+      setRawTextDump('')
+      triggerModalToast('AI successfully structured your profile! Review below.')
+    } catch (e) {
+      setExtractError(e instanceof Error ? e.message : 'AI Extraction failed')
+    } finally {
+      setIsExtracting(false)
+    }
+  }
 
   if (!isOpen) return null
 
@@ -84,6 +129,54 @@ export default function ProfileModal({ isOpen, onClose }: ProfileModalProps) {
         {/* Scrollable Body */}
         <div className="flex-1 overflow-y-auto p-6 space-y-6">
           
+          {/* Section 0: AI Extractor */}
+          <div className="p-4 bg-white/[0.02] border border-white/5 rounded-xl space-y-3">
+            <div className="flex justify-between items-center">
+              <h3 className="text-xs uppercase tracking-wider text-[var(--accent)] font-bold flex items-center gap-1.5">
+                <Sparkles className="w-3.5 h-3.5" />
+                <span>AI Voice Profile Extractor</span>
+              </h3>
+              <span className="text-[10px] text-[var(--text-muted)] font-medium">Paste bio, tweets, or raw notes</span>
+            </div>
+            
+            <textarea
+              placeholder="Paste anything about you, your niche, your writing rules, or paste 3-5 tweets you wrote. The AI will parse it and auto-fill the settings below..."
+              value={rawTextDump}
+              onChange={(e) => setRawTextDump(e.target.value)}
+              className="glass-input w-full h-24 p-3 bg-transparent text-xs font-sans leading-relaxed"
+            />
+            
+            <button
+              onClick={handleAutoExtract}
+              disabled={isExtracting || !rawTextDump.trim()}
+              className="glass-button w-full py-2 bg-[var(--accent)] hover:bg-[var(--accent-hover)] text-white text-xs font-bold border-transparent"
+            >
+              {isExtracting ? (
+                'Extracting and structuring...'
+              ) : (
+                <span className="flex items-center gap-1.5 justify-center">
+                  <Wand2 className="w-3.5 h-3.5" />
+                  <span>Analyze & Populate Profile</span>
+                </span>
+              )}
+            </button>
+
+            {extractError && (
+              <p className="text-xs text-[var(--fail)] bg-[var(--fail)]/5 border border-[var(--fail)]/20 p-2.5 rounded-lg font-sans">
+                {extractError}
+              </p>
+            )}
+
+            {modalToast && (
+              <p className="text-xs text-[var(--pass)] bg-[var(--pass)]/5 border border-[var(--pass)]/20 p-2.5 rounded-lg font-sans flex items-center gap-1.5">
+                <Check className="w-3.5 h-3.5" />
+                <span>{modalToast}</span>
+              </p>
+            )}
+          </div>
+
+          <hr className="border-white/5" />
+
           {/* Section 1: Basic Identity */}
           <div className="space-y-4">
             <h3 className="text-xs uppercase tracking-wider text-[var(--text-muted)] font-semibold">Identity & Niche</h3>
