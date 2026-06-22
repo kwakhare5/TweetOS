@@ -1,4 +1,5 @@
 # TweetOS — Personal Twitter Growth System
+
 ## Architecture & Build Document v2.0
 
 > **What this is:** A personal AI system that deeply knows Karan, drafts tweets in his voice, scores them against X algorithm signals, helps him find engagement opportunities, generates smart replies, and packages everything for Grok validation.
@@ -8,6 +9,7 @@
 > **Growth model:** Posting alone doesn't grow Twitter. Engagement does. This system covers both — original content AND reply strategy.
 >
 > **Daily targets (confirmed from X algorithm research):**
+>
 > - Original posts: 2–4/day (1 anchor + 1–2 quick updates + 1 thread/week on Saturday)
 > - Replies: 10–15/day total (5–8 morning + 5–7 evening)
 > - Quote tweets: 2–4/day with your own take added
@@ -21,16 +23,16 @@
 
 ## Tech Stack
 
-| Layer | Tool | Why |
-|---|---|---|
-| Framework | Next.js 15 (App Router) | File-based routing, Vercel-native |
-| Language | TypeScript | Type safety on all data models |
-| Styling | Tailwind CSS v4 + shadcn/ui | Fast, clean, dark theme |
-| AI | Google Gemini 2.5 Flash | Free tier, generous limits |
-| State | Zustand | Simple global state |
-| Storage | Supabase (Postgres) | Free, cross-device sync — PC + mobile via same URL |
-| Auth | Supabase Auth (magic link) | No password, email only, fully free |
-| Hosting | Vercel | Free, auto-deploy from GitHub |
+| Layer     | Tool                        | Why                                                |
+| --------- | --------------------------- | -------------------------------------------------- |
+| Framework | Next.js 15 (App Router)     | File-based routing, Vercel-native                  |
+| Language  | TypeScript                  | Type safety on all data models                     |
+| Styling   | Tailwind CSS v4 + shadcn/ui | Fast, clean, dark theme                            |
+| AI        | Google Gemini 2.5 Flash     | Free tier, generous limits                         |
+| State     | Zustand                     | Simple global state                                |
+| Storage   | Supabase (Postgres)         | Free, cross-device sync — PC + mobile via same URL |
+| Auth      | Supabase Auth (magic link)  | No password, email only, fully free                |
+| Hosting   | Vercel                      | Free, auto-deploy from GitHub                      |
 
 **Gemini Model:** `gemini-2.5-flash` via `@google/genai`
 **API key:** https://aistudio.google.com/app/apikey (free)
@@ -45,14 +47,15 @@ tweetOS/
 ├── src/
 │   ├── app/
 │   │   ├── layout.tsx
-│   │   ├── page.tsx                      # Dashboard
-│   │   ├── profile/page.tsx
-│   │   ├── brain-dump/page.tsx
-│   │   ├── workshop/page.tsx
-│   │   ├── scorer/page.tsx
-│   │   ├── library/page.tsx
-│   │   ├── engagement/page.tsx           # NEW: Engagement Engine
-│   │   └── grok-packet/page.tsx
+│   │   ├── page.tsx                      # Consolidated Workspace (Drafts, Dump, Workshop)
+│   │   ├── profile/page.tsx              # Profile & Seed Data
+│   │   ├── engage/page.tsx               # Engagement Hub
+│   │   ├── analytics/page.tsx            # Analytics & Library
+│   │   ├── login/page.tsx                # Magic Link Login
+│   │   ├── auth/callback/route.ts        # Auth Callback
+│   │   ├── globals.css                   # Tailwind and UI utilities
+│   │   ├── error.tsx
+│   │   └── loading.tsx
 │   │
 │   ├── components/
 │   │   ├── layout/
@@ -134,45 +137,51 @@ tweetOS/
 This is Karan's actual profile from Grok analysis. Load this as the default when no profile exists in localStorage. User can update it anytime via the Profile page.
 
 ```typescript
-import { UserProfile } from '@/types'
+import { UserProfile } from "@/types";
 
 export const SEED_PROFILE: UserProfile = {
   name: "Karan",
   twitterHandle: "kwakhare5",
-  niche: "3rd/4th-year Pune Comp Eng student vibe-coding full-stack AI projects and sharing the raw internship chase.",
+  niche:
+    "3rd/4th-year Pune Comp Eng student vibe-coding full-stack AI projects and sharing the raw internship chase.",
   bio: "thanos was right the whole time",
 
   contentPillars: [
     {
       id: "pillar_1",
       name: "Vibe Coding Logs",
-      description: "Raw day-in-the-life of building with Claude/Gemini: prompts that worked, failures, quick wins. Short updates + screenshots/code snippets.",
-      percentage: 30
+      description:
+        "Raw day-in-the-life of building with Claude/Gemini: prompts that worked, failures, quick wins. Short updates + screenshots/code snippets.",
+      percentage: 30,
     },
     {
       id: "pillar_2",
       name: "Project Spotlights",
-      description: "Deep dives or launch threads on GitHub projects (Git-for-Prompts, MemoryPalace, Tonal). Screenshots, tech decisions, lessons. Builds internship credibility.",
-      percentage: 25
+      description:
+        "Deep dives or launch threads on GitHub projects (Git-for-Prompts, MemoryPalace, Tonal). Screenshots, tech decisions, lessons. Builds internship credibility.",
+      percentage: 25,
     },
     {
       id: "pillar_3",
       name: "AI Tool Reality Checks",
-      description: "Honest takes on Gemini/Claude (frustrations + hacks), comparisons, student-friendly alternatives. Original insight, not just quote tweets.",
-      percentage: 20
+      description:
+        "Honest takes on Gemini/Claude (frustrations + hacks), comparisons, student-friendly alternatives. Original insight, not just quote tweets.",
+      percentage: 20,
     },
     {
       id: "pillar_4",
       name: "Student Builder Journey",
-      description: "Internship applications, Pune college life + building, refreshing emails, rejections/wins. Relatable emotional arc.",
-      percentage: 15
+      description:
+        "Internship applications, Pune college life + building, refreshing emails, rejections/wins. Relatable emotional arc.",
+      percentage: 15,
     },
     {
       id: "pillar_5",
       name: "Quick Wins & Resources",
-      description: "Prompt templates, small hacks, GitHub tips tailored for Indian CS students.",
-      percentage: 10
-    }
+      description:
+        "Prompt templates, small hacks, GitHub tips tailored for Indian CS students.",
+      percentage: 10,
+    },
   ],
 
   voice: {
@@ -184,33 +193,36 @@ export const SEED_PROFILE: UserProfile = {
       "Boastful flexing",
       "Corporate jargon",
       "Overused 'Day X of building' without unique angle",
-      "Quote tweeting without adding insight"
+      "Quote tweeting without adding insight",
     ],
     exampleTweets: [
       "submitted my Instamart-Intelligence project to Swiggy Builders last week and I've been refreshing Gmail like it's gonna pay my fees 😭 day 5 still nothing. @Swiggy if you're seeing this, the WhatsApp restock agent actually works lmao. built it all with Claude in ~3 weekends",
       "vibe coding Git-for-Prompts today: Claude generated 80% of the Monaco editor integration perfectly. then it hallucinated the Drizzle schema twice 💀 pro tip: explicit 'no assumptions on relationships' in the prompt fixed it. repo link in bio if you version control prompts too",
       "Pune college + building full-stack: lectures till 4, then vibe code till 2am because Claude doesn't judge your sleep schedule. shipped the prompt VCS today. if you're a 3rd year feeling behind, you're not — just start documenting the mess. it compounds.",
-      "just shipped a small feature to my pantry AI that predicts inventory from past Swiggy orders. took 2 hours with Gemini for the prediction logic + WhatsApp integration. feels illegal how fast this stuff moves now. what's one AI hack that's saved you hours?"
+      "just shipped a small feature to my pantry AI that predicts inventory from past Swiggy orders. took 2 hours with Gemini for the prediction logic + WhatsApp integration. feels illegal how fast this stuff moves now. what's one AI hack that's saved you hours?",
     ],
-    writingStyle: "Start with strong personal hook or specific observation. Use casual Indian student slang lightly (vro, fr, lmao) but pair with clear value. End with CTA or question when natural. First-person storytelling. Punchy, not padded."
+    writingStyle:
+      "Start with strong personal hook or specific observation. Use casual Indian student slang lightly (vro, fr, lmao) but pair with clear value. End with CTA or question when natural. First-person storytelling. Punchy, not padded.",
   },
 
   audience: {
-    currentAudience: "Small group of similar students reacting to AI gripes and tool frustrations",
-    targetAudience: "2nd-4th year CS/Comp Eng students in India (Tier 2/3 cities), aspiring full-stack/AI builders targeting MAANG/unicorns, indie hackers starting out",
+    currentAudience:
+      "Small group of similar students reacting to AI gripes and tool frustrations",
+    targetAudience:
+      "2nd-4th year CS/Comp Eng students in India (Tier 2/3 cities), aspiring full-stack/AI builders targeting MAANG/unicorns, indie hackers starting out",
     audienceProblems: [
       "Don't know what to build",
       "Struggling with AI prompt engineering for real apps",
       "Can't deploy projects confidently",
       "Don't know how to stand out on GitHub for internships",
-      "Feel behind compared to peers"
+      "Feel behind compared to peers",
     ],
     audienceGoals: [
       "Ship fast with AI tools",
       "Land good internship offers",
       "Build a visible GitHub portfolio",
-      "Find repeatable AI workflows without senior mentorship"
-    ]
+      "Find repeatable AI workflows without senior mentorship",
+    ],
   },
 
   goals: [
@@ -218,7 +230,7 @@ export const SEED_PROFILE: UserProfile = {
     "Get visibility for projects (Tonal, Git-for-Prompts, MemoryPalace)",
     "Land internships at top companies (Swiggy, MAANG)",
     "Build AI-native builder personal brand",
-    "Connect with Indian dev community"
+    "Connect with Indian dev community",
   ],
 
   admiredAccounts: [
@@ -227,13 +239,13 @@ export const SEED_PROFILE: UserProfile = {
     "adxtyahq",
     "dhruvtwt_",
     "bit2swaz",
-    "kalashvasaniya"
+    "kalashvasaniya",
   ],
 
   postingFrequency: "1 original tweet/day + 5-10 replies/day",
   createdAt: new Date().toISOString(),
-  updatedAt: new Date().toISOString()
-}
+  updatedAt: new Date().toISOString(),
+};
 ```
 
 ---
@@ -246,197 +258,197 @@ export const SEED_PROFILE: UserProfile = {
 // ─── PROFILE ─────────────────────────────────────────────────────────────────
 
 export interface UserProfile {
-  name: string
-  twitterHandle: string
-  niche: string
-  bio: string
-  contentPillars: ContentPillar[]
-  voice: VoiceConfig
-  audience: AudienceConfig
-  goals: string[]
-  admiredAccounts: string[]
-  postingFrequency: string
-  createdAt: string
-  updatedAt: string
+  name: string;
+  twitterHandle: string;
+  niche: string;
+  bio: string;
+  contentPillars: ContentPillar[];
+  voice: VoiceConfig;
+  audience: AudienceConfig;
+  goals: string[];
+  admiredAccounts: string[];
+  postingFrequency: string;
+  createdAt: string;
+  updatedAt: string;
 }
 
 export interface ContentPillar {
-  id: string
-  name: string
-  description: string
-  percentage: number                    // All pillars must add to 100
+  id: string;
+  name: string;
+  description: string;
+  percentage: number; // All pillars must add to 100
 }
 
 export interface VoiceConfig {
-  tone: string
-  avoidList: string[]
-  exampleTweets: string[]
-  writingStyle: string
+  tone: string;
+  avoidList: string[];
+  exampleTweets: string[];
+  writingStyle: string;
 }
 
 export interface AudienceConfig {
-  currentAudience: string
-  targetAudience: string
-  audienceProblems: string[]
-  audienceGoals: string[]
+  currentAudience: string;
+  targetAudience: string;
+  audienceProblems: string[];
+  audienceGoals: string[];
 }
 
 // ─── BRAIN DUMP ───────────────────────────────────────────────────────────────
 
 export interface BrainDumpSession {
-  id: string
-  rawDump: string
-  extractedMoments: ExtractedMoment[]
-  generatedDrafts: TweetDraft[]
-  createdAt: string
+  id: string;
+  rawDump: string;
+  extractedMoments: ExtractedMoment[];
+  generatedDrafts: TweetDraft[];
+  createdAt: string;
 }
 
 export interface ExtractedMoment {
-  id: string
-  insight: string
-  type: MomentType
+  id: string;
+  insight: string;
+  type: MomentType;
 }
 
 export type MomentType =
-  | 'story'
-  | 'lesson'
-  | 'opinion'
-  | 'progress'
-  | 'question'
-  | 'observation'
+  | "story"
+  | "lesson"
+  | "opinion"
+  | "progress"
+  | "question"
+  | "observation";
 
 // ─── TWEET DRAFT ──────────────────────────────────────────────────────────────
 
 export interface TweetDraft {
-  id: string
-  content: string
-  isThread: boolean
-  threadTweets?: string[]
-  pillarId: string
-  momentType: MomentType
-  hookVariations: string[]
-  algorithmScore: AlgorithmScore
-  sessionId?: string
-  status: DraftStatus
-  createdAt: string
-  updatedAt: string
+  id: string;
+  content: string;
+  isThread: boolean;
+  threadTweets?: string[];
+  pillarId: string;
+  momentType: MomentType;
+  hookVariations: string[];
+  algorithmScore: AlgorithmScore;
+  sessionId?: string;
+  status: DraftStatus;
+  createdAt: string;
+  updatedAt: string;
 }
 
-export type DraftStatus = 'draft' | 'polished' | 'posted' | 'archived'
+export type DraftStatus = "draft" | "polished" | "posted" | "archived";
 
 // ─── ALGORITHM SCORE ──────────────────────────────────────────────────────────
 
 export interface AlgorithmScore {
-  overall: number                       // 0-100
-  hookStrength: SignalScore
-  replyBait: SignalScore
-  specificity: SignalScore
-  emotionalTrigger: SignalScore
-  length: SignalScore
-  noLinksInBody: SignalScore
-  ctaQuality: SignalScore
-  threadPotential: SignalScore
-  suggestions: string[]
-  calculatedAt: string
+  overall: number; // 0-100
+  hookStrength: SignalScore;
+  replyBait: SignalScore;
+  specificity: SignalScore;
+  emotionalTrigger: SignalScore;
+  length: SignalScore;
+  noLinksInBody: SignalScore;
+  ctaQuality: SignalScore;
+  threadPotential: SignalScore;
+  suggestions: string[];
+  calculatedAt: string;
 }
 
 export interface SignalScore {
-  score: number                         // 0-10
-  label: 'Strong' | 'Weak' | 'Fail'
-  reason: string
+  score: number; // 0-10
+  label: "Strong" | "Weak" | "Fail";
+  reason: string;
 }
 
 // ─── LIBRARY ─────────────────────────────────────────────────────────────────
 
 export interface LibraryEntry {
-  id: string
-  tweet: string
-  isThread: boolean
-  threadTweets?: string[]
-  pillarId: string
-  algorithmScore?: AlgorithmScore
-  postedAt?: string
-  performanceNote?: string
-  grokRefinement?: string
-  tags: string[]
-  createdAt: string
+  id: string;
+  tweet: string;
+  isThread: boolean;
+  threadTweets?: string[];
+  pillarId: string;
+  algorithmScore?: AlgorithmScore;
+  postedAt?: string;
+  performanceNote?: string;
+  grokRefinement?: string;
+  tags: string[];
+  createdAt: string;
 }
 
 // ─── ENGAGEMENT ───────────────────────────────────────────────────────────────
 
 export interface TargetAccount {
-  id: string
-  handle: string                        // without @
-  name: string
-  why: string
-  temperature: AccountTemperature
-  lastEngaged?: string
-  engagementCount: number
-  notes?: string
-  addedAt: string
+  id: string;
+  handle: string; // without @
+  name: string;
+  why: string;
+  temperature: AccountTemperature;
+  lastEngaged?: string;
+  engagementCount: number;
+  notes?: string;
+  addedAt: string;
 }
 
 export type AccountTemperature =
-  | 'cold'          // Never interacted
-  | 'warm'          // Replied 1-3 times
-  | 'hot'           // Regular interaction, they reply back
-  | 'connection'    // DMed or had a real conversation
+  | "cold" // Never interacted
+  | "warm" // Replied 1-3 times
+  | "hot" // Regular interaction, they reply back
+  | "connection"; // DMed or had a real conversation
 
 export interface EngagementOpportunity {
-  id: string
-  tweetText: string
-  tweetAuthorHandle: string
-  tweetUrl?: string
-  opportunityType: OpportunityType
-  replies: GeneratedReply[]
-  status: 'pending' | 'replied' | 'skipped'
-  createdAt: string
-  repliedAt?: string
+  id: string;
+  tweetText: string;
+  tweetAuthorHandle: string;
+  tweetUrl?: string;
+  opportunityType: OpportunityType;
+  replies: GeneratedReply[];
+  status: "pending" | "replied" | "skipped";
+  createdAt: string;
+  repliedAt?: string;
 }
 
 export type OpportunityType =
-  | 'add_value'
-  | 'share_experience'
-  | 'ask_question'
-  | 'agree_expand'
-  | 'respectful_push'
+  | "add_value"
+  | "share_experience"
+  | "ask_question"
+  | "agree_expand"
+  | "respectful_push";
 
 export interface GeneratedReply {
-  id: string
-  content: string
-  replyType: OpportunityType
-  tone: string
+  id: string;
+  content: string;
+  replyType: OpportunityType;
+  tone: string;
 }
 
 export interface EngagementLog {
-  id: string
-  targetHandle: string
-  tweetSnippet: string                  // First 60 chars of tweet replied to
-  replyUsed: string
-  repliedAt: string
-  outcome?: string                      // "they replied back", "got 3 likes", etc.
+  id: string;
+  targetHandle: string;
+  tweetSnippet: string; // First 60 chars of tweet replied to
+  replyUsed: string;
+  repliedAt: string;
+  outcome?: string; // "they replied back", "got 3 likes", etc.
 }
 
 // ─── GROK PACKET ──────────────────────────────────────────────────────────────
 
-export type GrokPacketMode = 'draft' | 'engagement'
+export type GrokPacketMode = "draft" | "engagement";
 
 export interface DraftPacketConfig {
-  mode: 'draft'
-  selectedDraftIds: string[]
-  includeScores: boolean
-  customRequest: string
+  mode: "draft";
+  selectedDraftIds: string[];
+  includeScores: boolean;
+  customRequest: string;
 }
 
 export interface EngagementPacketConfig {
-  mode: 'engagement'
-  targetAccounts: string[]
-  topicKeywords: string[]
-  opportunityTypes: OpportunityType[]
-  customRequest: string
+  mode: "engagement";
+  targetAccounts: string[];
+  topicKeywords: string[];
+  opportunityTypes: OpportunityType[];
+  customRequest: string;
 }
 
-export type GrokPacketConfig = DraftPacketConfig | EngagementPacketConfig
+export type GrokPacketConfig = DraftPacketConfig | EngagementPacketConfig;
 ```
 
 ---
@@ -452,11 +464,11 @@ export type GrokPacketConfig = DraftPacketConfig | EngagementPacketConfig
 // src/lib/storage.ts
 export async function getProfile(userId: string): Promise<UserProfile> {
   const { data } = await supabase
-    .from('profiles')
-    .select('*')
-    .eq('user_id', userId)
-    .single()
-  return data ?? SEED_PROFILE  // Falls back to real seed data on first load
+    .from("profiles")
+    .select("*")
+    .eq("user_id", userId)
+    .single();
+  return data ?? SEED_PROFILE; // Falls back to real seed data on first load
 }
 ```
 
@@ -503,25 +515,25 @@ export async function getProfile(userId: string): Promise<UserProfile> {
 export const BRAIN_DUMP_PROMPT = (
   dump: string,
   profile: UserProfile,
-  topPerformers: string
+  topPerformers: string,
 ) => `
 You are a Twitter content strategist for ${profile.name} (@${profile.twitterHandle}).
 
 EXACT NICHE: ${profile.niche}
 
 CONTENT PILLARS:
-${profile.contentPillars.map(p => `• ${p.name} (${p.percentage}%): ${p.description}`).join('\n')}
+${profile.contentPillars.map((p) => `• ${p.name} (${p.percentage}%): ${p.description}`).join("\n")}
 
 VOICE: ${profile.voice.tone}
 WRITING STYLE: ${profile.voice.writingStyle}
 
 NEVER WRITE:
-${profile.voice.avoidList.map(a => `• ${a}`).join('\n')}
+${profile.voice.avoidList.map((a) => `• ${a}`).join("\n")}
 
 EXAMPLE TWEETS (match this energy exactly):
-${profile.voice.exampleTweets.map((t, i) => `${i + 1}. ${t}`).join('\n\n')}
+${profile.voice.exampleTweets.map((t, i) => `${i + 1}. ${t}`).join("\n\n")}
 
-${topPerformers ? `BEST PERFORMING TWEETS SO FAR:\n${topPerformers}` : ''}
+${topPerformers ? `BEST PERFORMING TWEETS SO FAR:\n${topPerformers}` : ""}
 
 RAW BRAIN DUMP:
 ---
@@ -560,7 +572,7 @@ RESPOND ONLY IN THIS JSON (no preamble, no markdown fences):
     }
   ]
 }
-`
+`;
 ```
 
 ### UI Flow
@@ -614,7 +626,7 @@ export const HOOK_GENERATOR_PROMPT = (tweet: string, profile: UserProfile) => `
 Twitter hook specialist for ${profile.name} — ${profile.niche}
 
 VOICE: ${profile.voice.tone}
-EXAMPLE TWEETS: ${profile.voice.exampleTweets.slice(0, 3).join(' || ')}
+EXAMPLE TWEETS: ${profile.voice.exampleTweets.slice(0, 3).join(" || ")}
 
 TWEET TO REWORK:
 ${tweet}
@@ -638,7 +650,7 @@ RESPOND ONLY IN JSON:
     { "technique": "frustration opener", "text": "hook text here" }
   ]
 }
-`
+`;
 ```
 
 ### Thread Builder Prompt
@@ -675,10 +687,11 @@ RESPOND ONLY IN JSON:
     { "number": 1, "content": "tweet text" }
   ]
 }
-`
+`;
 ```
 
 ### Tightener
+
 Paste a tweet over 280 chars or that feels padded → get a tighter version. Shows live character count. Removes filler, makes every word earn its place.
 
 ### Quote Tweet Generator (NEW — 2-4/day target)
@@ -689,7 +702,7 @@ Paste a tweet over 280 chars or that feels padded → get a tighter version. Sho
 export const QUOTE_TWEET_PROMPT = (
   originalTweet: string,
   authorHandle: string,
-  profile: UserProfile
+  profile: UserProfile,
 ) => `
 Generate quote tweet takes for ${profile.name} (@${profile.twitterHandle}).
 
@@ -722,7 +735,7 @@ RESPOND ONLY IN JSON:
     { "option": "C", "type": "question", "text": "quote text" }
   ]
 }
-`
+`;
 ```
 
 **UI:** Paste tweet → select type → 3 options → copy best → log it.
@@ -747,12 +760,12 @@ export function scoreTweet(tweet: string, isThread: boolean): AlgorithmScore {
     ctaQuality: scoreCTA(tweet),
     threadPotential: scoreThreadPotential(tweet, isThread),
     suggestions: generateSuggestions(tweet, isThread),
-    calculatedAt: new Date().toISOString()
-  }
+    calculatedAt: new Date().toISOString(),
+  };
 }
 
 function scoreHook(tweet: string): SignalScore {
-  const firstWords = tweet.split(' ').slice(0, 8).join(' ').toLowerCase()
+  const firstWords = tweet.split(" ").slice(0, 8).join(" ").toLowerCase();
   // Strong signals: number in first 3 words, "I", specific tool name,
   //                frustration word, strong verb, question mark
   // Weak signals: "So I", "Just", "Hey", "Thread:", vague opener
@@ -779,7 +792,7 @@ function scoreEmotionalTrigger(tweet: string): SignalScore {
 }
 
 function scoreLength(tweet: string, isThread: boolean): SignalScore {
-  const chars = tweet.length
+  const chars = tweet.length;
   // HARD FAIL: over 280 chars = violates free account limit
   // Single tweet sweet spots: < 100 chars (punchy) OR 220-270 chars (contextual)
   // Awkward zone: 100-200 chars (neither punchy nor contextual)
@@ -832,6 +845,7 @@ function scoreCTA(tweet: string): SignalScore {
 **Storage:** `tweetOS_library` → `LibraryEntry[]`
 
 ### Features
+
 - Filter: status / pillar / score range / date
 - Full text search
 - Add performance note after posting ("47 likes, 5 new followers, 2 DMs")
@@ -844,10 +858,10 @@ function scoreCTA(tweet: string): SignalScore {
 ```typescript
 export function getTopPerformers(library: LibraryEntry[]): string {
   return library
-    .filter(e => e.performanceNote && e.postedAt)
+    .filter((e) => e.performanceNote && e.postedAt)
     .slice(0, 5)
-    .map(e => e.tweet)
-    .join('\n---\n')
+    .map((e) => e.tweet)
+    .join("\n---\n");
 }
 // Injected into Brain Dump prompt — Gemini learns what works for Karan over time
 ```
@@ -866,35 +880,41 @@ export function getTopPerformers(library: LibraryEntry[]): string {
 export function generateDraftPacket(
   profile: UserProfile,
   drafts: TweetDraft[],
-  config: DraftPacketConfig
+  config: DraftPacketConfig,
 ): string {
   return `
 ═══════════════════════════════════════
 TWEETOS — DRAFT PACKET
-${new Date().toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' })} IST
+${new Date().toLocaleString("en-IN", { timeZone: "Asia/Kolkata" })} IST
 ═══════════════════════════════════════
 
 ═══ WHO I AM ═══
 @${profile.twitterHandle} — ${profile.niche}
 Voice: ${profile.voice.tone}
 Audience: ${profile.audience.targetAudience}
-Goals: ${profile.goals.join(' | ')}
+Goals: ${profile.goals.join(" | ")}
 
 Content Pillars:
-${profile.contentPillars.map(p => `• ${p.name} (${p.percentage}%)`).join('\n')}
+${profile.contentPillars.map((p) => `• ${p.name} (${p.percentage}%)`).join("\n")}
 
-Accounts I want to be like: ${profile.admiredAccounts.map(a => '@' + a).join(', ')}
+Accounts I want to be like: ${profile.admiredAccounts.map((a) => "@" + a).join(", ")}
 
 ═══ TODAY'S DRAFTS ═══
-${drafts.map((d, i) => `
+${drafts
+  .map(
+    (d, i) => `
 DRAFT ${i + 1} [local score: ${d.algorithmScore.overall}/100]:
-${d.isThread
-    ? d.threadTweets?.map((t, n) => `${n + 1}/ ${t}`).join('\n')
-    : d.content}
+${
+  d.isThread
+    ? d.threadTweets?.map((t, n) => `${n + 1}/ ${t}`).join("\n")
+    : d.content
+}
 
-Flagged weaknesses: ${d.algorithmScore.suggestions.join(', ')}
+Flagged weaknesses: ${d.algorithmScore.suggestions.join(", ")}
 Pillar: ${d.pillarId}
-`).join('\n')}
+`,
+  )
+  .join("\n")}
 
 ═══ WHAT I NEED ═══
 ${config.customRequest}
@@ -909,7 +929,7 @@ ALWAYS DO THESE:
 7. Best posting time today for Indian audience (IST)?
 
 ═══════════════════════════════════════
-  `.trim()
+  `.trim();
 }
 ```
 
@@ -918,12 +938,12 @@ ALWAYS DO THESE:
 ```typescript
 export function generateEngagementPacket(
   profile: UserProfile,
-  config: EngagementPacketConfig
+  config: EngagementPacketConfig,
 ): string {
   return `
 ═══════════════════════════════════════
 TWEETOS — ENGAGEMENT PACKET
-${new Date().toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' })} IST
+${new Date().toLocaleString("en-IN", { timeZone: "Asia/Kolkata" })} IST
 ═══════════════════════════════════════
 
 ═══ WHO I AM ═══
@@ -935,10 +955,10 @@ My value-add in replies: Real student build experience, specific AI tool failure
 ═══ FIND ME TWEETS TO REPLY TO ═══
 
 Check recent tweets (last 24-48 hours) from these accounts:
-${config.targetAccounts.map(h => `• @${h}`).join('\n')}
+${config.targetAccounts.map((h) => `• @${h}`).join("\n")}
 
 Also search for recent tweets about:
-${config.topicKeywords.map(k => `• ${k}`).join('\n')}
+${config.topicKeywords.map((k) => `• ${k}`).join("\n")}
 
 ═══ WHAT I NEED ═══
 
@@ -982,10 +1002,10 @@ After the tweet list, also tell me:
 - Is there an active thread I should jump into (not just a single reply)?
 - Any new account posting great content I should add to my engage list?
 
-${config.customRequest ? `EXTRA: ${config.customRequest}` : ''}
+${config.customRequest ? `EXTRA: ${config.customRequest}` : ""}
 
 ═══════════════════════════════════════
-  `.trim()
+  `.trim();
 }
 ```
 
@@ -1051,12 +1071,14 @@ Replies are how you get discovered. When you reply to an account with 5K followe
 **Pre-seeded from Karan's admired accounts list.**
 
 **Temperature system:**
+
 - Cold (never interacted) → default for all seed accounts
 - Warm (replied 1-3 times) → auto-updated from engagement log
 - Hot (4+ replies or they replied back) → manually mark or auto-detect from log
 - Connection (DM or real conversation) → manually mark
 
 **UI:**
+
 ```
 ┌─────────────────────────────────────────┐
 │  TARGET ACCOUNTS  [+ ADD]              │
@@ -1084,6 +1106,7 @@ Replies are how you get discovered. When you reply to an account with 5K followe
 **Most-used feature. The daily loop.**
 
 **Full workflow:**
+
 1. Grok engagement packet returns 8-10 tweet opportunities
 2. Copy each tweet text from Grok
 3. Come to Reply Generator → paste tweet
@@ -1099,7 +1122,7 @@ export const REPLY_GENERATOR_PROMPT = (
   originalTweet: string,
   authorHandle: string,
   opportunityType: OpportunityType,
-  profile: UserProfile
+  profile: UserProfile,
 ) => `
 Generate Twitter replies for ${profile.name} (@${profile.twitterHandle}).
 
@@ -1148,10 +1171,11 @@ RESPOND ONLY IN JSON:
     }
   ]
 }
-`
+`;
 ```
 
 **UI:**
+
 ```
 ┌─────────────────────────────────────────┐
 │  REPLY GENERATOR                       │
@@ -1198,6 +1222,7 @@ RESPOND ONLY IN JSON:
 Simple, fast. One tap after replying to log it.
 
 Fields:
+
 - Who you replied to (@handle)
 - Tweet snippet (first 60 chars — auto-filled from generator)
 - Reply you used (auto-filled from generator)
@@ -1215,17 +1240,17 @@ Fields:
 
 export function updateAccountTemperature(
   account: TargetAccount,
-  log: EngagementLog[]
+  log: EngagementLog[],
 ): AccountTemperature {
-  const accountReplies = log.filter(l => l.targetHandle === account.handle)
+  const accountReplies = log.filter((l) => l.targetHandle === account.handle);
   const positiveOutcomes = accountReplies.filter(
-    l => l.outcome?.includes('replied') || l.outcome?.includes('followed')
-  )
+    (l) => l.outcome?.includes("replied") || l.outcome?.includes("followed"),
+  );
 
-  if (positiveOutcomes.length > 0) return 'hot'
-  if (accountReplies.length >= 4) return 'hot'
-  if (accountReplies.length >= 1) return 'warm'
-  return 'cold'
+  if (positiveOutcomes.length > 0) return "hot";
+  if (accountReplies.length >= 4) return "hot";
+  if (accountReplies.length >= 1) return "warm";
+  return "cold";
 }
 ```
 
@@ -1318,23 +1343,39 @@ TOTAL DAILY: ~35-45 min — sustainable even during exams
 ```typescript
 // src/lib/utils.ts
 export function getPostingWindowStatus(): {
-  status: 'green' | 'yellow' | 'off'
-  label: string
-  suggestion: string
+  status: "green" | "yellow" | "off";
+  label: string;
+  suggestion: string;
 } {
-  const now = new Date()
-  const istHour = (now.getUTCHours() + 5.5) % 24  // Convert to IST
+  const now = new Date();
+  const istHour = (now.getUTCHours() + 5.5) % 24; // Convert to IST
 
   if (istHour >= 10 && istHour < 12) {
-    return { status: 'green', label: '🟢 Morning window (10AM-12PM)', suggestion: 'Great time for replies and quote tweets' }
+    return {
+      status: "green",
+      label: "🟢 Morning window (10AM-12PM)",
+      suggestion: "Great time for replies and quote tweets",
+    };
   }
   if (istHour >= 18 && istHour < 21) {
-    return { status: 'green', label: '🟢 Evening window (6PM-9PM)', suggestion: 'Best time to post anchor tweet — max early engagement' }
+    return {
+      status: "green",
+      label: "🟢 Evening window (6PM-9PM)",
+      suggestion: "Best time to post anchor tweet — max early engagement",
+    };
   }
   if ((istHour >= 12 && istHour < 18) || (istHour >= 21 && istHour < 23)) {
-    return { status: 'yellow', label: '🟡 Okay window', suggestion: 'Can engage, but save anchor post for evening' }
+    return {
+      status: "yellow",
+      label: "🟡 Okay window",
+      suggestion: "Can engage, but save anchor post for evening",
+    };
   }
-  return { status: 'off', label: '🔴 Low activity time', suggestion: 'Save energy — post during 10AM-12PM or 6PM-9PM' }
+  return {
+    status: "off",
+    label: "🔴 Low activity time",
+    suggestion: "Save energy — post during 10AM-12PM or 6PM-9PM",
+  };
 }
 ```
 
@@ -1423,16 +1464,16 @@ create policy "own data" on stats for all using (auth.uid() = user_id);
 
 ```typescript
 // src/lib/auth.ts
-import { createClient } from '@supabase/supabase-js'
+import { createClient } from "@supabase/supabase-js";
 
 export const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-)
+  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+);
 
 // One-tap login — sends magic link to email
 export async function signIn(email: string) {
-  return supabase.auth.signInWithOtp({ email })
+  return supabase.auth.signInWithOtp({ email });
 }
 ```
 
@@ -1443,6 +1484,7 @@ User opens app → enters email once → clicks magic link in email → logged i
 ## Environment Setup
 
 **`.env.local`** (never commit):
+
 ```
 NEXT_PUBLIC_GEMINI_API_KEY=your_key_here
 NEXT_PUBLIC_SUPABASE_URL=your_supabase_project_url
@@ -1450,6 +1492,7 @@ NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
 ```
 
 **`.env.example`** (commit this):
+
 ```
 NEXT_PUBLIC_GEMINI_API_KEY=get_free_key_at_aistudio.google.com
 NEXT_PUBLIC_SUPABASE_URL=get_from_supabase_project_settings
@@ -1457,6 +1500,7 @@ NEXT_PUBLIC_SUPABASE_ANON_KEY=get_from_supabase_project_settings
 ```
 
 **Supabase setup (one-time, 5 min):**
+
 1. Go to https://supabase.com → new project (free)
 2. Run SQL schema above in SQL editor
 3. Copy Project URL + anon key → paste in `.env.local`
@@ -1484,7 +1528,9 @@ NEXT_PUBLIC_SUPABASE_ANON_KEY=get_from_supabase_project_settings
 ## Build Phases
 
 ### Phase 1 — Foundation (Days 1-2) ✅ DONE
+
 **Model: Claude Sonnet 4.6** — Best for scaffolding, file structure, boilerplate.
+
 - [x] Init Next.js 15 + TypeScript + Tailwind v4 + shadcn/ui
 - [x] File structure
 - [x] Sidebar (desktop) + Bottom tab bar (mobile) — 5 tabs: Home | Dump | Engage | Library | Grok
@@ -1494,7 +1540,9 @@ NEXT_PUBLIC_SUPABASE_ANON_KEY=get_from_supabase_project_settings
 - [x] CLAUDE.md at root
 
 ### Phase 2 — Core AI Loop (Days 3-4) ✅ DONE
+
 **Model: Claude Sonnet 4.6** — Best for wiring AI integrations and complex component logic.
+
 - [x] Gemini integration (`src/lib/gemini.ts`) — `geminiJSON<T>()` wrapper, lazy client init, strips markdown fences
 - [x] Brain Dump page — textarea → Gemini extract → DraftCards (3-step flow)
 - [x] DraftCard component with live char count (280 limit), hook variation picker, save/post actions
@@ -1502,14 +1550,18 @@ NEXT_PUBLIC_SUPABASE_ANON_KEY=get_from_supabase_project_settings
 - [x] Save to Supabase `drafts` table (wires in when real Supabase keys added)
 
 ### Phase 3 — Scoring (Day 5) ✅ DONE
+
 **Model: Gemini 3.5 Flash (Medium)** — Pure logic/math, no complex architecture. Fast and cheap.
+
 - [x] All 8 scorer signals in `src/lib/scorer.ts`
 - [x] 280-char hard limit check (separate from other signals — this is a FAIL not a weak)
 - [x] Live character counter on all tweet inputs across the app
 - [x] ScoreCard UI with improvement tips
 
 ### Phase 4 — Engagement Engine (Days 6-7) ✅ DONE
+
 **Model: Claude Sonnet 4.6** — Most complex module, needs best reasoning for prompt design.
+
 - [x] Target Accounts list (pre-seeded from profile — 6 accounts from admiredAccounts, cold/warm/hot/connection)
 - [x] Reply Generator — full flow with Gemini (280 char enforced, 3 options A/B/C, copy + log)
 - [x] Quote Tweet Generator — `QUOTE_TWEET_PROMPT` in `prompts.ts` (UI in Phase 5 Workshop)
@@ -1518,32 +1570,38 @@ NEXT_PUBLIC_SUPABASE_ANON_KEY=get_from_supabase_project_settings
 - [x] Engagement Grok Packet — deferred to Phase 6 (belongs with grok-packet page)
 
 ### Phase 5 — Workshop (Days 8-9) ✅ DONE
+
 **Model: Gemini 3.5 Flash (Medium)** — Straightforward UI components, no deep logic.
+
 - [x] Hook Generator
 - [x] Thread Builder (1 per week, Saturday content)
 - [x] Variation Generator
 - [x] Tightener (with live 280-char counter)
 
 ### Phase 6 — Grok Packet (Day 10) ✅ DONE
+
 **Model: Gemini 3.5 Flash (Medium)** — Simple template/string generation logic.
+
 - [x] Draft packet generator
 - [x] Engagement packet generator (pre-filled, one click)
 - [x] Mode toggle UI
 
 ### Phase 7 — Library + Dashboard (Day 11) ✅ DONE
+
 **Model: Gemini 3.5 Flash (Medium)** — UI-heavy, data display, filters. No complex logic.
+
 - [x] Library with filters + performance notes + export
 - [x] Dashboard with IST posting window indicator (🟢🟡🔴)
 - [x] Daily target progress bars (replies, posts, quotes)
 - [x] Relationship status summary
 
 ### Phase 8 — Polish (Localhost) (Days 12-13) ✅ DONE
+
 - [x] All error / loading / empty states
 - [x] Mobile layout QA on actual phone
 - [x] Posting window notification logic
 - [x] Local env setup for localhost testing
 - [x] Full daily workflow test end-to-end (one full day in the system)
-
 
 ---
 
@@ -1555,20 +1613,25 @@ Create at project root before starting Phase 1:
 # TweetOS — Claude Context
 
 ## What This Is
+
 Personal Twitter growth system for @kwakhare5.
 Two-part workflow:
+
 1. TweetOS (this app) — personalization, drafting, scoring, engagement
 2. Grok — real-time Twitter data, validation, tweet discovery
 
 ## Owner
+
 Karan — CS student, Pune. Vibe coder. Builds with Claude/Gemini.
 Projects: Tonal (Chrome extension), Git-for-Prompts (prompt VCS), MemoryPalace (RAG second brain)
 Niche: Indian student builder documenting the AI-native build + internship journey
 
 ## Stack
+
 Next.js 15 App Router | TypeScript | Tailwind v4 | shadcn/ui | Gemini 2.5 Flash | Zustand | Supabase (Postgres)
 
 ## Absolute Rules
+
 - ALL data stored in Supabase — same URL works on phone and PC.
 - Auth: magic link via Supabase Auth. No password.
 - Gemini API key: NEXT_PUBLIC_GEMINI_API_KEY in .env.local
@@ -1580,15 +1643,17 @@ Next.js 15 App Router | TypeScript | Tailwind v4 | shadcn/ui | Gemini 2.5 Flash 
 - Mobile-first. Bottom tab bar = primary nav on mobile.
 
 ## 7 Modules
+
 1. Profile — setup + seed data
 2. Brain Dump — daily dump → Gemini → drafts
 3. Workshop — hook gen, thread builder, variations
 4. Scorer — algorithm signals, no AI needed
 5. Library — all tweets, performance notes, grows-with-you
-6. Grok Packet — DRAFT mode + ENGAGEMENT mode (two separate packets)
+6. Grok Packet — DRAFT mode + ENGAGEMENT mode + TRENDING packet
 7. Engagement Engine — target accounts, reply generator, engagement log, temperature tracking
 
 ## Current Build Phase
+
 [Update this line as you complete phases]
 Phase 1 started: [date]
 ```
@@ -1599,17 +1664,18 @@ Phase 1 started: [date]
 
 You have these models. Use the right one per task:
 
-| Model | Best For | Cost |
-|---|---|---|
-| **Claude Sonnet 4.6** | Complex architecture, wiring AI, debugging, Supabase schema, any phase where things feel stuck | Medium |
-| **Claude Opus 4.6** | Only when Sonnet fails or for hardest architectural decisions — expensive, use sparingly | High |
-| **Gemini 3.5 Flash (Medium)** | Default workhorse — UI components, scorer logic, simple integrations, most day-to-day tasks | Low |
-| **Gemini 3.5 Flash (High)** | When Medium gives weak output — better reasoning, still fast | Low-Med |
-| **Gemini 3.5 Flash (Low)** | Ultra simple tasks only — copy changes, minor tweaks, formatting | Lowest |
-| **Gemini 3.1 Pro (High)** | Long context tasks — reading all of ARCHITECTURE.md + generating full files | Med |
-| **Gemini 3.1 Pro (Low)** | Same as above, budget version | Low-Med |
+| Model                         | Best For                                                                                       | Cost    |
+| ----------------------------- | ---------------------------------------------------------------------------------------------- | ------- |
+| **Claude Sonnet 4.6**         | Complex architecture, wiring AI, debugging, Supabase schema, any phase where things feel stuck | Medium  |
+| **Claude Opus 4.6**           | Only when Sonnet fails or for hardest architectural decisions — expensive, use sparingly       | High    |
+| **Gemini 3.5 Flash (Medium)** | Default workhorse — UI components, scorer logic, simple integrations, most day-to-day tasks    | Low     |
+| **Gemini 3.5 Flash (High)**   | When Medium gives weak output — better reasoning, still fast                                   | Low-Med |
+| **Gemini 3.5 Flash (Low)**    | Ultra simple tasks only — copy changes, minor tweaks, formatting                               | Lowest  |
+| **Gemini 3.1 Pro (High)**     | Long context tasks — reading all of ARCHITECTURE.md + generating full files                    | Med     |
+| **Gemini 3.1 Pro (Low)**      | Same as above, budget version                                                                  | Low-Med |
 
 ### Quick Rule:
+
 - **Building/debugging something complex** → Claude Sonnet 4.6
 - **Standard UI/component work** → Gemini 3.5 Flash (Medium)
 - **Something is broken and Sonnet can't fix it** → Claude Opus 4.6
@@ -1617,4 +1683,4 @@ You have these models. Use the right one per task:
 
 ---
 
-*TweetOS Architecture v3.0 — Supabase DB for cross-device sync, model selection guide added*
+_TweetOS Architecture v3.0 — Supabase DB for cross-device sync, model selection guide added_

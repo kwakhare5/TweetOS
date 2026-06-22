@@ -748,12 +748,14 @@ Result Notes: ${e.performanceNote}
                       </button>
                       <button 
                         onClick={() => handleClipboardAction('grok')}
+                        disabled={!activeDraft.content.trim()}
                         className="glass-button px-3 py-1.5 text-[10px] bg-transparent text-[var(--text-muted)]"
                       >
                         Grok Packet
                       </button>
                       <button 
                         onClick={() => handleClipboardAction('raw')}
+                        disabled={!activeDraft.content.trim()}
                         className="glass-button px-3 py-1.5 text-[10px] bg-transparent"
                       >
                         Copy Raw

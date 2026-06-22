@@ -66,5 +66,7 @@ Phase 8 ✅ DONE — UI Consolidation & Polish (Localhost)
 - Added Settings profile modal toggled from sidebar
 - Implemented closed-loop feedback learning from posted library entries
 - Deleted Vercel configuration files, targeted localhost execution only
+- Implemented 3 Brain Dump modes (Dev, Personal, Shitpost) for tailored draft extraction
+- Added one-click Trending Radar and Engagement Packets for stateless Grok validation
 
 
