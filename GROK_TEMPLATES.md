@@ -134,8 +134,8 @@ This is the structured response you will receive from Grok to copy back:
   - **Originality:** 5/10 (every developer complains about node_modules compiling)
 
 ### 2. Real-Time X References (Last 48 Hours)
-- "vibe coding with cursor is all fun and games until typescript decides to complain about a library from 2019" by @shydev69 (https://x.com/shydev69/status/123456789)
-  - *Why it worked:* Combines Cursor hype with library frustration.
+- "vibe coding with antigravity ide is all fun and games until typescript decides to complain about a library from 2019" by @shydev69 (https://x.com/shydev69/status/123456789)
+  - *Why it worked:* Combines Antigravity IDE hype with library frustration.
 - "spent 3 hours resolving lockfile conflicts because of a minor dev dependency upgrade" by @buildwithsid (https://x.com/buildwithsid/status/987654321)
   - *Why it worked:* Specific builder receipt.
 
@@ -236,22 +236,37 @@ vibe coding, building with claude, building with gemini, claude api, gemini 2.0,
 ═══ WHAT I NEED ═══
 
 PART 1: REPLY OPPORTUNITIES
-Find 10–12 tweets. For each, give:
-① Tweet text + author @handle
-② Why this is a good opportunity for ME specifically
-③ Risk level: Low / Medium / High
-④ 3 reply options:
-   - OPTION A [casual/relatable]: Texts a friend. Relatable.
-   - OPTION B [adds specific insight]: real experience, specific tool/fix.
-   - OPTION C [genuine question]: Opens conversation.
 
-All replies must be:
-- Under 280 characters.
-- Pune student voice.
-- No "Great point!" / "So true!" openers.
+Find me 10–12 tweets I can genuinely reply to.
+Do NOT repeat accounts I replied to in the last 48hrs (listed above).
+Prioritize accounts that have replied to me before (listed above).
+
+Format each opportunity as a clear, double-spaced block:
+
+### Opportunity [N]: Tweet by @[handle]
+*   **Original Tweet:** "[Tweet content]"
+*   **Why for me:** [Why this is a good opportunity for ME specifically - what do I know that's directly relevant?]
+*   **Risk Level:** [Low / Medium / High] (High = controversial, easily misread)
+*   **Reply Options:**
+    • **Option A (Casual):** [Reply draft under 280 chars. Relatable student energy. No generic agreement.] ([Character count])
+    • **Option B (Insight):** [Reply draft under 280 chars. Reference a real experience from my builds. Grok must inject actual project names (Tonal, Git-for-Prompts, Swiggy/Instamart agents, iPod, MemoryPalace, TweetOS) directly based on context. No placeholders.] ([Character count])
+    • **Option C (Question):** [Reply draft under 280 chars ending with a specific question to drive conversation. No generic "thoughts?".] ([Character count])
+
+All options must be under 280 characters, reference what they said, add genuine value, use a Pune CS student voice, and never start with generic openers like "Great point!" or "So true!". Ensure the core message of the target tweet is strictly preserved.
 
 PART 2: QUOTE TWEET OPPORTUNITIES
-Find 3-4 tweets to quote. Under 200 chars. Nuanced take or honest pushback.
+
+Find me 3–4 tweets I can quote with my own take.
+Target: tweets from accounts with 1K–50K followers on topics I have a real angle on. Not just agreeing — adding a new thought.
+
+Format each quote tweet opportunity as a clear, double-spaced block:
+
+### Quote Opportunity [N]: Tweet by @[handle]
+*   **Original Tweet Link:** [Link]
+*   **Why quote:** [Why it's a good quote tweet for me]
+*   **Quote Options:**
+    • **Option 1 (Agree + Expand):** [Quote text under 200 chars using actual project names] ([Character count])
+    • **Option 2 (Nuanced / Pushback):** [Quote text under 200 chars] ([Character count])
 
 PART 3: RELATIONSHIP BUILDING
 Identify 2-3 accounts to double down on today and threads to join.
@@ -322,7 +337,7 @@ TWEETOS → GROK PACKET: TRENDING RADAR
 
 CONTEXT: I am Karan (@kwakhare5). You are Grok with real-time X access.
 Stateless session — all context is below.
-Your job: use your live X data to find what's moving RIGHT NOW. Focus heavily on AI technology, frontier models, AI developer tools, and AI startups/companies (OpenAI, Anthropic, Google, Cursor, etc.) and hot tech ecosystem news that I can create genuine original content about.
+Your job: use your live X data to find what's moving RIGHT NOW. Focus heavily on AI technology, frontier models, AI developer tools, and AI startups/companies (OpenAI, Anthropic, Google, Antigravity IDE, etc.) and hot tech ecosystem news that I can create genuine original content about.
 Do not surface anything older than 12 hours.
 
 ═══ WHO I AM ═══
@@ -350,32 +365,37 @@ I WILL NOT tweet about:
 
 ☑ AI Technology & Developments (frontier models, Claude, Gemini, GPT, open source LLMs)
 ☑ AI Tech Companies & Organizations (OpenAI, Anthropic, Google, Microsoft, Meta, hot startups)
-☑ AI Developer Ecosystem (Cursor, coding agents, API changes, latency/cost improvements)
+☑ AI Developer Ecosystem (Antigravity IDE, coding agents, API changes, latency/cost improvements)
 ☑ Student & Job Market (hiring trends in tech/AI, placements, developer salaries)
 
 ═══ WHAT I NEED FROM YOU ═══
 
 PART 1: TRENDING NOW (last 6–12 hours on X)
-Find 6–8 topics. For each topic, give me:
-① WHAT: One clear sentence.
-② WHO: Key voices (handles).
-③ WHY NOW: Why is it trending?
-④ SENTIMENT: [Positive / Negative / Mixed / Chaotic / Ironic]
-⑤ RISK LEVEL: Low / Medium / High
-⑥ RELEVANCE: 1–10
-⑦ YOUR HONEST TAKE: real opinion.
+
+For each topic, output a clear, double-spaced block:
+
+### Topic [N]: [Topic Title]
+*   **What happened:** [One clear sentence]
+*   **Key voices:** [Handles and what they are saying]
+*   **Why now:** [Why is this trending today specifically?]
+*   **Sentiment:** [Positive / Negative / Mixed / Chaotic / Ironic]
+*   **Risk Level:** [Low / Medium / High]
+*   **Relevance:** [1-10]
+*   **Honest Take:** [Your real, unhedged opinion]
 
 PART 2: MY ANGLE (for each topic rated 6+ relevance)
-Give 2 tweet angles:
-- ANGLE A [personal lens]: how it affects a Pune CS student.
-- ANGLE B [hot take / pushback]: honest opinion.
-All under 280 chars, in your voice, character count included.
 
-PART 3: QUICK CONTENT
-Quote tweet targets (2-3) and Shitpost window suggestions (2 options).
+Give me 2 tweet angles I could take. Separate them with clear markdown headers:
 
-PART 4: RANKING & STRATEGY
-Rank top 2 topics to tweet about today and optimal timing.
+#### [Topic Name]
+*   **Angle A (Personal):**
+    • *Strategy:* [1-line strategy rationale explaining why this angle is strategic]
+    • *Tweet:* [Tweet text under 280 chars] ([Character count])
+*   **Angle B (Hot Take):**
+    • *Strategy:* [1-line strategy rationale explaining why this angle is strategic]
+    • *Tweet:* [Tweet text under 280 chars] ([Character count])
+
+Ensure both angles use a Pune student voice (punchy, lowercase-heavy), are original, are not empty dunks, and cannot hurt my internship chances.
 
 FINAL TWEETS SUMMARY:
 At the very end of your response, output a final section titled "📋 COPY-PASTE READY TWEETS" compiling all generated tweet angles and shitposts in a clean bulleted list structure for quick copying:
@@ -400,9 +420,9 @@ This is the structured response you will receive from Grok to copy back:
    - **Relevance:** 9/10
    - **Honest Take:** Good brand play for Swiggy, but feels like another application form to refresh daily.
 
-2. **Topic: Cursor AI Agent upgrades**
-   - **What:** Cursor released dynamic terminal agent runs.
-   - **Who:** @cursor_ai, @buildwithsid
+2. **Topic: Antigravity IDE agent upgrades**
+   - **What:** Antigravity IDE released dynamic terminal agent runs.
+   - **Who:** @antigravity_ai, @buildwithsid
    - **Why Now:** Agents are executing commands locally.
    - **Sentiment:** Chaotic (people amazed but also getting recursive errors)
    - **Risk:** Low
@@ -415,8 +435,8 @@ This is the structured response you will receive from Grok to copy back:
 - **Angle A (Personal):** "applied to the swiggy builders cohort today. day 1 of refreshing my inbox every 10 minutes. at least the whatsapp restock flow i built works while i wait 💀" (164 characters)
 - **Angle B (Hot Take):** "cohorts are nice but nothing beats building an actual project and tagging the founder. no forms required just raw receipts" (120 characters)
 
-#### 2. Cursor AI Agent
-- **Angle A (Personal):** "cursor agent decided to run npm audit fix on its own and broke my entire package-lock. code was vibe coding now i'm git reflog debugging" (134 characters)
+#### 2. Antigravity IDE Agent
+- **Angle A (Personal):** "antigravity agent decided to run npm audit fix on its own and broke my entire package-lock. code was vibe coding now i'm git reflog debugging" (139 characters)
 - **Angle B (Hot Take):** "giving an ai agent write access to your local terminal is brave. we are one compile loop away from deleting our system folders" (124 characters)
 
 ### Part 3: Quick Content
@@ -430,8 +450,8 @@ This is the structured response you will receive from Grok to copy back:
 ### 📋 COPY-PASTE READY TWEETS
 • **Swiggy Builders Club - Angle A (Personal):** applied to the swiggy builders cohort today. day 1 of refreshing my inbox every 10 minutes. at least the whatsapp restock flow i built works while i wait 💀 (164 characters)
 • **Swiggy Builders Club - Angle B (Hot Take):** cohorts are nice but nothing beats building an actual project and tagging the founder. no forms required just raw receipts (120 characters)
-• **Cursor AI Agent - Angle A (Personal):** cursor agent decided to run npm audit fix on its own and broke my entire package-lock. code was vibe coding now i'm git reflog debugging (134 characters)
-• **Cursor AI Agent - Angle B (Hot Take):** giving an ai agent write access to your local terminal is brave. we are one compile loop away from deleting our system folders (124 characters)
+• **Antigravity IDE Agent - Angle A (Personal):** antigravity agent decided to run npm audit fix on its own and broke my entire package-lock. code was vibe coding now i'm git reflog debugging (139 characters)
+• **Antigravity IDE Agent - Angle B (Hot Take):** giving an ai agent write access to your local terminal is brave. we are one compile loop away from deleting our system folders (124 characters)
 • **Shitpost Option 1:** dsa sheet? no bro i vibe code. i let the compiler output errors and ask gemini to apologize (94 characters)
 • **Shitpost Option 2:** nothing prepares you for tier 3 college viva like telling the external examiner 'it worked on my localhost' 😭 (108 characters)
 ```

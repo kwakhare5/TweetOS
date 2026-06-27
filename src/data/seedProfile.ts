@@ -10,7 +10,7 @@ export const SEED_PROFILE: UserProfile = {
     {
       id: "pillar_1",
       name: "Tool Reality Checks",
-      description: "Blunt sarcastic/frustrated takes and workarounds on Gemini, Claude, Groq, Cursor, and latest AI drops/news. 'This is cooked' energy. No hype — just what actually happened when you used the thing.",
+      description: "Blunt sarcastic/frustrated takes and workarounds on Gemini, Claude, Groq, Antigravity IDE, and latest AI drops/news. 'This is cooked' energy. No hype — just what actually happened when you used the thing.",
       percentage: 30
     },
     {
@@ -83,7 +83,7 @@ export const SEED_PROFILE: UserProfile = {
     currentAudience: "Small group of Indian student devs reacting to AI complaints and tool frustrations",
     targetAudience: "Indian builders, indie devs, micro-influencers, junior engineers, startups, and recruiters in the @shydev69 / @buildwithsid / @adxtyahq / @kalashvasaniya circle — people who ship real things, hate hype, and value honest builder receipts",
     audienceProblems: [
-      "unreliable frontier models and API drift (Gemini, Claude, Cursor)",
+      "unreliable frontier models and API drift (Gemini, Claude, Antigravity IDE)",
       "getting noticed and landing internships without corporate glaze or big-name backing",
       "cutting through influencer AI hype to find what actually works in production",
       "building useful full-stack products with tier-2/3 college constraints"
