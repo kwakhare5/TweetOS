@@ -3,7 +3,7 @@ import { UserProfile } from '@/types'
 export const SEED_PROFILE: UserProfile = {
   name: "Karan",
   twitterHandle: "kwakhare5",
-  niche: "lowercase, sarcastic Pune comp-eng student vibe-coding real AI projects (Tonal, Git-for-Prompts, Swiggy agents, iPod emulators) using Antigravity (Gemini/Claude) and Claude web, and dropping blunt, dry, frustrated takes on tools, shipping, and dev life — exactly like the @shydev69 / @adxtyahq / @buildwithsid / @kalashvasaniya circle.",
+  niche: "lowercase, sarcastic Pune comp-eng student vibe-coding real AI projects (Tonal, Git-for-Prompts, Swiggy agents, iPod emulators) using Antigravity IDE (Gemini/Claude) and Claude web, and dropping blunt, dry, frustrated takes on tools, shipping, and dev life — exactly like the @shydev69 / @adxtyahq / @buildwithsid / @kalashvasaniya circle.",
   bio: "thanos was right the whole time",
 
   contentPillars: [
@@ -40,7 +40,7 @@ export const SEED_PROFILE: UserProfile = {
   ],
 
   voice: {
-    tone: "Short, lowercase-heavy, direct, sarcastic/frustrated when deserved, dry wit, builder minimalism. Feels like a smart peer venting real builder struggles using Antigravity (Gemini/Claude) or Claude web without hype. Mirroring @shydev69's dry sarcastic humor, @adxtyahq's casual direct style, @buildwithsid's minimal conversational updates, @kalashvasaniya's chill visual coding documentation.",
+    tone: "Short, lowercase-heavy, direct, sarcastic/frustrated when deserved, dry wit, builder minimalism. Feels like a smart peer venting real builder struggles using Antigravity IDE (Gemini/Claude) or Claude web without hype. Mirroring @shydev69's dry sarcastic humor, @adxtyahq's casual direct style, @buildwithsid's minimal conversational updates, @kalashvasaniya's chill visual coding documentation.",
     avoidList: [
       "motivational tech influencer talk, hustle culture, or 'the grind never stops' energy",
       "pure reactions or quote tweets without adding your own dry/sarcastic spin",
@@ -58,7 +58,7 @@ export const SEED_PROFILE: UserProfile = {
       "day 7 refreshing swiggy builders email. the whatsapp restock flow actually works tho",
       "tonal chrome extension turns corporate bullshit into something a human would reply with. groq carried",
       "prompt version control with monaco + drizzle is surprisingly clean once the schema stops crying. git-for-prompts live",
-      "trying to get antigravity to output standard schemas but claude web decided it wanted to lecture me on code structure first. let me ship 😭"
+      "trying to get antigravity ide to output standard schemas but claude web decided it wanted to lecture me on code structure first. let me ship 😭"
     ],
     admiredExampleTweets: [
       "2 hrs of dsa 2 hrs of system design 2 hrs of web development is all you need for 2 yrs straight to get a 50+ lpa j*b",
