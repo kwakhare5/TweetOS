@@ -64,3 +64,4 @@ Phase 9 ✅ DONE — Cleanup & UI Modernization
 - Migrated all UI components to use high-quality Lucide icons instead of emojis.
 - Replaced standalone Tutorial tabs with inline onboarding flows across Drafts, Dump, and Workshop areas.
 - Consolidated views to use glass-panel CSS for a professional, premium aesthetic.
+- Conducted ponytail-audit to prune unused target accounts and engagement log query methods and types from storage.ts and index.ts (removed 74 lines of dead code).

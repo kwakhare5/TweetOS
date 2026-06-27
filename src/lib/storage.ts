@@ -2,7 +2,7 @@
  * All Supabase DB calls live here. Never query Supabase directly in components.
  */
 import { createClient } from '@/lib/supabase/client'
-import { UserProfile, TweetDraft, BrainDumpSession, LibraryEntry, TargetAccount, EngagementLog, UserStats } from '@/types'
+import { UserProfile, TweetDraft, BrainDumpSession, LibraryEntry, UserStats } from '@/types'
 import { SEED_PROFILE } from '@/data/seedProfile'
 
 // Lazy init — avoids module-level instantiation that fails at build time
@@ -56,28 +56,6 @@ export async function getLibrary(userId: string): Promise<LibraryEntry[]> {
 
 export async function saveLibraryEntry(userId: string, entry: LibraryEntry): Promise<void> {
   await db().from('library').upsert({ user_id: userId, data: entry })
-}
-
-// ─── TARGET ACCOUNTS ─────────────────────────────────────────────────────────
-
-export async function getTargetAccounts(userId: string): Promise<TargetAccount[]> {
-  const { data } = await db().from('target_accounts').select('data').eq('user_id', userId).order('created_at', { ascending: false })
-  return (data ?? []).map((r) => r.data as TargetAccount)
-}
-
-export async function saveTargetAccount(userId: string, account: TargetAccount): Promise<void> {
-  await db().from('target_accounts').upsert({ user_id: userId, data: account })
-}
-
-// ─── ENGAGEMENT LOG ───────────────────────────────────────────────────────────
-
-export async function getEngagementLog(userId: string): Promise<EngagementLog[]> {
-  const { data } = await db().from('engagement_log').select('data').eq('user_id', userId).order('replied_at', { ascending: false })
-  return (data ?? []).map((r) => r.data as EngagementLog)
-}
-
-export async function saveEngagementLog(userId: string, log: EngagementLog): Promise<void> {
-  await db().from('engagement_log').insert({ user_id: userId, data: log })
 }
 
 // ─── STATS ────────────────────────────────────────────────────────────────────

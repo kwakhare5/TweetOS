@@ -125,58 +125,12 @@ export interface LibraryEntry {
 
 // ─── ENGAGEMENT ───────────────────────────────────────────────────────────────
 
-export interface TargetAccount {
-  id: string
-  handle: string
-  name: string
-  why: string
-  temperature: AccountTemperature
-  lastEngaged?: string
-  engagementCount: number
-  notes?: string
-  addedAt: string
-}
-
-export type AccountTemperature =
-  | 'cold'
-  | 'warm'
-  | 'hot'
-  | 'connection'
-
-export interface EngagementOpportunity {
-  id: string
-  tweetText: string
-  tweetAuthorHandle: string
-  tweetUrl?: string
-  opportunityType: OpportunityType
-  replies: GeneratedReply[]
-  status: 'pending' | 'replied' | 'skipped'
-  createdAt: string
-  repliedAt?: string
-}
-
 export type OpportunityType =
   | 'add_value'
   | 'share_experience'
   | 'ask_question'
   | 'agree_expand'
   | 'respectful_push'
-
-export interface GeneratedReply {
-  id: string
-  content: string
-  replyType: OpportunityType
-  tone: string
-}
-
-export interface EngagementLog {
-  id: string
-  targetHandle: string
-  tweetSnippet: string
-  replyUsed: string
-  repliedAt: string
-  outcome?: string
-}
 
 // ─── GROK PACKET ──────────────────────────────────────────────────────────────
 
