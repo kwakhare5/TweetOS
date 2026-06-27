@@ -19,7 +19,7 @@ function formatPastPerformance(entries: LibraryEntry[] | undefined): string {
 
   if (targets.length === 0) return '[Not enough data yet]'
 
-  return targets.map((e, i) => {
+  return targets.map((e) => {
     const content = e.isThread && e.threadTweets ? e.threadTweets.map((t, n) => `${n + 1}/ ${t}`).join('\n') : e.tweet
     return `---
 Tweet: "${content}"
@@ -32,7 +32,7 @@ Pillar: ${e.pillarId} | Type: ${e.isThread ? 'Thread' : 'Tweet'}
 /**
  * Formats flops (drafts scored under 50 or archived).
  */
-function formatFlopLog(entries: LibraryEntry[] | undefined): string {
+function formatFlopLog(_entries: LibraryEntry[] | undefined): string {
   // Simplistic flop log using items with low scores or bad performance notes
   // For now just returning placeholder if we don't have explicit flop tracking
   return '[Not enough data yet]'
@@ -198,7 +198,7 @@ FINAL TWEETS SUMMARY:
 export function generateEngagementPacket(
   profile: UserProfile,
   config: EngagementPacketConfig,
-  libraryEntries?: LibraryEntry[]
+  _libraryEntries?: LibraryEntry[]
 ): string {
   const dateStr = new Date().toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' })
   
@@ -358,7 +358,7 @@ At the very end of your response, output a final section on a new line titled "ð
 export function generateTrendingPacket(
   profile: UserProfile,
   config: TrendingPacketConfig,
-  libraryEntries?: LibraryEntry[]
+  _libraryEntries?: LibraryEntry[]
 ): string {
   const dateStr = new Date().toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' })
 
