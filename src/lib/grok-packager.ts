@@ -179,7 +179,7 @@ LEARNING CAPTURE (fill this at end — I'll add it to my learning notes):
     that I should remember for next week.
 
 FINAL TWEETS SUMMARY:
-11. At the very end of your response, output a final section titled "📋 COPY-PASTE READY TWEETS" compiling all final rewritten drafts/threads, fresh angles, and shitposts in a clean bulleted list structure for quick copying:
+11. At the very end of your response, output a final section on a new line titled "📋 COPY-PASTE READY TWEETS". Under this title, compile all final rewritten drafts/threads, fresh angles, and shitposts. Format this as a clean bulleted list where each item is on its own new line:
 • **Rewritten Draft [N]:** [Tweet text] ([Character count])
 • **Angle A (Safe):** [Tweet text] ([Character count])
 • **Angle B (Spicy):** [Tweet text] ([Character count])
@@ -359,7 +359,7 @@ After giving me the list, tell me:
 [I'll add this to my running learning notes after the session]
 
 FINAL REPLIES SUMMARY:
-At the very end of your response, output a final section titled "📋 COPY-PASTE READY TWEETS" compiling all final drafted replies and quote tweets in a clean bulleted list structure for quick copying:
+At the very end of your response, output a final section on a new line titled "📋 COPY-PASTE READY TWEETS". Under this title, compile all final drafted replies and quote tweets. Format this as a clean bulleted list where each item is on its own new line:
 • **Reply to @[handle] - Option A (Casual):** [Reply text] ([Character count])
 • **Reply to @[handle] - Option B (Insight):** [Reply text] ([Character count])
 • **Reply to @[handle] - Option C (Question):** [Reply text] ([Character count])
@@ -522,7 +522,7 @@ After giving me everything:
 [I'll add this to my running learning notes]
 
 FINAL TWEETS SUMMARY:
-At the very end of your response, output a final section titled "📋 COPY-PASTE READY TWEETS" compiling all generated tweet angles and shitposts in a clean bulleted list structure for quick copying:
+At the very end of your response, output a final section on a new line titled "📋 COPY-PASTE READY TWEETS". Under this title, compile all generated tweet angles and shitposts. Format this as a clean bulleted list where each item is on its own new line:
 • **[Topic Name] - Angle A (Personal):** [Tweet text] ([Character count])
 • **[Topic Name] - Angle B (Hot Take):** [Tweet text] ([Character count])
 • **Shitpost Option 1:** [Tweet text] ([Character count])
