@@ -185,11 +185,11 @@ LEARNING CAPTURE (fill this at end — I'll add it to my learning notes):
 
 FINAL TWEETS SUMMARY:
 12. At the very end of your response, output a final section on a new line titled "📋 COPY-PASTE READY TWEETS". Under this title, compile all final rewritten drafts/threads, fresh angles, and shitposts. Format this as a clean bulleted list where each item is on its own new line:
-• **Rewritten Draft [N]:** [Tweet text] ([Character count])
-• **Angle A (Safe):** [Tweet text] ([Character count])
-• **Angle B (Spicy):** [Tweet text] ([Character count])
-• **Shitpost Option 1:** [Tweet text] ([Character count])
-• **Shitpost Option 2:** [Tweet text] ([Character count])
+• **Rewritten Draft [N] [Pillar: Name]:** [Tweet text] ([Character count])
+• **Angle A (Safe) [Pillar: Name]:** [Tweet text] ([Character count])
+• **Angle B (Spicy) [Pillar: Name]:** [Tweet text] ([Character count])
+• **Shitpost Option 1 [Pillar: Name]:** [Tweet text] ([Character count])
+• **Shitpost Option 2 [Pillar: Name]:** [Tweet text] ([Character count])
 
 ═══════════════════════════════════════════════════
 `.trim()
@@ -346,10 +346,10 @@ After giving me the list, tell me:
 
 FINAL REPLIES SUMMARY:
 At the very end of your response, output a final section on a new line titled "📋 COPY-PASTE READY TWEETS". Under this title, compile all final drafted replies and quote tweets. Format this as a clean bulleted list where each item is on its own new line:
-• **Reply to @[handle] - Option A (Casual):** [Reply text] ([Character count])
-• **Reply to @[handle] - Option B (Insight):** [Reply text] ([Character count])
-• **Reply to @[handle] - Option C (Question):** [Reply text] ([Character count])
-• **Quote Tweet - @[handle]:** [Quote text] ([Character count])
+• **Reply to @[handle] - Option A (Casual) [Pillar: Quick Connects]:** [Reply text] ([Character count])
+• **Reply to @[handle] - Option B (Insight) [Pillar: Tool Reality Checks OR Project Fragments]:** [Reply text] ([Character count])
+• **Reply to @[handle] - Option C (Question) [Pillar: Quick Connects]:** [Reply text] ([Character count])
+• **Quote Tweet - @[handle] [Pillar: Sharp Takes OR Tool Reality Checks]:** [Quote text] ([Character count])
 
 ═══════════════════════════════════════════════════
 `.trim()
@@ -499,10 +499,10 @@ After giving me everything:
 
 FINAL TWEETS SUMMARY:
 At the very end of your response, output a final section on a new line titled "📋 COPY-PASTE READY TWEETS". Under this title, compile all generated tweet angles and shitposts. Format this as a clean bulleted list where each item is on its own new line:
-• **[Topic Name] - Angle A (Personal):** [Tweet text] ([Character count])
-• **[Topic Name] - Angle B (Hot Take):** [Tweet text] ([Character count])
-• **Shitpost Option 1:** [Tweet text] ([Character count])
-• **Shitpost Option 2:** [Tweet text] ([Character count])
+• **[Topic Name] - Angle A (Personal) [Pillar: Name]:** [Tweet text] ([Character count])
+• **[Topic Name] - Angle B (Hot Take) [Pillar: Name]:** [Tweet text] ([Character count])
+• **Shitpost Option 1 [Pillar: Name]:** [Tweet text] ([Character count])
+• **Shitpost Option 2 [Pillar: Name]:** [Tweet text] ([Character count])
 
 ═══════════════════════════════════════════════════
 `.trim()

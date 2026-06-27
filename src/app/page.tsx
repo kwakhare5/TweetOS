@@ -113,8 +113,41 @@ Result Notes: ${e.performanceNote}
   // Active editor updates
   function handleContentChange(val: string) {
     if (!activeDraft) return
-    setActiveDraft({ ...activeDraft, content: val })
-    updateDraft(activeDraft.id, { content: val })
+    
+    let cleanVal = val
+    let matchedPillarId = activeDraft.pillarId
+    const pillars = profile?.contentPillars || []
+
+    // Try to match content pillar prefix
+    for (const pillar of pillars) {
+      const name = pillar.name
+      const escapedName = name.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&')
+      const regexes = [
+        new RegExp(`^\\[Pillar:\\s*${escapedName}\\]\\s*`, 'i'),
+        new RegExp(`^\\[${escapedName}\\]\\s*`, 'i'),
+        new RegExp(`^${escapedName}\\s*[|:]\\s*`, 'i'),
+        new RegExp(`^•\\s*\\*\\*.*?\\[Pillar:\\s*${escapedName}\\]\\s*\\*\\*:\\s*`, 'i'),
+        new RegExp(`^\\*\\s*\\*\\*.*?\\[Pillar:\\s*${escapedName}\\]\\s*\\*\\*:\\s*`, 'i'),
+        new RegExp(`^\\*\\*.*?\\[Pillar:\\s*${escapedName}\\]\\s*\\*\\*:\\s*`, 'i')
+      ]
+
+      let matched = false
+      for (const rx of regexes) {
+        if (rx.test(cleanVal)) {
+          cleanVal = cleanVal.replace(rx, '')
+          matchedPillarId = name
+          matched = true
+          break
+        }
+      }
+      if (matched) break
+    }
+
+    // Strip trailing character counts like " (120)" or " (120 chars)"
+    cleanVal = cleanVal.replace(/\s*\(\d+(?:\s*chars)?\)\s*$/, '')
+
+    setActiveDraft({ ...activeDraft, content: cleanVal, pillarId: matchedPillarId })
+    updateDraft(activeDraft.id, { content: cleanVal, pillarId: matchedPillarId })
   }
 
   function handleThreadToggle(isThread: boolean) {
