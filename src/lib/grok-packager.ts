@@ -49,6 +49,11 @@ export function generateDraftPacket(
   const performanceSection = formatPastPerformance(libraryEntries)
   const flopSection = formatFlopLog(libraryEntries)
 
+  const activeLearningNotes = profile.voice.learningNotes || []
+  const formattedLearningNotes = activeLearningNotes.length > 0
+    ? activeLearningNotes.slice(0, 5).map((n, i) => `[Session #${activeLearningNotes.length - i}] — ${n}`).join('\n')
+    : '[Start adding yours here →]'
+
   return `
 ═══════════════════════════════════════════════════
 TWEETOS → GROK PACKET: DRAFT REVIEW
@@ -72,14 +77,14 @@ Current follower count: [FOLLOWER COUNT — update weekly]
 Content Pillars:
 ${profile.contentPillars.map(p => `• ${p.name} (${p.percentage}%): ${p.description}`).join('\n')}
 
-Accounts I want to be like:
-${profile.admiredAccounts.map(a => '@' + a).join(' ')}
-
 NEVER write:
 ${profile.voice.avoidList.map(a => `• ${a}`).join('\n')}
 
 Example tweets in my exact voice (match this energy):
 ${profile.voice.exampleTweets.map((t, i) => `${i + 1}. "${t}"`).join('\n\n')}
+
+Example tweets from accounts I want to be like:
+${(profile.voice.admiredExampleTweets || []).map((t, i) => `${i + 1}. "${t}"`).join('\n\n')}
 
 Hard constraint: 280 chars MAX per tweet. Free X account. Non-negotiable.
 Any rewrite you generate must include a character count.
@@ -99,8 +104,7 @@ ENGAGEMENT PATTERNS:
 [Need more data to determine patterns]
 
 RUNNING LEARNING NOTES (added by me after each Grok session):
-[Add one line here after every session. Most recent first.]
-[Start adding yours here →]
+${formattedLearningNotes}
 
 ═══ SESSION CONTEXT ═══
 
@@ -120,6 +124,10 @@ ${drafts.length === 0 ? 'No drafts selected.' : drafts.map((d, i) => {
   const weaknesses = config.includeScores && d.algorithmScore.suggestions.length > 0
     ? `\nFlagged weaknesses: ${d.algorithmScore.suggestions.join(', ')}`
     : ''
+  
+  const hooks = d.hookVariations && d.hookVariations.length > 0
+    ? d.hookVariations.map((h, idx) => `  ${String.fromCharCode(65 + idx)}) ${h}`).join('\n')
+    : '  A) [None]'
 
   return `--- DRAFT ${i + 1} ---
 Text: ${content}
@@ -127,8 +135,7 @@ Type: ${d.isThread ? 'Thread' : 'Tweet'}
 Pillar: ${d.pillarId}
 Local score: ${d.algorithmScore.overall}/100${weaknesses}
 Hook variations considered:
-  A) [hook a]
-  B) [hook b]
+${hooks}
 `
 }).join('\n')}
 
@@ -153,7 +160,9 @@ REAL-TIME DATA (use your X access):
    hook today's content onto? Relevance score 1–10 for my niche.
 
 IMPROVEMENT:
-4. Rewrite the strongest draft. Keep my exact voice. Add character count.
+4. Rewrite ALL submitted drafts. Keep my exact voice. Add character count.
+   • For thread drafts, output the rewritten thread posts as a numbered list (1/, 2/) separated by blank lines for easy copying.
+   • Ensure the core message and intent of my drafts is strictly preserved.
 5. Give me 2 completely fresh angles on today's theme I haven't
    considered — one safe, one spicy.
 6. For thread drafts: is this worth a thread or stronger as a single
@@ -169,6 +178,14 @@ LEARNING CAPTURE (fill this at end — I'll add it to my learning notes):
 10. One-line observation about what's working or not in today's drafts
     that I should remember for next week.
 
+FINAL TWEETS SUMMARY:
+11. At the very end of your response, output a final section titled "📋 COPY-PASTE READY TWEETS" compiling all final rewritten drafts/threads, fresh angles, and shitposts in a clean bulleted list structure for quick copying:
+• **Rewritten Draft [N]:** [Tweet text] ([Character count])
+• **Angle A (Safe):** [Tweet text] ([Character count])
+• **Angle B (Spicy):** [Tweet text] ([Character count])
+• **Shitpost Option 1:** [Tweet text] ([Character count])
+• **Shitpost Option 2:** [Tweet text] ([Character count])
+
 ═══════════════════════════════════════════════════
 `.trim()
 }
@@ -180,6 +197,11 @@ export function generateEngagementPacket(
 ): string {
   const dateStr = new Date().toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' })
   
+  const activeLearningNotes = profile.voice.learningNotes || []
+  const formattedLearningNotes = activeLearningNotes.length > 0
+    ? activeLearningNotes.slice(0, 5).map((n, i) => `[Session #${activeLearningNotes.length - i}] — ${n}`).join('\n')
+    : '[Start adding yours here →]'
+
   return `
 ═══════════════════════════════════════════════════
 TWEETOS → GROK PACKET: ENGAGEMENT HUNT
@@ -196,14 +218,8 @@ stated here.
 
 Voice: ${profile.voice.tone}
 
-Projects I've shipped:
-• Tonal — Chrome extension for real-time tone translation in Gmail,
-  Slack, LinkedIn, WhatsApp Web. Built with Cloudflare Workers + Gemini.
-• Git-for-Prompts — GitHub-style version control for AI prompts with
-  visual diffs, branching, LLM-as-judge test runner. Next.js + Supabase
-  + Monaco Editor.
-• MemoryPalace — RAG-based second brain visualized as a spatial memory
-  palace. AI agent observability tool.
+Projects I am building / have shipped:
+(Refer to my Niche and Goals sections above for the list of active projects I build, such as Tonal, Git-for-Prompts, Swiggy/Instamart agents, iPod emulator, TweetOS, etc. Integrate these names dynamically in your replies).
 
 My genuine value-add in replies (what I actually know):
 • Real failures and fixes when building with Claude/Gemini as a solo dev
@@ -216,6 +232,12 @@ My genuine value-add in replies (what I actually know):
 Audience I'm targeting: ${profile.audience.targetAudience}
 
 Current follower count: [update weekly]
+
+Example tweets in my voice:
+${profile.voice.exampleTweets.map((t, i) => `${i + 1}. "${t}"`).join('\n\n')}
+
+Example tweets from accounts I want to be like:
+${(profile.voice.admiredExampleTweets || []).map((t, i) => `${i + 1}. "${t}"`).join('\n\n')}
 
 ═══ SELF-LEARNING: ENGAGEMENT HISTORY ═══
 
@@ -235,8 +257,7 @@ TOPICS WHERE MY REPLIES FLOPPED:
 [From engagement log]
 
 RUNNING LEARNING NOTES:
-[Add one line after each session. Most recent first.]
-[Add yours here →]
+${formattedLearningNotes}
 
 ═══ TODAY'S RECENT ACTIVITY (CONTEXT) ═══
 
@@ -283,10 +304,12 @@ For each tweet:
    Reference a real experience from my builds. Name the tool,
    error, fix, or project specifically. This is the strongest reply
    type — use it when I have a real angle.
+   • Grok must inject actual project names (Tonal, Git-for-Prompts, iPod, MemoryPalace, TweetOS) directly into this reply based on context. No generic placeholders.
 
    OPTION C [genuine question]:
    Opens a real conversation. Makes them want to reply.
    Not "thoughts?" — specific to what they said.
+   • Grok must inject actual project names dynamically if relevant.
 
    All options must be:
    ✅ Under 280 characters (verify count)
@@ -296,6 +319,7 @@ For each tweet:
    ❌ Never start with "Great point!" / "So true!" / "Couldn't agree more!"
    ❌ No self-promotion as the main message
    ❌ No vague compliments
+   • Ensure the core message and intent of the target tweet is strictly preserved.
 
 PART 2: QUOTE TWEET OPPORTUNITIES
 
@@ -307,7 +331,7 @@ For each:
 ① Tweet link + author
 ② Why it's a good quote tweet for me
 ③ 2 quote options:
-   - One agree + expand (add my experience/insight)
+   - One agree + expand (add my experience/insight, using actual project names)
    - One nuanced take or honest pushback
    All under 200 chars (room for the quoted embed)
 
@@ -325,7 +349,7 @@ After the tweet list:
 
 ${config.customRequest ? `EXTRA: ${config.customRequest}` : '[No custom request]'}
 
-═══ LEARNING CAPTURE ═══
+═══ LEARNING CAPTURE & FINAL SUMMARY ═══
 
 After giving me the list, tell me:
 • Which opportunity type (A/B/C) you'd bet on most for me today and why
@@ -333,6 +357,13 @@ After giving me the list, tell me:
   I should know
 
 [I'll add this to my running learning notes after the session]
+
+FINAL REPLIES SUMMARY:
+At the very end of your response, output a final section titled "📋 COPY-PASTE READY TWEETS" compiling all final drafted replies and quote tweets in a clean bulleted list structure for quick copying:
+• **Reply to @[handle] - Option A (Casual):** [Reply text] ([Character count])
+• **Reply to @[handle] - Option B (Insight):** [Reply text] ([Character count])
+• **Reply to @[handle] - Option C (Question):** [Reply text] ([Character count])
+• **Quote Tweet - @[handle]:** [Quote text] ([Character count])
 
 ═══════════════════════════════════════════════════
 `.trim()
@@ -345,6 +376,11 @@ export function generateTrendingPacket(
 ): string {
   const dateStr = new Date().toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' })
 
+  const activeLearningNotes = profile.voice.learningNotes || []
+  const formattedLearningNotes = activeLearningNotes.length > 0
+    ? activeLearningNotes.slice(0, 5).map((n, i) => `[Session #${activeLearningNotes.length - i}] — ${n}`).join('\n')
+    : '[Start adding yours here →]'
+
   return `
 ═══════════════════════════════════════════════════
 TWEETOS → GROK PACKET: TRENDING RADAR
@@ -353,8 +389,7 @@ ${dateStr} IST
 
 CONTEXT: I am ${profile.name} (@${profile.twitterHandle}). You are Grok with real-time X access.
 Stateless session — all context is below.
-Your job: use your live X data to find what's moving RIGHT NOW that I
-can create genuine original content about.
+Your job: use your live X data to find what's moving RIGHT NOW. Focus heavily on AI technology, frontier models, AI developer tools, and AI startups/companies (OpenAI, Anthropic, Google, Cursor, etc.) and hot tech ecosystem news that I can create genuine original content about.
 Do not surface anything older than 12 hours unless it's still actively
 spreading.
 
@@ -370,9 +405,7 @@ Content pillars (what's on-brand for me):
 ${profile.contentPillars.map(p => `• ${p.name}`).join('\n')}
 
 Projects I can reference (only if genuinely relevant):
-• Tonal (Chrome extension — tone translation in Gmail/Slack/WhatsApp)
-• Git-for-Prompts (prompt version control — Next.js + Supabase)
-• MemoryPalace (RAG second brain — spatial memory palace UI)
+(Refer to my Niche and Goals sections above for the active projects I build, such as Tonal, Git-for-Prompts, Swiggy/Instamart agents, iPod emulator, TweetOS, etc. Integrate these dynamically).
 
 I WILL NOT tweet about:
 • Politics (any kind — not my lane)
@@ -383,6 +416,12 @@ I WILL NOT tweet about:
 
 Current follower count: [update weekly]
 Stage: Early growth (under 1K) — building credibility > chasing virality
+
+Example tweets in my voice:
+${profile.voice.exampleTweets.map((t, i) => `${i + 1}. "${t}"`).join('\n\n')}
+
+Example tweets from accounts I want to be like:
+${(profile.voice.admiredExampleTweets || []).map((t, i) => `${i + 1}. "${t}"`).join('\n\n')}
 
 ═══ SELF-LEARNING: TREND PERFORMANCE HISTORY ═══
 
@@ -396,18 +435,16 @@ TOPICS MY AUDIENCE ENGAGES WITH MOST:
 [From library]
 
 RUNNING LEARNING NOTES:
-[Add one line after each session. Most recent first.]
-[Add yours here →]
+${formattedLearningNotes}
 
 ═══ TODAY'S FOCUS AREAS ═══
 
 ${config.focusAreas.length > 0
   ? config.focusAreas.map(a => `☑ ${a}`).join('\n')
-  : `☑ AI tools (Claude, Gemini, Cursor, new model releases, AI drama)
-☑ Indian dev/startup scene (new launches, Swiggy/Zepto/Y Combinator)
-☑ Student/internship/job market (placements, layoffs, new programs)
-☑ Vibe coding / building with AI (new workflows, tools, debates)
-☑ GitHub/open source (new releases, trending repos)`
+  : `☑ AI Technology & Developments (frontier models, Claude, Gemini, GPT, open source LLMs)
+☑ AI Tech Companies & Organizations (OpenAI, Anthropic, Google, Microsoft, Meta, hot startups)
+☑ AI Developer Ecosystem (Cursor, coding agents, API changes, latency/cost improvements)
+☑ Student & Job Market (hiring trends in tech/AI, placements, developer salaries)`
 }
 
 ═══ WHAT I NEED FROM YOU ═══
@@ -444,6 +481,7 @@ or "here's what everyone's missing."
 Spicy is fine. Embarrassing to my future employer is not.
 
 Both angles must be:
+• Include a brief 1-line strategy rationale bullet point above the tweet text for both Angle A and Angle B explaining why this angle is strategic.
 ✅ Under 280 chars (give character count)
 ✅ Original — not just summarizing the trend
 ✅ In my voice (Pune student, punchy, specific)
@@ -474,7 +512,7 @@ PART 4: RANKING & STRATEGY
 
 ${config.customRequest ? `EXTRA: ${config.customRequest}` : ''}
 
-═══ LEARNING CAPTURE ═══
+═══ LEARNING CAPTURE & FINAL SUMMARY ═══
 
 After giving me everything:
 • One-line summary of what's working in my niche right now that I
@@ -482,6 +520,13 @@ After giving me everything:
 • One topic/format combination you'd bet on for my next 3 posts
 
 [I'll add this to my running learning notes]
+
+FINAL TWEETS SUMMARY:
+At the very end of your response, output a final section titled "📋 COPY-PASTE READY TWEETS" compiling all generated tweet angles and shitposts in a clean bulleted list structure for quick copying:
+• **[Topic Name] - Angle A (Personal):** [Tweet text] ([Character count])
+• **[Topic Name] - Angle B (Hot Take):** [Tweet text] ([Character count])
+• **Shitpost Option 1:** [Tweet text] ([Character count])
+• **Shitpost Option 2:** [Tweet text] ([Character count])
 
 ═══════════════════════════════════════════════════
 `.trim()

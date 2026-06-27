@@ -40,7 +40,7 @@ export const SEED_PROFILE: UserProfile = {
   ],
 
   voice: {
-    tone: "Short, lowercase-heavy, direct, sarcastic/frustrated when deserved, dry wit, builder minimalism. Feels like a smart peer venting real builder struggles without hype. Mirroring @shydev69's dry sarcastic humor, @adxtyahq's casual direct style, @buildwithsid's minimal conversational updates, @kalashvasaniya's chill visual cooking documentation.",
+    tone: "Short, lowercase-heavy, direct, sarcastic/frustrated when deserved, dry wit, builder minimalism. Feels like a smart peer venting real builder struggles without hype. Mirroring @shydev69's dry sarcastic humor, @adxtyahq's casual direct style, @buildwithsid's minimal conversational updates, @kalashvasaniya's chill visual coding documentation.",
     avoidList: [
       "motivational tech influencer talk, hustle culture, or 'the grind never stops' energy",
       "pure reactions or quote tweets without adding your own dry/sarcastic spin",
@@ -48,14 +48,18 @@ export const SEED_PROFILE: UserProfile = {
       "fake humility, fake excitement, or using emojis as a crutch",
       "preachy, academic, or corporate tone — keep it peer-to-peer and direct",
       "storytelling hooks or long first-person narratives — that's a different style",
-      "any tweet that sounds like a growth hacker wrote it"
+      "any tweet that sounds like a growth hacker wrote it",
+      "boilerplate thread hooks (e.g., 'Here is how I did X in 5 steps: 🧵', 'X is changing forever')",
+      "generic positive replies (e.g., 'So true!', 'Love this!', 'Couldn't agree more!', 'Great point!')"
     ],
     exampleTweets: [
       "google engineers be using anything except gemini. can't blame them at this point",
       "gemini drifted again on the instamart agent. switched to groq + explicit state management and finally shipped the prediction layer",
       "day 7 refreshing swiggy builders email. the whatsapp restock flow actually works tho",
       "tonal chrome extension turns corporate bullshit into something a human would reply with. groq carried",
-      "prompt version control with monaco + drizzle is surprisingly clean once the schema stops crying. git-for-prompts live",
+      "prompt version control with monaco + drizzle is surprisingly clean once the schema stops crying. git-for-prompts live"
+    ],
+    admiredExampleTweets: [
       "2 hrs of dsa 2 hrs of system design 2 hrs of web development is all you need for 2 yrs straight to get a 50+ lpa j*b",
       "where do you see yourself in 5 years",
       "₹20000 pay 12 months bond tier 3 placements",
@@ -66,7 +70,12 @@ export const SEED_PROFILE: UserProfile = {
       "hey guys so the launch is delayed :( really sorry... it will launch on 23th now",
       "how's the mrr?"
     ],
-    writingStyle: "lowercase-heavy. brief punchy sentences — usually 1-3 sentences, ideally under 150 chars total. open with a blunt observation or opinion, not a storytelling hook. mix natural sarcasm/frustration on tools with real project receipts. keep it minimal, direct, and conversational — like texting a developer friend over chai. never write motivational lists. sparse emojis only when natural (💀 😭 occasionally). no exclamation marks unless genuinely warranted."
+    writingStyle: "lowercase-heavy. brief punchy sentences — usually 1-3 sentences, ideally under 150 chars total. open with a blunt observation or opinion, not a storytelling hook. mix natural sarcasm/frustration on tools with real project receipts. keep it minimal, direct, and conversational — like texting a developer friend over chai. never write motivational lists. sparse emojis only when natural (💀 😭 occasionally). no exclamation marks unless genuinely warranted.",
+    learningNotes: [
+      "hooks with a specific number in first 3 words get 2x replies in my niche",
+      "frustration + fix format performs best in vibe coding content pillar",
+      "admired accounts engage heavily between 6-9 PM IST — post then for max reach"
+    ]
   },
 
   audience: {

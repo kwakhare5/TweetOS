@@ -26,7 +26,9 @@ export interface VoiceConfig {
   tone: string
   avoidList: string[]
   exampleTweets: string[]
+  admiredExampleTweets: string[]
   writingStyle: string
+  learningNotes: string[]
 }
 
 export interface AudienceConfig {

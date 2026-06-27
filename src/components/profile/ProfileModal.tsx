@@ -24,6 +24,10 @@ export default function ProfileModal({ isOpen, onClose }: ProfileModalProps) {
   const [newAvoidItem, setNewAvoidItem] = useState('')
   const [exampleTweets, setExampleTweets] = useState(profile.voice.exampleTweets)
   const [newExampleItem, setNewExampleItem] = useState('')
+  const [admiredExampleTweets, setAdmiredExampleTweets] = useState(profile.voice.admiredExampleTweets || [])
+  const [newAdmiredExampleItem, setNewAdmiredExampleItem] = useState('')
+  const [learningNotes, setLearningNotes] = useState(profile.voice.learningNotes || [])
+  const [newLearningNote, setNewLearningNote] = useState('')
 
   // AI Extractor states
   const [rawTextDump, setRawTextDump] = useState('')
@@ -49,6 +53,8 @@ export default function ProfileModal({ isOpen, onClose }: ProfileModalProps) {
         writingStyle: string
         avoidList: string[]
         exampleTweets: string[]
+        admiredExampleTweets?: string[]
+        learningNotes?: string[]
       }>(VOICE_EXTRACTOR_PROMPT(rawTextDump))
 
       if (result.name) setName(result.name)
@@ -58,6 +64,8 @@ export default function ProfileModal({ isOpen, onClose }: ProfileModalProps) {
       if (result.writingStyle) setWritingStyle(result.writingStyle)
       if (result.avoidList) setAvoidList(result.avoidList)
       if (result.exampleTweets) setExampleTweets(result.exampleTweets)
+      if (result.admiredExampleTweets) setAdmiredExampleTweets(result.admiredExampleTweets)
+      if (result.learningNotes) setLearningNotes(result.learningNotes)
 
       setRawTextDump('')
       triggerModalToast('AI successfully structured your profile! Review below.')
@@ -90,6 +98,26 @@ export default function ProfileModal({ isOpen, onClose }: ProfileModalProps) {
     setExampleTweets(exampleTweets.filter((_, i) => i !== index))
   }
 
+  function handleAddAdmiredExample() {
+    if (!newAdmiredExampleItem.trim()) return
+    setAdmiredExampleTweets([...admiredExampleTweets, newAdmiredExampleItem.trim()])
+    setNewAdmiredExampleItem('')
+  }
+
+  function handleRemoveAdmiredExample(index: number) {
+    setAdmiredExampleTweets(admiredExampleTweets.filter((_, i) => i !== index))
+  }
+
+  function handleAddLearningNote() {
+    if (!newLearningNote.trim()) return
+    setLearningNotes([...learningNotes, newLearningNote.trim()])
+    setNewLearningNote('')
+  }
+
+  function handleRemoveLearningNote(index: number) {
+    setLearningNotes(learningNotes.filter((_, i) => i !== index))
+  }
+
   function handleSave() {
     const updated = {
       name,
@@ -99,7 +127,9 @@ export default function ProfileModal({ isOpen, onClose }: ProfileModalProps) {
         tone,
         writingStyle,
         avoidList,
-        exampleTweets
+        exampleTweets,
+        admiredExampleTweets,
+        learningNotes
       }
     }
     updateProfile(updated)
@@ -282,13 +312,55 @@ export default function ProfileModal({ isOpen, onClose }: ProfileModalProps) {
 
           <hr className="border-white/5" />
 
-          {/* Section 4: Example Tweets */}
+          {/* Section 3.5: Running Learning Notes */}
           <div className="space-y-4">
-            <h3 className="text-xs uppercase tracking-wider text-[var(--text-muted)] font-semibold">Example Voice Targets (Tweets to match)</h3>
+            <h3 className="text-xs uppercase tracking-wider text-[var(--text-muted)] font-semibold">Running Learning Notes (Grok Session Takeaways)</h3>
+            <div className="space-y-3">
+              <div className="flex gap-2">
+                <input
+                  type="text"
+                  placeholder="e.g. [Week 1] — frustration + fix format performs best in vibe coding"
+                  value={newLearningNote}
+                  onChange={(e) => setNewLearningNote(e.target.value)}
+                  onKeyDown={(e) => e.key === 'Enter' && handleAddLearningNote()}
+                  className="glass-input flex-1 px-3 py-2 bg-transparent"
+                />
+                <button onClick={handleAddLearningNote} className="glass-button px-4">
+                  Add Note
+                </button>
+              </div>
+              <div className="space-y-2 mt-2 max-h-40 overflow-y-auto pr-1">
+                {learningNotes.map((note, i) => (
+                  <div 
+                    key={i} 
+                    className="p-2.5 bg-white/[0.02] border border-white/5 rounded-lg flex items-start gap-3 group text-xs text-[var(--text-muted)]"
+                  >
+                    <span className="font-mono text-[var(--accent)] font-semibold">#{i+1}</span>
+                    <p className="flex-1 leading-relaxed font-sans">{note}</p>
+                    <button 
+                      onClick={() => handleRemoveLearningNote(i)} 
+                      className="opacity-0 group-hover:opacity-100 hover:text-[var(--fail)] transition-opacity text-[10px] font-bold p-0.5"
+                    >
+                      Delete
+                    </button>
+                  </div>
+                ))}
+                {learningNotes.length === 0 && (
+                  <span className="text-xs text-[var(--text-muted)] italic">No running learning notes added yet.</span>
+                )}
+              </div>
+            </div>
+          </div>
+
+          <hr className="border-white/5" />
+
+          {/* Section 4: Example Tweets (Your Voice) */}
+          <div className="space-y-4">
+            <h3 className="text-xs uppercase tracking-wider text-[var(--text-muted)] font-semibold">Your Example Tweets (Karan's Voice)</h3>
             <div className="space-y-3">
               <div className="flex gap-2">
                 <textarea
-                  placeholder="Paste a tweet that matches your ideal voice..."
+                  placeholder="Paste a tweet showing your personal style..."
                   value={newExampleItem}
                   onChange={(e) => setNewExampleItem(e.target.value)}
                   className="glass-input flex-1 h-20 bg-transparent text-xs font-mono"
@@ -297,7 +369,7 @@ export default function ProfileModal({ isOpen, onClose }: ProfileModalProps) {
                   Add Target
                 </button>
               </div>
-              <div className="space-y-2 mt-2 max-h-48 overflow-y-auto pr-1">
+              <div className="space-y-2 mt-2 max-h-40 overflow-y-auto pr-1">
                 {exampleTweets.map((tweet, i) => (
                   <div 
                     key={i} 
@@ -307,6 +379,43 @@ export default function ProfileModal({ isOpen, onClose }: ProfileModalProps) {
                     <p className="flex-1 font-mono leading-relaxed whitespace-pre-wrap">{tweet}</p>
                     <button 
                       onClick={() => handleRemoveExample(i)} 
+                      className="opacity-0 group-hover:opacity-100 hover:text-[var(--fail)] transition-opacity text-sm font-semibold p-1"
+                    >
+                      Delete
+                    </button>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+
+          <hr className="border-white/5" />
+
+          {/* Section 5: Admired Accounts Example Tweets */}
+          <div className="space-y-4">
+            <h3 className="text-xs uppercase tracking-wider text-[var(--text-muted)] font-semibold">Admired Accounts Example Tweets (@shydev69, @adxtyahq, etc.)</h3>
+            <div className="space-y-3">
+              <div className="flex gap-2">
+                <textarea
+                  placeholder="Paste a tweet showing styles you admire to teach the model..."
+                  value={newAdmiredExampleItem}
+                  onChange={(e) => setNewAdmiredExampleItem(e.target.value)}
+                  className="glass-input flex-1 h-20 bg-transparent text-xs font-mono"
+                />
+                <button onClick={handleAddAdmiredExample} className="glass-button px-4 self-end">
+                  Add Target
+                </button>
+              </div>
+              <div className="space-y-2 mt-2 max-h-40 overflow-y-auto pr-1">
+                {admiredExampleTweets.map((tweet, i) => (
+                  <div 
+                    key={i} 
+                    className="p-3 bg-white/[0.02] border border-white/5 rounded-lg flex items-start gap-3 group text-xs text-[var(--text)]"
+                  >
+                    <span className="font-mono text-[var(--text-muted)]">#{i+1}</span>
+                    <p className="flex-1 font-mono leading-relaxed whitespace-pre-wrap">{tweet}</p>
+                    <button 
+                      onClick={() => handleRemoveAdmiredExample(i)} 
                       className="opacity-0 group-hover:opacity-100 hover:text-[var(--fail)] transition-opacity text-sm font-semibold p-1"
                     >
                       Delete

@@ -301,7 +301,8 @@ JSON SCHEMA:
   "tone": "string (2-4 adjectives describing the tone, e.g. punchy, casual, developer-focused)",
   "writingStyle": "string (description of writing rules, e.g. lower-case, brief fragments, no fluff)",
   "avoidList": ["string (corporate, influencer, or fluff words to avoid, at least 3 items)"],
-  "exampleTweets": ["string (ideal tweets in the user's voice, extract from text if provided, otherwise write 3 realistic examples that match the voice/niche)"]
+  "exampleTweets": ["string (ideal tweets in the user's own voice focusing on his projects like Tonal, Git-for-Prompts, iPod, Swiggy waitlist, etc.)"],
+  "admiredExampleTweets": ["string (ideal tweets from the target circle like @shydev69, @adxtyahq, @buildwithsid, @kalashvasaniya containing dry lists, hiring takes, and minimal builderupdates to copy the style)"]
 }
 
 RESPONSE FORMAT:
