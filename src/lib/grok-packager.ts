@@ -146,11 +146,13 @@ ${config.customRequest || '[No custom request provided]'}
 ALWAYS DO ALL OF THESE:
 
 SCORING & VALIDATION:
-1. Score each draft 1–10 with specific reasoning:
-   • Voice match (does it sound like the examples above?)
-   • Hook strength (first 5 words — would you stop scrolling?)
-   • Engagement potential (will it get replies, not just likes?)
-   • Originality (is this something my niche has heard 100 times?)
+1. Score each draft 1-10 with specific reasoning. Format as a clean markdown block for each draft:
+   ### Draft [N] Scorer:
+   *   **Voice Match:** [Score]/10 [Reason]
+   *   **Hook Strength:** [Score]/10 [Reason]
+   *   **Engagement Potential:** [Score]/10 [Reason]
+   *   **Originality:** [Score]/10 [Reason]
+   *   **Overall Recommendation:** [Keep / Edit / Archive]
    Flag if any draft is too similar to what I posted in last 48hrs.
 
 REAL-TIME DATA (use your X access):
@@ -174,12 +176,15 @@ STRATEGY:
    Factor in: day of week + current time + my follower activity window.
 9. Should I add a link in the first reply? If yes, what specifically?
 
+PART 5: TWO-WAY CLARIFYING QUESTIONS
+10. If there are angles or drafts where you need more context (e.g., details about my specific project implementation, my stance, or context on a trend) to make the rewritten tweets 10x better and more authentic, ask me 1–3 direct, short questions. I will answer them in our next turn to refine the output.
+
 LEARNING CAPTURE (fill this at end — I'll add it to my learning notes):
-10. One-line observation about what's working or not in today's drafts
+11. One-line observation about what's working or not in today's drafts
     that I should remember for next week.
 
 FINAL TWEETS SUMMARY:
-11. At the very end of your response, output a final section on a new line titled "📋 COPY-PASTE READY TWEETS". Under this title, compile all final rewritten drafts/threads, fresh angles, and shitposts. Format this as a clean bulleted list where each item is on its own new line:
+12. At the very end of your response, output a final section on a new line titled "📋 COPY-PASTE READY TWEETS". Under this title, compile all final rewritten drafts/threads, fresh angles, and shitposts. Format this as a clean bulleted list where each item is on its own new line:
 • **Rewritten Draft [N]:** [Tweet text] ([Character count])
 • **Angle A (Safe):** [Tweet text] ([Character count])
 • **Angle B (Spicy):** [Tweet text] ([Character count])
@@ -219,7 +224,7 @@ stated here.
 Voice: ${profile.voice.tone}
 
 Projects I am building / have shipped:
-(Refer to my Niche and Goals sections above for the list of active projects I build, such as Tonal, Git-for-Prompts, Swiggy/Instamart agents, iPod emulator, TweetOS, etc. Integrate these names dynamically in your replies).
+(Refer to my Niche and Goals sections above for the list of active projects I build, such as Tonal, Git-for-Prompts, Swiggy/Instamart agents, iPod emulator, TweetOS, etc. Only reference these projects if highly relevant and natural. Never force them if it feels artificial).
 
 My genuine value-add in replies (what I actually know):
 • Real failures and fixes when building with Claude/Gemini as a solo dev
@@ -288,66 +293,47 @@ Find me 10–12 tweets I can genuinely reply to.
 Do NOT repeat accounts I replied to in the last 48hrs (listed above).
 Prioritize accounts that have replied to me before (listed above).
 
-For each tweet:
-① Tweet text + author @handle
-② Why this is a good opportunity for ME specifically
-   (not generic — what do I know that's directly relevant?)
-③ Risk level: Low / Medium / High
-   High = controversial topic, easily misread, could backfire
-④ 3 reply options:
+For each tweet, output a clear, double-spaced block:
+### Opportunity [N]: Tweet by @[handle]
+*   **Original Tweet:** "[Tweet content]"
+*   **Why for me:** [Why this is a good opportunity for ME specifically - what do I know that's directly relevant?]
+*   **Risk Level:** [Low / Medium / High] (High = controversial, easily misread)
+*   **Reply Options:**
+    • **Option A (Casual):** [Reply draft under 280 chars. Relatable student energy. No generic agreement.] ([Character count])
+    • **Option B (Insight):** [Reply draft under 280 chars. Reference a real experience from my builds. Grok must inject actual project names (Tonal, Git-for-Prompts, Swiggy/Instamart agents, iPod, MemoryPalace, TweetOS) directly based on context, but only if highly relevant and natural. Never force a project name reference if it feels artificial.] ([Character count])
+    • **Option C (Question):** [Reply draft under 280 chars ending with a specific question to drive conversation. Only reference projects if highly relevant and organic to the context.] ([Character count])
 
-   OPTION A [casual/relatable]:
-   Sounds like texting a friend. Relatable student energy.
-   Mention projects only if organic, never forced.
-
-   OPTION B [adds specific insight]:
-   Reference a real experience from my builds. Name the tool,
-   error, fix, or project specifically. This is the strongest reply
-   type — use it when I have a real angle.
-   • Grok must inject actual project names (Tonal, Git-for-Prompts, iPod, MemoryPalace, TweetOS) directly into this reply based on context. No generic placeholders.
-
-   OPTION C [genuine question]:
-   Opens a real conversation. Makes them want to reply.
-   Not "thoughts?" — specific to what they said.
-   • Grok must inject actual project names dynamically if relevant.
-
-   All options must be:
-   ✅ Under 280 characters (verify count)
-   ✅ Reference what they said — no generic replies
-   ✅ Add genuine value — never empty agreement
-   ✅ Pune CS student voice — not polished influencer
-   ❌ Never start with "Great point!" / "So true!" / "Couldn't agree more!"
-   ❌ No self-promotion as the main message
-   ❌ No vague compliments
-   • Ensure the core message and intent of the target tweet is strictly preserved.
+All options must be under 280 characters, reference what they said, add genuine value, use a Pune CS student voice, and never start with generic openers like "Great point!" or "So true!". Ensure the core message of the target tweet is strictly preserved.
 
 PART 2: QUOTE TWEET OPPORTUNITIES
 
 Find me 3–4 tweets I can quote with my own take.
-Target: tweets from accounts with 1K–50K followers on topics I have a
-real angle on. Not just agreeing — adding a new thought.
+Target: tweets from accounts with 1K–50K followers on topics I have a real angle on. Not just agreeing — adding a new thought.
 
-For each:
-① Tweet link + author
-② Why it's a good quote tweet for me
-③ 2 quote options:
-   - One agree + expand (add my experience/insight, using actual project names)
-   - One nuanced take or honest pushback
-   All under 200 chars (room for the quoted embed)
+Format each quote tweet opportunity as a clear, double-spaced block:
+### Quote Opportunity [N]: Tweet by @[handle]
+*   **Original Tweet Link:** [Link]
+*   **Why quote:** [Why it's a good quote tweet for me]
+*   **Quote Options:**
+    • **Option 1 (Agree + Expand):** [Quote text under 200 chars using actual project names only if natural and relevant] ([Character count])
+    • **Option 2 (Nuanced / Pushback):** [Quote text under 200 chars] ([Character count])
 
 PART 3: RELATIONSHIP BUILDING
 
 After the tweet list:
-① Which 2–3 accounts should I double down on THIS WEEK based on
+1. Which 2–3 accounts should I double down on THIS WEEK based on
    what you see them posting and their reply patterns? Why?
-② Is there an active thread (not just a single tweet) I should jump
+2. Is there an active thread (not just a single tweet) I should jump
    into right now? High-engagement threads = more discovery.
-③ Any account I'm not following yet that's clearly in my niche and
+3. Any account I'm not following yet that's clearly in my niche and
    posting great content this week? (New account to add to my list)
-④ Any of my admired accounts posted something in last 24hrs that I
+4. Any of my admired accounts posted something in last 24hrs that I
    should engage with IMMEDIATELY while the engagement window is open?
 
 ${config.customRequest ? `EXTRA: ${config.customRequest}` : '[No custom request]'}
+
+PART 4: TWO-WAY CLARIFYING QUESTIONS
+If there are accounts, reply options, or angles where you need more context (e.g. details about my projects, my experience, or target account relationships) to make the replies 10x better and more authentic, ask me 1–3 direct, short questions. I will answer them in our next turn to refine the output.
 
 ═══ LEARNING CAPTURE & FINAL SUMMARY ═══
 
@@ -389,7 +375,7 @@ ${dateStr} IST
 
 CONTEXT: I am ${profile.name} (@${profile.twitterHandle}). You are Grok with real-time X access.
 Stateless session — all context is below.
-Your job: use your live X data to find what's moving RIGHT NOW. Focus heavily on AI technology, frontier models, AI developer tools, and AI startups/companies (OpenAI, Anthropic, Google, Cursor, etc.) and hot tech ecosystem news that I can create genuine original content about.
+Your job: use your live X data to find what's moving RIGHT NOW. Focus heavily on AI technology, frontier models, AI developer tools, and AI startups/companies (OpenAI, Anthropic, Google, Antigravity IDE, etc.) and hot tech ecosystem news that I can create genuine original content about.
 Do not surface anything older than 12 hours unless it's still actively
 spreading.
 
@@ -405,7 +391,7 @@ Content pillars (what's on-brand for me):
 ${profile.contentPillars.map(p => `• ${p.name}`).join('\n')}
 
 Projects I can reference (only if genuinely relevant):
-(Refer to my Niche and Goals sections above for the active projects I build, such as Tonal, Git-for-Prompts, Swiggy/Instamart agents, iPod emulator, TweetOS, etc. Integrate these dynamically).
+(Refer to my Niche and Goals sections above for the active projects I build, such as Tonal, Git-for-Prompts, Swiggy/Instamart agents, iPod emulator, TweetOS, etc. Integrate these only if highly relevant and natural. Never force them if it feels artificial).
 
 I WILL NOT tweet about:
 • Politics (any kind — not my lane)
@@ -443,7 +429,7 @@ ${config.focusAreas.length > 0
   ? config.focusAreas.map(a => `☑ ${a}`).join('\n')
   : `☑ AI Technology & Developments (frontier models, Claude, Gemini, GPT, open source LLMs)
 ☑ AI Tech Companies & Organizations (OpenAI, Anthropic, Google, Microsoft, Meta, hot startups)
-☑ AI Developer Ecosystem (Cursor, coding agents, API changes, latency/cost improvements)
+☑ AI Developer Ecosystem (Antigravity IDE, coding agents, API changes, latency/cost improvements)
 ☑ Student & Job Market (hiring trends in tech/AI, placements, developer salaries)`
 }
 
@@ -453,41 +439,28 @@ PART 1: TRENDING NOW (last 6–12 hours on X)
 
 Find 6–8 topics or conversations trending in my focus areas.
 
-For each topic, give me:
-① WHAT: What is the topic / what happened? One clear sentence.
-② WHO: Key voices driving it (handles). What are they saying?
-③ WHY NOW: Why is this trending today specifically?
-④ SENTIMENT: What's the overall mood on X?
-   [Positive / Negative / Mixed / Chaotic / Ironic]
-⑤ RISK LEVEL for me to engage: Low / Medium / High
-   High = politically charged, corporate drama, could be misread,
-   controversial in ways that could hurt my internship reputation
-⑥ RELEVANCE to my niche and audience: 1–10
-⑦ YOUR HONEST TAKE: What's the most interesting angle here?
-   Don't hedge — give me a real opinion.
+For each topic, output a clear, double-spaced block:
+### Topic [N]: [Topic Title]
+*   **What happened:** [One clear sentence]
+*   **Key voices:** [Handles and what they are saying]
+*   **Why now:** [Why is this trending today specifically?]
+*   **Sentiment:** [Positive / Negative / Mixed / Chaotic / Ironic]
+*   **Risk Level:** [Low / Medium / High]
+*   **Relevance:** [1-10]
+*   **Honest Take:** [Your real, unhedged opinion]
 
 PART 2: MY ANGLE (for each topic rated 6+ relevance)
 
-Give me 2 tweet angles I could take:
+Give me 2 tweet angles I could take. Separate them with clear markdown headers:
+#### [Topic Name]
+*   **Angle A (Personal):**
+    • *Strategy:* [1-line strategy rationale explaining why this angle is strategic]
+    • *Tweet:* [Tweet text under 280 chars] ([Character count])
+*   **Angle B (Hot Take):**
+    • *Strategy:* [1-line strategy rationale explaining why this angle is strategic]
+    • *Tweet:* [Tweet text under 280 chars] ([Character count])
 
-ANGLE A [personal lens]:
-How does this affect me as a Pune CS student specifically?
-My experience, my projects, my situation. Not summarizing the trend —
-adding something only I can add.
-
-ANGLE B [hot take or honest pushback]:
-A genuine opinion. Could be agreement with specific nuance, pushback,
-or "here's what everyone's missing."
-Spicy is fine. Embarrassing to my future employer is not.
-
-Both angles must be:
-• Include a brief 1-line strategy rationale bullet point above the tweet text for both Angle A and Angle B explaining why this angle is strategic.
-✅ Under 280 chars (give character count)
-✅ Original — not just summarizing the trend
-✅ In my voice (Pune student, punchy, specific)
-✅ Something I actually believe or have real experience with
-❌ No empty dunks on companies or people
-❌ Nothing that could hurt my internship chances
+Ensure both angles use a Pune student voice (punchy, lowercase-heavy), are original, are not empty dunks, and cannot hurt my internship chances.
 
 PART 3: QUICK CONTENT (low-effort, high-reach)
 
@@ -503,14 +476,17 @@ A bad shitpost is worse than no shitpost.
 
 PART 4: RANKING & STRATEGY
 
-① TOP 2 topics I should tweet about TODAY — ranked. Why these two?
-② For each: post as standalone tweet or thread? Why?
-③ Post immediately or wait for peak window (6–9PM IST)?
+1. TOP 2 topics I should tweet about TODAY — ranked. Why these two?
+2. For each: post as standalone tweet or thread? Why?
+3. Post immediately or wait for peak window (6–9PM IST)?
    Consider: Is this trend still rising or already peaking?
-④ Any topic I should AVOID today even though it seems relevant?
+4. Any topic I should AVOID today even though it seems relevant?
    (Things that look good but have hidden risks for my account/stage)
 
 ${config.customRequest ? `EXTRA: ${config.customRequest}` : ''}
+
+PART 5: TWO-WAY CLARIFYING QUESTIONS
+If there are trends, angles, or shitpost options where you need more context (e.g. details about my projects, my actual stance on a tool, or college constraints) to make the tweets 10x better and more authentic, ask me 1–3 direct, short questions. I will answer them in our next turn to refine the output.
 
 ═══ LEARNING CAPTURE & FINAL SUMMARY ═══
 
