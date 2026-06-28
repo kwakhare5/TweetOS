@@ -18,6 +18,8 @@ export default function ProfileModal({ isOpen, onClose }: ProfileModalProps) {
   const [niche, setNiche] = useState(profile.niche)
   const [tone, setTone] = useState(profile.voice.tone)
   const [writingStyle, setWritingStyle] = useState(profile.voice.writingStyle)
+  const [secondBrain, setSecondBrain] = useState(profile.secondBrain || '')
+  const [geminiApiKey, setGeminiApiKey] = useState(profile.geminiApiKey || '')
   
   // Lists
   const [avoidList, setAvoidList] = useState(profile.voice.avoidList)
@@ -123,6 +125,8 @@ export default function ProfileModal({ isOpen, onClose }: ProfileModalProps) {
       name,
       twitterHandle,
       niche,
+      secondBrain,
+      geminiApiKey,
       voice: {
         tone,
         writingStyle,
@@ -266,6 +270,34 @@ export default function ProfileModal({ isOpen, onClose }: ProfileModalProps) {
                   onChange={(e) => setWritingStyle(e.target.value)}
                   className="glass-input w-full px-3 py-2 bg-transparent"
                   placeholder="e.g. lower-case, brief fragments, no fluff, tech-heavy"
+                />
+              </div>
+            </div>
+          </div>
+
+          <hr className="border-white/5" />
+
+          {/* Section 2.5: Second Brain & API Configuration */}
+          <div className="space-y-4">
+            <h3 className="text-xs uppercase tracking-wider text-[var(--text-muted)] font-semibold font-mono">🧠 Second Brain & API Config</h3>
+            <div className="space-y-3">
+              <div>
+                <label className="block text-[11px] text-[var(--text-muted)] mb-1 uppercase tracking-wider">Second Brain Context</label>
+                <textarea
+                  value={secondBrain}
+                  onChange={(e) => setSecondBrain(e.target.value)}
+                  className="glass-input w-full h-24 p-3 bg-transparent text-xs font-sans leading-relaxed"
+                  placeholder="Dump details about your background, active projects, tech stacks, and daily life context here..."
+                />
+              </div>
+              <div>
+                <label className="block text-[11px] text-[var(--text-muted)] mb-1 uppercase tracking-wider">Gemini API Key</label>
+                <input
+                  type="password"
+                  value={geminiApiKey}
+                  onChange={(e) => setGeminiApiKey(e.target.value)}
+                  className="glass-input w-full px-3 py-2 bg-transparent text-xs font-mono"
+                  placeholder="AIzaSy..."
                 />
               </div>
             </div>
