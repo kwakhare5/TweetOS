@@ -26,7 +26,11 @@ It supports **3 Dump Modes**:
 - **Library**: Pre-polished tweets or threads that have been logged.
 - **Closed-Loop Feedback**: Performance notes logged in the library are injected into Gemini context for new draft generation.
 
-### 4. Grok Packets & Trending
+### 5. Second Brain & Fact Checking
+- **Second Brain Memory Bank**: A permanent knowledge base stored in profile settings containing Karan's background, antg-IDE, and full project specs. This context is automatically injected into Gemini prompts and Grok packets to maintain a deep, persistent memory of who they are and what they build.
+- **Automated Fact Checking**: An automated validation layer in the AI Composer and Grok packagers that checks technical statements (prices, model sizes, releases) against search knowledge. If claims are speculative or unverified, the system flags them with an alert banner on the workspace.
+
+### 6. Grok Packets & Trending
 Grok is stateless, so "Grok Packets" are full text bundles carrying all context (profile, voice, avoid list, drafts).
 - **Draft Review Packet**: Sends drafts to Grok for feedback based on the selected dump mode. Now includes a feedback loop containing the top 5 recently posted tweets and performance notes from the library.
 - **Trending Radar Packet**: A one-click packet generation to ask Grok for the latest X trends to hook content onto. Now carries the top 5 posted tweet learnings for context.
@@ -37,6 +41,8 @@ Grok is stateless, so "Grok Packets" are full text bundles carrying all context 
 - **Single-Column ChatGPT-Style Workspace**: Restructured the workspace (`/`) into a simplified single-column layout. A single ChatGPT-style text area routes natural language inputs to Gemini to automatically detect intent (`draft`, `hooks`, `thread`, `tighten`, or `replies`), dynamically updates the workspace state, and displays the dynamic ScoreCard at the very bottom.
 - **Single Unified Editor State**: Eliminated the `activeDraft === null` state. The composer is always editing the selected active draft. If the drafts list is empty, a default blank draft is auto-created on load. The "+ Write Draft" button in the header is the single standard action to start a fresh empty draft. Removed all deselect actions and made utilities/scorecard always visible.
 - **Grok Analytics Sync Loop**: Implemented a zero-cost organic reach analytics integration inside the Library page (`/analytics`). Users copy a profile-aware search prompt, paste it into Grok to scan their actual X profile for views/likes/retweets/replies/bookmarks metrics, and paste the resulting JSON output back into TweetOS to sync performance data. Sync performance statistics render as a grid on each posted tweet card.
+- **Second Brain Integration**: Added editable memory block UI in settings, and configured Gemini and Grok prompt packagers to load background profiles and project context dynamically.
+- **Automated Fact Checking Integration**: Embedded verification checks into routing engine draft schemas and Grok generation scripts, displaying real-time warning boxes on the dashboard if speculative claims are flagged.
 - **Three Consolidated Dashboards**: Restructured into 3 unified screens: Workspace (`/`) for creation & scoring, Engage Hub (`/engage`) for 3-step reply generation, and Library (`/analytics`) for chronological history of posted tweets.
 - **AI Voice Profile Extractor**: A single text area at the top of the Voice Settings modal where users can paste raw bios, description notes, or example tweets. The AI extracts and maps these into structured fields (`name`, `twitterHandle`, `niche`, `tone`, `writingStyle`, `avoidList`, `exampleTweets`) in the settings UI.
 - **Pure Client Logic**: All algorithm scorer computations in `src/lib/scorer.ts` are pure TypeScript functions. No network latency, database storage, or LLM tokens are wasted during scoring.
