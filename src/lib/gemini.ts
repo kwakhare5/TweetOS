@@ -1,11 +1,33 @@
 import { GoogleGenAI } from '@google/genai'
 
+let _currentKey: string | null = null
 let _ai: GoogleGenAI | null = null
 
 function getAI(): GoogleGenAI {
-  if (!_ai) {
-    const key = process.env.NEXT_PUBLIC_GEMINI_API_KEY
-    if (!key) throw new Error('Missing NEXT_PUBLIC_GEMINI_API_KEY')
+  let key: string | null = null
+
+  // Resolve dynamically from local settings store
+  if (typeof window !== 'undefined') {
+    try {
+      const stored = localStorage.getItem('tweetos-profile-storage')
+      if (stored) {
+        const parsed = JSON.parse(stored)
+        key = parsed.state?.profile?.geminiApiKey || null
+      }
+    } catch {}
+  }
+
+  // Fallback to env key
+  if (!key) {
+    key = process.env.NEXT_PUBLIC_GEMINI_API_KEY || null
+  }
+
+  if (!key) {
+    throw new Error('Missing Gemini API Key. Please configure one in Profile settings.')
+  }
+
+  if (!_ai || _currentKey !== key) {
+    _currentKey = key
     _ai = new GoogleGenAI({ apiKey: key })
   }
   return _ai

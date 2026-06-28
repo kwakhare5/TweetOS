@@ -85,6 +85,20 @@ export default function ProfilePage() {
             />
           </section>
 
+          {/* API Configuration */}
+          <section className="bg-[var(--surface)] border border-[var(--border)] rounded-lg p-4 space-y-3">
+            <h2 className="text-xs text-[var(--text-muted)] uppercase tracking-wider">🔑 API Configuration</h2>
+            <p className="text-[11px] text-[var(--text-muted)] mt-0.5">
+              Configure your Gemini API key from Google AI Studio to run the AI Voice Profile Extractor and workspace routing.
+            </p>
+            <Field 
+              label="Gemini API Key" 
+              value={profile.geminiApiKey || ''} 
+              onChange={(v) => update('geminiApiKey', v)} 
+              placeholder="AIzaSy..."
+            />
+          </section>
+
           {/* Goals */}
           <section className="bg-[var(--surface)] border border-[var(--border)] rounded-lg p-4 space-y-3">
             <h2 className="text-xs text-[var(--text-muted)] uppercase tracking-wider">Goals</h2>

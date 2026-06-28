@@ -12,6 +12,7 @@ export interface UserProfile {
   admiredAccounts: string[]
   postingFrequency: string
   secondBrain?: string
+  geminiApiKey?: string
   createdAt: string
   updatedAt: string
 }
