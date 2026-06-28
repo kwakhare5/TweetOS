@@ -34,10 +34,16 @@ ${profile.voice.tone}
 WRITING STYLE RULES:
 ${profile.voice.writingStyle}
 
-SECOND BRAIN — MY FULL CONTEXT (READ THIS CAREFULLY):
-This is not just my projects list. This is my actual current state — my active thoughts, opinions, frustrations, wins, what I am building, what I failed at, what I waiting on, what I'm learning, who I'm talking to, and how I currently see the world. Use this to make every output hyper-specific to who I am right now, not a generic version of me.
+PROJECTS & SHIPPED WORK (from profile):
+${(profile.goals || []).filter(g => g.toLowerCase().includes('project') || g.toLowerCase().includes('tonal') || g.toLowerCase().includes('git') || g.toLowerCase().includes('instamart') || g.toLowerCase().includes('ipod') || g.toLowerCase().includes('tweetos')).join('\n') || profile.niche}
 
-${profile.secondBrain || '[No second brain context loaded. Remind user to fill it in under /profile → Second Brain section.]'}
+MY GOALS:
+${(profile.goals || []).map(g => `• ${g}`).join('\n')}
+
+SECOND BRAIN — WHAT CHANGED TODAY (read this carefully):
+This is NOT bio or projects — those are above. This is the live, daily version of who I am right now: what I built, broke, shipped, failed at, waited on, thought about, and felt today. Every output you generate must be anchored to this current context, not a generic version of me.
+
+${profile.secondBrain || '[Second Brain empty — user has not updated today\'s context yet. Use profile identity fields above only.]'}
 
 CONTENT PILLARS (weight and description):
 ${profile.contentPillars.map(p => `• ${p.name} (${p.percentage}%): ${p.description}`).join('\n')}

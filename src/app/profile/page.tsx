@@ -224,14 +224,14 @@ export default function ProfilePage() {
                 <h2 className="text-xs uppercase tracking-widest font-bold text-[var(--text-muted)]">Second Brain — Active Context</h2>
               </div>
               <p className="text-[11px] text-[var(--text-muted)] leading-relaxed">
-                Dump your active projects, daily events, and background facts here. The AI reads this for every tweet so it stays hyper-specific to your life — <span className="text-white/60">e.g. &ldquo;Swiggy didn&apos;t reply to mail&rdquo;, &ldquo;new project: Instamart agent&rdquo;</span>.
+                This is your <span className="text-white/70 font-semibold">live, daily context</span> — not your bio or projects (those are in the fields above). Write what&apos;s actually happening right now: what you&apos;re building, debugging, waiting on, thinking about, or feeling. Grok reads this to make every output feel like it came from <span className="text-white/60">you today</span>, not a generic version of you.
               </p>
               <textarea
                 className={inputCls}
                 rows={8}
                 value={secondBrain}
                 onChange={e => setSecondBrain(e.target.value)}
-                placeholder={"– Pune CS student, 3rd year, SIT\n– Applied to Swiggy internship, awaiting reply\n– Currently building: Instamart delivery agent (Next.js + Supabase)\n– Shipped: Tonal (music app), Git-for-Prompts\n– Uses Antigravity IDE for everything\n– Daily: studying DSA, building in public, shipping fast"}
+                placeholder={"ACTIVE NOW (update daily):\n– Swiggy Builders: applied, no reply yet. checked inbox 3 times.\n– Debugging Supabase auth session not persisting across tabs\n– Shipped the Grok packet rewrite this morning\n– Read about Claude 4 Sonnet context limit — has opinions\n– Feeling behind on DSA but shipped 2 things this week so net positive\n\nYour bio, niche, voice, and projects live in the fields above — this is just what changed today."}
               />
             </section>
 

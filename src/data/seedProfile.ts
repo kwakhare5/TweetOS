@@ -111,31 +111,20 @@ export const SEED_PROFILE: UserProfile = {
   ],
 
   postingFrequency: "3-5 short tweets/day + 20-30 replies/day in builder community, optimizing for evening IST windows (6-9PM)",
-  secondBrain: `BIO/BACKGROUND:
-- Solo computer science engineering student from Pune, India.
-- Focuses heavily on building full-stack AI/LLM products in public.
-- Uses Antigravity IDE (powered by Gemini/Claude) and Claude Web for programming.
-- Member of the indie hacker / builder community circle on X (similar to @shydev69, @adxtyahq, @buildwithsid, @kalashvasaniya).
-- Prefers raw/lowercase, minimalist, sarcastic developer takes over influencer hype.
+  secondBrain: `ACTIVE NOW (update daily):
+- [What you're building or debugging today]
+- [Any frustration, blocker, or win from last 24hrs]
+- [Status of anything you're waiting on — internship replies, PR reviews, etc.]
+- [Any new project started or shipped]
+- [Something you observed, read, or thought about today that felt tweet-worthy]
+- [Current mood / energy level if relevant]
 
-PROJECTS & TECH STACK DETAILED INFO:
-1. Tonal (Chrome Extension):
-   - Turns corporate Gmail/Slack/WhatsApp jargon into standard casual human speech.
-   - Built with Next.js, Groq API (extremely fast latency), and vanilla JS.
-2. Git-for-Prompts:
-   - Version control system for LLM prompts, resembling GitHub.
-   - Built with Next.js, Supabase, Monaco Editor interface, and Drizzle ORM.
-3. MemoryPalace:
-   - Second brain RAG application with vector search indexing.
-   - Built with pgvector, Next.js, and local embedding models.
-4. Swiggy/Instamart Agent:
-   - Automation script checking Swiggy Builders waitlists/emails and automating Instamart order logs.
-   - Built using Node.js, Groq API, and custom state synchronization.
-5. Karan's iPod:
-   - Classic retro iPod emulator with a digital clickwheel for playing Spotify/Apple Music tracks.
-   - Built with React, Tailwind, Framer Motion, and web APIs.
-6. TweetOS:
-   - Custom Twitter workspace app with real-time reach scoring, Grok hand-off, and analytics sync loop.`,
+EXAMPLE (replace with your real today):
+- Swiggy Builders: applied, no reply yet. refreshed email 4 times.
+- Debugging auth middleware on TweetOS — supabase session not persisting across tabs
+- Shipped Grok packet improvements this morning with Antigravity IDE
+- Read about Claude 4 Sonnet context window — feels like cheating for RAG apps
+- Feeling behind on DSA prep but shipped 2 things this week so net positive`,
   createdAt: new Date().toISOString(),
   updatedAt: new Date().toISOString()
 }
