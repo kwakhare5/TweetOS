@@ -9,33 +9,42 @@ import { useProfileStore } from '@/store/useProfileStore'
 import { geminiJSON } from '@/lib/gemini'
 import { VOICE_EXTRACTOR_PROMPT } from '@/lib/prompts'
 import AppShell from '@/components/layout/AppShell'
-import { Sparkles, Wand2, Plus, X, Check, Brain, Key, User, Mic, Target, BookOpen } from 'lucide-react'
+import { Sparkles, Wand2, Plus, X, Check, Brain, Key, User, Mic, BookOpen } from 'lucide-react'
+
+type Tab = 'identity' | 'voice' | 'examples' | 'settings'
+
+const TABS: { id: Tab; label: string }[] = [
+  { id: 'identity', label: 'Identity' },
+  { id: 'voice', label: 'Voice' },
+  { id: 'examples', label: 'Examples' },
+  { id: 'settings', label: 'Settings' },
+]
 
 export default function ProfilePage() {
   const { profile, updateProfile } = useProfileStore()
   const [userId, setUserId] = useState<string | null>(null)
   const [saving, setSaving] = useState(false)
   const [saved, setSaved] = useState(false)
+  const [tab, setTab] = useState<Tab>('identity')
 
-  // Form state mirroring profile
   const [name, setName] = useState(profile.name)
   const [twitterHandle, setTwitterHandle] = useState(profile.twitterHandle)
   const [bio, setBio] = useState(profile.bio || '')
   const [niche, setNiche] = useState(profile.niche)
+  const [admiredAccounts, setAdmiredAccounts] = useState<string[]>(profile.admiredAccounts || [])
+  const [newAdmiredAccount, setNewAdmiredAccount] = useState('')
+
   const [tone, setTone] = useState(profile.voice.tone)
   const [writingStyle, setWritingStyle] = useState(profile.voice.writingStyle)
-  const [secondBrain, setSecondBrain] = useState(profile.secondBrain || '')
-  const [geminiApiKey, setGeminiApiKey] = useState(profile.geminiApiKey || '')
   const [avoidList, setAvoidList] = useState<string[]>(profile.voice.avoidList)
   const [newAvoidItem, setNewAvoidItem] = useState('')
+
   const [exampleTweets, setExampleTweets] = useState<string[]>(profile.voice.exampleTweets)
   const [newExampleItem, setNewExampleItem] = useState('')
   const [admiredExampleTweets, setAdmiredExampleTweets] = useState<string[]>(profile.voice.admiredExampleTweets || [])
   const [newAdmiredItem, setNewAdmiredItem] = useState('')
-  const [admiredAccounts, setAdmiredAccounts] = useState<string[]>(profile.admiredAccounts || [])
-  const [newAdmiredAccount, setNewAdmiredAccount] = useState('')
 
-  // AI Extractor
+  const [geminiApiKey, setGeminiApiKey] = useState(profile.geminiApiKey || '')
   const [rawTextDump, setRawTextDump] = useState('')
   const [isExtracting, setIsExtracting] = useState(false)
   const [extractError, setExtractError] = useState<string | null>(null)
@@ -56,7 +65,6 @@ export default function ProfilePage() {
         setNiche(p.niche)
         setTone(p.voice.tone)
         setWritingStyle(p.voice.writingStyle)
-        setSecondBrain(p.secondBrain || '')
         setGeminiApiKey(p.geminiApiKey || '')
         setAvoidList(p.voice.avoidList)
         setExampleTweets(p.voice.exampleTweets)
@@ -73,14 +81,9 @@ export default function ProfilePage() {
     setExtractSuccess(false)
     try {
       const result = await geminiJSON<{
-        name: string
-        twitterHandle: string
-        niche: string
-        tone: string
-        writingStyle: string
-        avoidList: string[]
-        exampleTweets: string[]
-        admiredExampleTweets?: string[]
+        name: string; twitterHandle: string; niche: string
+        tone: string; writingStyle: string; avoidList: string[]
+        exampleTweets: string[]; admiredExampleTweets?: string[]
       }>(VOICE_EXTRACTOR_PROMPT(rawTextDump))
       if (result.name) setName(result.name)
       if (result.twitterHandle) setTwitterHandle(result.twitterHandle)
@@ -104,22 +107,8 @@ export default function ProfilePage() {
     if (!userId) return
     setSaving(true)
     const updated = {
-      ...profile,
-      name,
-      twitterHandle,
-      bio,
-      niche,
-      secondBrain,
-      geminiApiKey,
-      admiredAccounts,
-      voice: {
-        ...profile.voice,
-        tone,
-        writingStyle,
-        avoidList,
-        exampleTweets,
-        admiredExampleTweets,
-      },
+      ...profile, name, twitterHandle, bio, niche, geminiApiKey, admiredAccounts,
+      voice: { ...profile.voice, tone, writingStyle, avoidList, exampleTweets, admiredExampleTweets },
       updatedAt: new Date().toISOString(),
     }
     updateProfile(updated)
@@ -129,282 +118,312 @@ export default function ProfilePage() {
     setTimeout(() => setSaved(false), 2500)
   }
 
-  const inputCls = 'w-full bg-white/[0.03] border border-white/[0.08] rounded-lg px-3 py-2.5 text-sm text-[var(--text)] placeholder-[var(--text-muted)] focus:outline-none focus:border-[var(--accent)] focus:bg-white/[0.05] transition-all duration-150 resize-none'
+  const inp = 'w-full bg-white/[0.03] border border-white/[0.08] rounded-lg px-3 py-2.5 text-sm text-[var(--text)] placeholder-[var(--text-muted)] focus:outline-none focus:border-[var(--accent)]/60 focus:bg-white/[0.05] transition-all duration-150 resize-none'
+  const lbl = 'block text-[11px] text-[var(--text-muted)] uppercase tracking-wider mb-1.5 font-medium'
+
+  function TagInput({ value, onChange, onAdd, onRemove, placeholder, color = 'accent' }: {
+    value: string; onChange: (v: string) => void
+    onAdd: () => void; onRemove: (i: number) => void
+    tags: string[]; placeholder: string; color?: string
+  } & { tags: string[] }) {
+    const colorMap: Record<string, string> = {
+      accent: 'bg-[var(--accent)]/10 border-[var(--accent)]/20 text-[var(--accent)]',
+      fail: 'bg-[var(--fail)]/10 border-[var(--fail)]/20 text-[var(--fail)]',
+    }
+    return (
+      <div className="space-y-2">
+        <div className="flex gap-2">
+          <input
+            className={inp}
+            value={value}
+            onChange={e => onChange(e.target.value)}
+            onKeyDown={e => { if (e.key === 'Enter') { e.preventDefault(); onAdd() } }}
+            placeholder={placeholder}
+          />
+          <button onClick={onAdd} className="px-3 py-2 bg-white/[0.04] border border-white/[0.08] rounded-lg hover:bg-white/[0.08] transition-colors shrink-0">
+            <Plus className="w-4 h-4" />
+          </button>
+        </div>
+        {(arguments[0] as { tags: string[] }).tags.length > 0 && (
+          <div className="flex flex-wrap gap-1.5">
+            {(arguments[0] as { tags: string[] }).tags.map((t, i) => (
+              <span key={i} className={`flex items-center gap-1 px-2 py-0.5 border rounded-full text-[11px] ${colorMap[color]}`}>
+                {t}
+                <button onClick={() => onRemove(i)} className="hover:opacity-60 transition-opacity"><X className="w-2.5 h-2.5" /></button>
+              </span>
+            ))}
+          </div>
+        )}
+      </div>
+    )
+  }
+
+  function TweetList({ tweets, onRemove }: { tweets: string[]; onRemove: (i: number) => void }) {
+    return (
+      <div className="space-y-2 max-h-60 overflow-y-auto pr-1">
+        {tweets.length === 0 && <p className="text-[11px] text-[var(--text-muted)] italic">None added yet.</p>}
+        {tweets.map((t, i) => (
+          <div key={i} className="p-2.5 bg-white/[0.02] border border-white/[0.05] rounded-lg flex items-start gap-2 group">
+            <span className="text-[10px] text-[var(--text-muted)] font-mono mt-0.5 shrink-0">#{i + 1}</span>
+            <p className="flex-1 text-xs font-mono text-[var(--text)] whitespace-pre-wrap leading-relaxed">{t}</p>
+            <button onClick={() => onRemove(i)} className="opacity-0 group-hover:opacity-100 transition-opacity text-[var(--text-muted)] hover:text-[var(--fail)] shrink-0"><X className="w-3.5 h-3.5" /></button>
+          </div>
+        ))}
+      </div>
+    )
+  }
+
+  function TweetInput({ value, onChange, onAdd, placeholder }: { value: string; onChange: (v: string) => void; onAdd: () => void; placeholder: string }) {
+    return (
+      <div className="flex gap-2">
+        <textarea className={`${inp} font-mono text-xs`} rows={2} value={value} onChange={e => onChange(e.target.value)} placeholder={placeholder} />
+        <button onClick={onAdd} className="px-3 py-2 self-end bg-white/[0.04] border border-white/[0.08] rounded-lg hover:bg-white/[0.08] transition-colors shrink-0"><Plus className="w-4 h-4" /></button>
+      </div>
+    )
+  }
 
   return (
     <AppShell>
-      <div className="min-h-full p-4 md:p-6 lg:p-8 max-w-6xl">
+      <div className="min-h-full p-4 md:p-6 max-w-2xl mx-auto">
 
-        {/* Page Header */}
-        <div className="flex items-center justify-between mb-8">
+        {/* Header */}
+        <div className="flex items-center justify-between mb-6">
           <div>
-            <h1 className="text-2xl font-bold tracking-tight">Profile Settings</h1>
-            <p className="text-[var(--text-muted)] text-sm mt-1">
-              Configure your AI voice, identity, and Second Brain context
-            </p>
+            <h1 className="text-xl font-bold tracking-tight">Profile</h1>
+            <p className="text-[var(--text-muted)] text-xs mt-0.5">Your permanent voice, identity, and AI settings</p>
           </div>
           <button
             onClick={handleSave}
             disabled={saving || !userId}
-            className="flex items-center gap-2 bg-[var(--accent)] hover:bg-[var(--accent-hover)] disabled:opacity-40 text-white text-sm font-semibold px-5 py-2.5 rounded-lg transition-all duration-200 shadow-lg shadow-[var(--accent)]/20"
+            className="flex items-center gap-2 bg-[var(--accent)] hover:bg-[var(--accent-hover)] disabled:opacity-40 text-white text-sm font-semibold px-4 py-2 rounded-lg transition-all duration-200"
           >
-            {saved ? (
-              <><Check className="w-4 h-4" /><span>Saved</span></>
-            ) : saving ? (
-              <span>Saving…</span>
-            ) : (
-              <span>Save Profile</span>
-            )}
+            {saved ? <><Check className="w-4 h-4" /><span>Saved</span></> : saving ? <span>Saving…</span> : <span>Save</span>}
           </button>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        {/* Tab Bar */}
+        <div className="flex gap-1 p-1 bg-white/[0.03] border border-white/[0.06] rounded-xl mb-6">
+          {TABS.map(t => (
+            <button
+              key={t.id}
+              onClick={() => setTab(t.id)}
+              className={`flex-1 py-2 text-xs font-semibold rounded-lg transition-all duration-150 ${
+                tab === t.id
+                  ? 'bg-white/[0.08] text-white shadow-sm'
+                  : 'text-[var(--text-muted)] hover:text-[var(--text)]'
+              }`}
+            >
+              {t.label}
+            </button>
+          ))}
+        </div>
 
-          {/* ── LEFT COLUMN ── */}
+        {/* ── TAB: IDENTITY ── */}
+        {tab === 'identity' && (
           <div className="space-y-5">
+            <div className="flex items-center gap-2 mb-1">
+              <User className="w-4 h-4 text-[var(--accent)]" />
+              <span className="text-xs font-bold uppercase tracking-widest text-[var(--text-muted)]">Who you are</span>
+            </div>
 
-            {/* Card: Identity */}
-            <section className="bg-white/[0.02] border border-white/[0.06] rounded-xl p-5 space-y-4">
-              <div className="flex items-center gap-2 mb-1">
-                <User className="w-4 h-4 text-[var(--accent)]" />
-                <h2 className="text-xs uppercase tracking-widest font-bold text-[var(--text-muted)]">Identity & Niche</h2>
-              </div>
-              <div className="grid grid-cols-2 gap-3">
-                <div>
-                  <label className="text-[11px] text-[var(--text-muted)] uppercase tracking-wider block mb-1.5">Name</label>
-                  <input className={inputCls} value={name} onChange={e => setName(e.target.value)} placeholder="Karan" />
-                </div>
-                <div>
-                  <label className="text-[11px] text-[var(--text-muted)] uppercase tracking-wider block mb-1.5">Twitter Handle</label>
-                  <input className={inputCls} value={twitterHandle} onChange={e => setTwitterHandle(e.target.value)} placeholder="@kwakhare5" />
-                </div>
+            <div className="grid grid-cols-2 gap-3">
+              <div>
+                <label className={lbl}>Name</label>
+                <input className={inp} value={name} onChange={e => setName(e.target.value)} placeholder="Karan" />
               </div>
               <div>
-                <label className="text-[11px] text-[var(--text-muted)] uppercase tracking-wider block mb-1.5">Bio (1–2 sentences)</label>
-                <textarea className={inputCls} rows={2} value={bio} onChange={e => setBio(e.target.value)} placeholder="Pune CS student. Building products in public." />
+                <label className={lbl}>Handle</label>
+                <input className={inp} value={twitterHandle} onChange={e => setTwitterHandle(e.target.value)} placeholder="@kwakhare5" />
               </div>
-              <div>
-                <label className="text-[11px] text-[var(--text-muted)] uppercase tracking-wider block mb-1.5">Niche / Target Topics</label>
-                <textarea className={inputCls} rows={2} value={niche} onChange={e => setNiche(e.target.value)} placeholder="e.g. CS student, AI products, building in public" />
-              </div>
-              <div>
-                <label className="text-[11px] text-[var(--text-muted)] uppercase tracking-wider block mb-1.5">Admired Accounts</label>
-                <div className="flex gap-2">
-                  <input
-                    className={inputCls}
-                    value={newAdmiredAccount}
-                    onChange={e => setNewAdmiredAccount(e.target.value)}
-                    onKeyDown={e => { if (e.key === 'Enter' && newAdmiredAccount.trim()) { setAdmiredAccounts([...admiredAccounts, newAdmiredAccount.trim()]); setNewAdmiredAccount('') } }}
-                    placeholder="@shydev69"
-                  />
-                  <button
-                    onClick={() => { if (newAdmiredAccount.trim()) { setAdmiredAccounts([...admiredAccounts, newAdmiredAccount.trim()]); setNewAdmiredAccount('') } }}
-                    className="px-3 py-2 bg-white/[0.04] border border-white/[0.08] rounded-lg hover:bg-white/[0.08] transition-colors"
-                  >
-                    <Plus className="w-4 h-4" />
-                  </button>
-                </div>
-                {admiredAccounts.length > 0 && (
-                  <div className="flex flex-wrap gap-1.5 mt-2">
-                    {admiredAccounts.map((a, i) => (
-                      <span key={i} className="flex items-center gap-1 px-2 py-0.5 bg-[var(--accent)]/10 border border-[var(--accent)]/20 rounded-full text-[11px] text-[var(--accent)]">
-                        {a}
-                        <button onClick={() => setAdmiredAccounts(admiredAccounts.filter((_, j) => j !== i))} className="hover:text-[var(--fail)] transition-colors"><X className="w-2.5 h-2.5" /></button>
-                      </span>
-                    ))}
-                  </div>
-                )}
-              </div>
-            </section>
+            </div>
 
-            {/* Card: Second Brain — now on Workspace */}
-            <section className="bg-purple-500/[0.04] border border-purple-500/20 rounded-xl p-5 space-y-2">
-              <div className="flex items-center gap-2">
-                <Brain className="w-4 h-4 text-purple-400" />
-                <h2 className="text-xs uppercase tracking-widest font-bold text-purple-400">Second Brain</h2>
+            <div>
+              <label className={lbl}>Bio</label>
+              <textarea className={inp} rows={2} value={bio} onChange={e => setBio(e.target.value)} placeholder="Pune CS student. Building products in public." />
+            </div>
+
+            <div>
+              <label className={lbl}>Niche</label>
+              <textarea className={inp} rows={3} value={niche} onChange={e => setNiche(e.target.value)} placeholder="CS student, AI products, building in public" />
+            </div>
+
+            <div>
+              <label className={lbl}>Admired Accounts</label>
+              <TagInput
+                value={newAdmiredAccount}
+                onChange={setNewAdmiredAccount}
+                onAdd={() => { if (newAdmiredAccount.trim()) { setAdmiredAccounts([...admiredAccounts, newAdmiredAccount.trim()]); setNewAdmiredAccount('') } }}
+                onRemove={i => setAdmiredAccounts(admiredAccounts.filter((_, j) => j !== i))}
+                tags={admiredAccounts}
+                placeholder="@shydev69"
+                color="accent"
+              />
+            </div>
+
+            <div className="p-3.5 bg-purple-500/[0.04] border border-purple-500/20 rounded-xl">
+              <div className="flex items-center gap-2 mb-1.5">
+                <Brain className="w-3.5 h-3.5 text-purple-400" />
+                <span className="text-[11px] font-bold text-purple-400">Second Brain</span>
               </div>
               <p className="text-[11px] text-[var(--text-muted)] leading-relaxed">
-                Your Second Brain now lives on the <span className="text-white/70 font-semibold">Workspace homepage</span> — it&apos;s the first panel you see. Type anything naturally (<span className="text-white/60">&ldquo;swiggy replied&rdquo;, &ldquo;started new project X&rdquo;, &ldquo;feeling blocked today&rdquo;</span>) and the AI updates the document intelligently. Hit Save to commit.
+                Your daily live context lives on the <span className="text-white/70 font-semibold">Workspace homepage</span> — type updates there naturally and the AI rewrites it for you.
               </p>
-              <a href="/" className="inline-flex items-center gap-1.5 mt-1 text-[11px] font-semibold text-purple-400 hover:text-purple-300 transition-colors">
-                Go to Workspace →
-              </a>
-            </section>
+              <a href="/" className="inline-block mt-2 text-[11px] font-semibold text-purple-400 hover:text-purple-300 transition-colors">Open Workspace →</a>
+            </div>
+          </div>
+        )}
 
-            {/* Card: API Config */}
-            <section className="bg-white/[0.02] border border-white/[0.06] rounded-xl p-5 space-y-4">
-              <div className="flex items-center gap-2 mb-1">
+        {/* ── TAB: VOICE ── */}
+        {tab === 'voice' && (
+          <div className="space-y-5">
+            <div className="flex items-center gap-2 mb-1">
+              <Mic className="w-4 h-4 text-blue-400" />
+              <span className="text-xs font-bold uppercase tracking-widest text-[var(--text-muted)]">How you sound</span>
+            </div>
+
+            <div>
+              <label className={lbl}>Tone</label>
+              <textarea className={inp} rows={3} value={tone} onChange={e => setTone(e.target.value)} placeholder="Punchy, lower-case, direct, sarcastic at times, no hype" />
+            </div>
+
+            <div>
+              <label className={lbl}>Writing Style Rules</label>
+              <textarea className={inp} rows={3} value={writingStyle} onChange={e => setWritingStyle(e.target.value)} placeholder="Short sentences. No emojis. Never say 'excited to share'. Use numbers." />
+            </div>
+
+            <div>
+              <label className={lbl}>Avoid List <span className="normal-case font-normal text-[var(--text-muted)]">— words/phrases that kill your voice</span></label>
+              <TagInput
+                value={newAvoidItem}
+                onChange={setNewAvoidItem}
+                onAdd={() => { if (newAvoidItem.trim()) { setAvoidList([...avoidList, newAvoidItem.trim()]); setNewAvoidItem('') } }}
+                onRemove={i => setAvoidList(avoidList.filter((_, j) => j !== i))}
+                tags={avoidList}
+                placeholder="game-changer, excited to announce…"
+                color="fail"
+              />
+            </div>
+          </div>
+        )}
+
+        {/* ── TAB: EXAMPLES ── */}
+        {tab === 'examples' && (
+          <div className="space-y-6">
+            <div>
+              <div className="flex items-center gap-2 mb-3">
+                <div className="w-2 h-2 rounded-full bg-emerald-400" />
+                <span className="text-xs font-bold uppercase tracking-widest text-[var(--text-muted)]">Your Tweets</span>
+                <span className="text-[10px] text-[var(--text-muted)] ml-auto">{exampleTweets.length} added</span>
+              </div>
+              <p className="text-[11px] text-[var(--text-muted)] mb-3">Your best tweets. The AI learns your exact voice fingerprint from these.</p>
+              <TweetInput
+                value={newExampleItem}
+                onChange={setNewExampleItem}
+                onAdd={() => { if (newExampleItem.trim()) { setExampleTweets([...exampleTweets, newExampleItem.trim()]); setNewExampleItem('') } }}
+                placeholder="paste one of your tweets here…"
+              />
+              <div className="mt-3">
+                <TweetList tweets={exampleTweets} onRemove={i => setExampleTweets(exampleTweets.filter((_, j) => j !== i))} />
+              </div>
+            </div>
+
+            <div className="border-t border-white/[0.05] pt-6">
+              <div className="flex items-center gap-2 mb-3">
+                <div className="w-2 h-2 rounded-full bg-orange-400" />
+                <span className="text-xs font-bold uppercase tracking-widest text-[var(--text-muted)]">Admired Style Examples</span>
+                <span className="text-[10px] text-[var(--text-muted)] ml-auto">{admiredExampleTweets.length} added</span>
+              </div>
+              <p className="text-[11px] text-[var(--text-muted)] mb-3">Tweets from @shydev69, @adxtyahq, etc. The AI studies the style.</p>
+              <TweetInput
+                value={newAdmiredItem}
+                onChange={setNewAdmiredItem}
+                onAdd={() => { if (newAdmiredItem.trim()) { setAdmiredExampleTweets([...admiredExampleTweets, newAdmiredItem.trim()]); setNewAdmiredItem('') } }}
+                placeholder="paste an admired tweet here…"
+              />
+              <div className="mt-3">
+                <TweetList tweets={admiredExampleTweets} onRemove={i => setAdmiredExampleTweets(admiredExampleTweets.filter((_, j) => j !== i))} />
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* ── TAB: SETTINGS ── */}
+        {tab === 'settings' && (
+          <div className="space-y-6">
+
+            {/* API Key */}
+            <div>
+              <div className="flex items-center gap-2 mb-4">
                 <Key className="w-4 h-4 text-amber-400" />
-                <h2 className="text-xs uppercase tracking-widest font-bold text-[var(--text-muted)]">API Configuration</h2>
+                <span className="text-xs font-bold uppercase tracking-widest text-[var(--text-muted)]">API Key</span>
               </div>
-              <p className="text-[11px] text-[var(--text-muted)] leading-relaxed">
-                Gemini API key is used by the <span className="text-white/60">AI Composer, AI Extractor, and Trending Radar</span>. Get yours from <a href="https://aistudio.google.com/app/apikey" target="_blank" className="text-[var(--accent)] hover:underline">Google AI Studio</a>.
+              <label className={lbl}>Gemini API Key</label>
+              <input
+                type="text"
+                className={`${inp} font-mono text-xs`}
+                value={geminiApiKey}
+                onChange={e => setGeminiApiKey(e.target.value)}
+                placeholder="AIzaSy..."
+              />
+              <p className="text-[11px] text-[var(--text-muted)] mt-2">
+                Powers AI Composer, Second Brain, and Voice Extractor. Get one from{' '}
+                <a href="https://aistudio.google.com/app/apikey" target="_blank" className="text-[var(--accent)] hover:underline">Google AI Studio</a>.
               </p>
-              <div>
-                <label className="text-[11px] text-[var(--text-muted)] uppercase tracking-wider block mb-1.5">Gemini API Key</label>
-                <input
-                  type="text"
-                  className={`${inputCls} font-mono text-xs`}
-                  value={geminiApiKey}
-                  onChange={e => setGeminiApiKey(e.target.value)}
-                  placeholder="AIzaSy..."
-                />
-              </div>
-            </section>
+            </div>
 
-            {/* Card: AI Extractor */}
-            <section className="bg-[var(--accent)]/[0.04] border border-[var(--accent)]/20 rounded-xl p-5 space-y-4">
-              <div className="flex items-center gap-2 mb-1">
+            <div className="border-t border-white/[0.05] pt-6">
+              {/* AI Voice Extractor */}
+              <div className="flex items-center gap-2 mb-4">
                 <Sparkles className="w-4 h-4 text-[var(--accent)]" />
-                <h2 className="text-xs uppercase tracking-widest font-bold text-[var(--accent)]">AI Voice Extractor</h2>
+                <span className="text-xs font-bold uppercase tracking-widest text-[var(--accent)]">AI Voice Extractor</span>
               </div>
-              <p className="text-[11px] text-[var(--text-muted)] leading-relaxed">
-                Paste your tweets, bio, or rough notes. The AI auto-fills Identity, Voice, and Avoid List below.
+              <p className="text-[11px] text-[var(--text-muted)] mb-3">
+                Paste your bio, old tweets, or rough notes. The AI fills in Identity, Voice, and Avoid List automatically.
               </p>
               <textarea
-                className={`${inputCls} font-mono text-xs`}
-                rows={5}
+                className={`${inp} font-mono text-xs`}
+                rows={6}
                 value={rawTextDump}
                 onChange={e => setRawTextDump(e.target.value)}
-                placeholder={"Paste bio, old tweets, or raw notes...\n\n\"just shipped v1 of tonal. building everything in public. cs student in pune.\ncan't stand words like 'excited to announce' or 'game-changer'\"\n\n– more tweets, notes, anything"}
+                placeholder={"paste bio, tweets, or notes...\n\n\"just shipped v1 of tonal. building in public. cs student in pune.\ncan't stand words like 'excited to announce'\"\n\n– more tweets or anything"}
               />
-              {extractError && (
-                <p className="text-[11px] text-[var(--fail)] bg-[var(--fail)]/5 border border-[var(--fail)]/20 rounded-lg p-2.5 font-sans">{extractError}</p>
-              )}
+              {extractError && <p className="text-[11px] text-[var(--fail)] bg-[var(--fail)]/5 border border-[var(--fail)]/20 rounded-lg p-2.5 mt-2">{extractError}</p>}
               {extractSuccess && (
-                <p className="text-[11px] text-green-400 bg-green-400/5 border border-green-400/20 rounded-lg p-2.5 flex items-center gap-2">
-                  <Check className="w-3.5 h-3.5" /> Profile auto-filled successfully. Review and save.
+                <p className="text-[11px] text-green-400 bg-green-400/5 border border-green-400/20 rounded-lg p-2.5 mt-2 flex items-center gap-2">
+                  <Check className="w-3.5 h-3.5" /> Auto-filled. Review tabs above then Save.
                 </p>
               )}
               <button
                 onClick={handleAutoExtract}
                 disabled={isExtracting || !rawTextDump.trim()}
-                className="w-full flex items-center justify-center gap-2 bg-[var(--accent)] hover:bg-[var(--accent-hover)] disabled:opacity-40 text-white text-sm font-semibold py-2.5 rounded-lg transition-all duration-200"
+                className="w-full mt-3 flex items-center justify-center gap-2 bg-[var(--accent)] hover:bg-[var(--accent-hover)] disabled:opacity-40 text-white text-sm font-semibold py-2.5 rounded-lg transition-all duration-200"
               >
                 <Wand2 className="w-4 h-4" />
-                {isExtracting ? 'Analyzing…' : 'Analyze & Auto-Fill Profile'}
+                {isExtracting ? 'Analyzing…' : 'Analyze & Auto-Fill'}
               </button>
-            </section>
+            </div>
 
-          </div>
-
-          {/* ── RIGHT COLUMN ── */}
-          <div className="space-y-5">
-
-            {/* Card: Voice & Tone */}
-            <section className="bg-white/[0.02] border border-white/[0.06] rounded-xl p-5 space-y-4">
-              <div className="flex items-center gap-2 mb-1">
-                <Mic className="w-4 h-4 text-blue-400" />
-                <h2 className="text-xs uppercase tracking-widest font-bold text-[var(--text-muted)]">Voice & Tone</h2>
+            <div className="border-t border-white/[0.05] pt-6">
+              <div className="flex items-center gap-2 mb-3">
+                <BookOpen className="w-4 h-4 text-purple-400" />
+                <span className="text-xs font-bold uppercase tracking-widest text-[var(--text-muted)]">Learning Notes</span>
+                <span className="text-[10px] text-[var(--text-muted)] ml-auto">{(profile.voice.learningNotes || []).length} saved</span>
               </div>
-              <div>
-                <label className="text-[11px] text-[var(--text-muted)] uppercase tracking-wider block mb-1.5">Tone Profile</label>
-                <textarea className={inputCls} rows={3} value={tone} onChange={e => setTone(e.target.value)} placeholder="Punchy, lower-case, direct, sarcastic at times, no hype" />
-              </div>
-              <div>
-                <label className="text-[11px] text-[var(--text-muted)] uppercase tracking-wider block mb-1.5">Writing Style Rules</label>
-                <textarea className={inputCls} rows={3} value={writingStyle} onChange={e => setWritingStyle(e.target.value)} placeholder="Short sentences. No emojis. Never say 'excited to share'. Use numbers." />
-              </div>
-              <div>
-                <label className="text-[11px] text-[var(--text-muted)] uppercase tracking-wider block mb-1.5">Avoid List</label>
-                <div className="flex gap-2">
-                  <input
-                    className={inputCls}
-                    value={newAvoidItem}
-                    onChange={e => setNewAvoidItem(e.target.value)}
-                    onKeyDown={e => { if (e.key === 'Enter' && newAvoidItem.trim()) { setAvoidList([...avoidList, newAvoidItem.trim()]); setNewAvoidItem('') } }}
-                    placeholder="game-changer, excited to announce…"
-                  />
-                  <button
-                    onClick={() => { if (newAvoidItem.trim()) { setAvoidList([...avoidList, newAvoidItem.trim()]); setNewAvoidItem('') } }}
-                    className="px-3 py-2 bg-white/[0.04] border border-white/[0.08] rounded-lg hover:bg-white/[0.08] transition-colors"
-                  >
-                    <Plus className="w-4 h-4" />
-                  </button>
-                </div>
-                {avoidList.length > 0 && (
-                  <div className="flex flex-wrap gap-1.5 mt-2">
-                    {avoidList.map((w, i) => (
-                      <span key={i} className="flex items-center gap-1 px-2 py-0.5 bg-[var(--fail)]/10 border border-[var(--fail)]/20 rounded-full text-[11px] text-[var(--fail)]">
-                        {w}
-                        <button onClick={() => setAvoidList(avoidList.filter((_, j) => j !== i))} className="hover:opacity-70 transition-opacity"><X className="w-2.5 h-2.5" /></button>
-                      </span>
-                    ))}
-                  </div>
-                )}
-              </div>
-            </section>
-
-            {/* Card: Your Example Tweets */}
-            <section className="bg-white/[0.02] border border-white/[0.06] rounded-xl p-5 space-y-4">
-              <div className="flex items-center gap-2 mb-1">
-                <Target className="w-4 h-4 text-emerald-400" />
-                <h2 className="text-xs uppercase tracking-widest font-bold text-[var(--text-muted)]">Your Example Tweets</h2>
-              </div>
-              <p className="text-[11px] text-[var(--text-muted)]">Paste your best tweets to teach the AI your exact voice fingerprint.</p>
-              <div className="flex gap-2">
-                <textarea
-                  className={`${inputCls} font-mono text-xs`}
-                  rows={3}
-                  value={newExampleItem}
-                  onChange={e => setNewExampleItem(e.target.value)}
-                  placeholder="paste one of your tweets here…"
-                />
-                <button
-                  onClick={() => { if (newExampleItem.trim()) { setExampleTweets([...exampleTweets, newExampleItem.trim()]); setNewExampleItem('') } }}
-                  className="px-3 py-2 self-end bg-white/[0.04] border border-white/[0.08] rounded-lg hover:bg-white/[0.08] transition-colors"
-                >
-                  <Plus className="w-4 h-4" />
-                </button>
-              </div>
-              <div className="space-y-2 max-h-52 overflow-y-auto pr-1">
-                {exampleTweets.length === 0 && <p className="text-[11px] text-[var(--text-muted)] italic">No example tweets added yet.</p>}
-                {exampleTweets.map((tweet, i) => (
-                  <div key={i} className="p-2.5 bg-white/[0.02] border border-white/[0.05] rounded-lg flex items-start gap-2 group">
-                    <span className="text-[10px] text-[var(--text-muted)] font-mono mt-0.5 shrink-0">#{i + 1}</span>
-                    <p className="flex-1 text-xs font-mono text-[var(--text)] whitespace-pre-wrap leading-relaxed">{tweet}</p>
-                    <button onClick={() => setExampleTweets(exampleTweets.filter((_, j) => j !== i))} className="opacity-0 group-hover:opacity-100 transition-opacity text-[var(--text-muted)] hover:text-[var(--fail)] shrink-0"><X className="w-3.5 h-3.5" /></button>
+              <p className="text-[11px] text-[var(--text-muted)] mb-3">Observations logged from past Grok sessions. Added from Workspace via &ldquo;Log Learning Note&rdquo;.</p>
+              <div className="space-y-1.5 max-h-48 overflow-y-auto">
+                {(profile.voice.learningNotes || []).length === 0 && <p className="text-[11px] text-[var(--text-muted)] italic">No notes yet — add them from the Workspace.</p>}
+                {(profile.voice.learningNotes || []).map((n, i) => (
+                  <div key={i} className="flex items-start gap-2 p-2.5 bg-white/[0.02] border border-white/[0.05] rounded-lg text-xs text-[var(--text)]">
+                    <span className="text-[10px] text-[var(--text-muted)] font-mono shrink-0 mt-0.5">#{i + 1}</span>
+                    <p className="flex-1 leading-relaxed">{n}</p>
                   </div>
                 ))}
               </div>
-            </section>
-
-            {/* Card: Admired Tweets */}
-            <section className="bg-white/[0.02] border border-white/[0.06] rounded-xl p-5 space-y-4">
-              <div className="flex items-center gap-2 mb-1">
-                <BookOpen className="w-4 h-4 text-orange-400" />
-                <h2 className="text-xs uppercase tracking-widest font-bold text-[var(--text-muted)]">Admired Example Tweets</h2>
-              </div>
-              <p className="text-[11px] text-[var(--text-muted)]">Paste tweets from @shydev69, @adxtyahq, or others you admire. The AI learns the style.</p>
-              <div className="flex gap-2">
-                <textarea
-                  className={`${inputCls} font-mono text-xs`}
-                  rows={3}
-                  value={newAdmiredItem}
-                  onChange={e => setNewAdmiredItem(e.target.value)}
-                  placeholder="paste an admired tweet here…"
-                />
-                <button
-                  onClick={() => { if (newAdmiredItem.trim()) { setAdmiredExampleTweets([...admiredExampleTweets, newAdmiredItem.trim()]); setNewAdmiredItem('') } }}
-                  className="px-3 py-2 self-end bg-white/[0.04] border border-white/[0.08] rounded-lg hover:bg-white/[0.08] transition-colors"
-                >
-                  <Plus className="w-4 h-4" />
-                </button>
-              </div>
-              <div className="space-y-2 max-h-52 overflow-y-auto pr-1">
-                {admiredExampleTweets.length === 0 && <p className="text-[11px] text-[var(--text-muted)] italic">No admired tweets added yet.</p>}
-                {admiredExampleTweets.map((tweet, i) => (
-                  <div key={i} className="p-2.5 bg-white/[0.02] border border-white/[0.05] rounded-lg flex items-start gap-2 group">
-                    <span className="text-[10px] text-[var(--text-muted)] font-mono mt-0.5 shrink-0">#{i + 1}</span>
-                    <p className="flex-1 text-xs font-mono text-[var(--text)] whitespace-pre-wrap leading-relaxed">{tweet}</p>
-                    <button onClick={() => setAdmiredExampleTweets(admiredExampleTweets.filter((_, j) => j !== i))} className="opacity-0 group-hover:opacity-100 transition-opacity text-[var(--text-muted)] hover:text-[var(--fail)] shrink-0"><X className="w-3.5 h-3.5" /></button>
-                  </div>
-                ))}
-              </div>
-            </section>
+            </div>
 
           </div>
-        </div>
+        )}
+
       </div>
     </AppShell>
   )
