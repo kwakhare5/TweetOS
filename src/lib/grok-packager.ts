@@ -32,6 +32,7 @@ Pillar: ${e.pillarId} | Type: ${e.isThread ? 'Thread' : 'Tweet'}
 /**
  * Formats flops (drafts scored under 50 or archived).
  */
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 function formatFlopLog(_entries: LibraryEntry[] | undefined): string {
   // Simplistic flop log using items with low scores or bad performance notes
   // For now just returning placeholder if we don't have explicit flop tracking
@@ -198,6 +199,7 @@ FINAL TWEETS SUMMARY:
 export function generateEngagementPacket(
   profile: UserProfile,
   config: EngagementPacketConfig,
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   _libraryEntries?: LibraryEntry[]
 ): string {
   const dateStr = new Date().toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' })
@@ -358,6 +360,7 @@ At the very end of your response, output a final section on a new line titled "ð
 export function generateTrendingPacket(
   profile: UserProfile,
   config: TrendingPacketConfig,
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   _libraryEntries?: LibraryEntry[]
 ): string {
   const dateStr = new Date().toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' })

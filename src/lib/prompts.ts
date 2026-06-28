@@ -29,6 +29,19 @@ TASK: Extract 2-4 chaotic, funny, or unhinged takes from the dump.
 - Pillar: "Personal" or just leave pillarName as "Shitpost"`
   }
 
+  if (mode === 'auto') {
+    return `MODE: Auto-Detect
+TASK: Analyze the raw brain dump. For each key point or moment, classify it and write a draft in the most appropriate category:
+1. Dev/AI (Vibe coding log, named tool/project updates, technical failures & fixes)
+2. Personal Life (Relatable stories, Pune college daily observations, exams, frustrations)
+3. Shitpost (Absurd meme energy, under 140 chars, hostel food, dry humor, no dev jargon)
+
+Extract 2–4 strong moments matching these categories. For each moment:
+- Pick the category that best fits the mood and content of the raw thoughts.
+- Set "pillarName" to matching pillar name: "Vibe Coding Logs" (for Dev), "Student Builder Journey" (for Personal), or "Shitpost" (for Shitpost).
+- Apply the corresponding style rules for that category (Dev: specific tools/projects; Personal: casual storytelling; Shitpost: meme energy/vibes under 140 chars).`
+  }
+
   // default: dev
   return `MODE: Dev / AI
 TASK: Extract 3-5 tweet-worthy moments. For each:
@@ -43,20 +56,19 @@ export const BRAIN_DUMP_PROMPT = (
   dump: string,
   profile: UserProfile,
   topPerformers: string,
-  mode: DumpMode = 'dev'
+  mode: DumpMode = 'auto'
 ) => `You are a Twitter content strategist for ${profile.name} (@${profile.twitterHandle}).
-
-VOICE: ${profile.voice.tone}
-WRITING STYLE: ${profile.voice.writingStyle}
-
-${mode === 'dev' ? `CONTENT PILLARS:\n${profile.contentPillars.map((p) => `• ${p.name} (${p.percentage}%): ${p.description}`).join('\n')}\n` : ''}
+`
+  + `VOICE: ${profile.voice.tone}\n`
+  + `WRITING STYLE: ${profile.voice.writingStyle}\n\n`
+  + `${(mode === 'dev' || mode === 'auto') ? `CONTENT PILLARS:\n${profile.contentPillars.map((p) => `• ${p.name} (${p.percentage}%): ${p.description}`).join('\n')}\n` : ''}
 NEVER WRITE:
 ${profile.voice.avoidList.map((a) => `• ${a}`).join('\n')}
 
 EXAMPLE TWEETS (match this energy exactly):
 ${profile.voice.exampleTweets.map((t, i) => `${i + 1}. ${t}`).join('\n\n')}
 
-${topPerformers && mode === 'dev' ? `BEST PERFORMING TWEETS SO FAR:\n${topPerformers}` : ''}
+${topPerformers && (mode === 'dev' || mode === 'auto') ? `BEST PERFORMING TWEETS SO FAR:\n${topPerformers}` : ''}
 
 RAW BRAIN DUMP:
 ---
@@ -309,3 +321,95 @@ RESPONSE FORMAT:
 Return ONLY a valid JSON object matching the schema above. Do not include markdown code block syntax (like \`\`\`json), explanations, or preambles.
 `
 
+// ─── UNIFIED INTENT ROUTER ───────────────────────────────────────────────────
+
+export const UNIFIED_ROUTER_PROMPT = (
+  userInput: string,
+  profile: UserProfile,
+  topPerformers: string
+) => `You are the core AI routing engine for TweetOS, a custom workspace for Twitter creator @${profile.twitterHandle}.
+
+Your goal is to parse the user's natural language input, classify their intent, and execute the requested task.
+
+USER NICHE/IDENTITY:
+${profile.niche}
+
+USER VOICE TONE:
+${profile.voice.tone}
+
+USER WRITING STYLE:
+${profile.voice.writingStyle}
+
+PAST WINNING TWEETS FOR REFERENCE:
+${topPerformers}
+
+AVOID LIST (NEVER USE THESE IN ANY GENERATION):
+${profile.voice.avoidList.join(', ')}
+
+DIRECTIONS FOR INTENT CLASSIFICATION:
+Analyze the user's input to determine which tool they want to run. Choose EXACTLY one of these 5 intents:
+
+1. 'draft': User is writing a raw dump of thoughts, venting, sharing coding progress, or asking to write a new draft tweet from scratch. E.g. "spent 5 hours debugging swiggy waitlist backend", "write a tweet about typescript utility types".
+2. 'hooks': User wants to generate hook (first line) variations for a tweet. E.g. "make hooks for: [tweet text]", "give me hook variations".
+3. 'thread': User wants to build/structure a multi-tweet thread. E.g. "make a thread about git-for-prompts architecture", "turn this topic into a thread: ...".
+4. 'tighten': User wants to shorten, tighten, or condense a tweet to fit the 280-character limit. E.g. "tighten this: [tweet text]", "shorten it".
+5. 'replies': User wants to reply to a tweet they pasted or mentioned. E.g. "suggest replies to this tweet: [tweet text]".
+
+OUTPUT SCHEMA SPECIFICATION (Based on intent):
+
+If intent is 'draft':
+{
+  "intent": "draft",
+  "moments": [
+    {
+      "id": "mom1",
+      "insight": "brief explanation",
+      "type": "progress|rant|insight",
+      "pillarName": "Tool Reality Checks|Project Fragments|Journey Notes|Sharp Takes|Quick Connects",
+      "tweet": "The main draft tweet under 280 characters matching voice",
+      "hookVariations": ["hook variation 1", "hook variation 2"],
+      "isThread": false,
+      "threadTweets": []
+    }
+  ]
+}
+
+If intent is 'hooks':
+{
+  "intent": "hooks",
+  "hooks": [
+    { "technique": "Intrigue | Open Loop | Absurdity | Contrast | Question", "text": "Generated hook line" }
+  ]
+}
+
+If intent is 'thread':
+{
+  "intent": "thread",
+  "thread": [
+    { "number": 1, "content": "1/ Tweet content" },
+    { "number": 2, "content": "2/ Tweet content" }
+  ]
+}
+
+If intent is 'tighten':
+{
+  "intent": "tighten",
+  "tightenedText": "Shortened, tightened version of the text strictly under 280 characters"
+}
+
+If intent is 'replies':
+{
+  "intent": "replies",
+  "replies": [
+    { "option": "A", "tone": "casual", "content": "casual reply option" },
+    { "option": "B", "tone": "insightful", "content": "insightful reply option" },
+    { "option": "C", "tone": "question", "content": "engaging question reply option" }
+  ]
+}
+
+USER INPUT STRING TO CLASSIFY AND EXECUTE:
+"""
+${userInput}
+"""
+
+RESPOND ONLY IN VALID JSON matching the structure of the classified intent. Do not output any markdown code blocks, explanations, or backticks. Start response with '{' and end with '}'.`

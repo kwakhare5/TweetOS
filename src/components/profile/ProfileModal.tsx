@@ -356,7 +356,7 @@ export default function ProfileModal({ isOpen, onClose }: ProfileModalProps) {
 
           {/* Section 4: Example Tweets (Your Voice) */}
           <div className="space-y-4">
-            <h3 className="text-xs uppercase tracking-wider text-[var(--text-muted)] font-semibold">Your Example Tweets (Karan's Voice)</h3>
+            <h3 className="text-xs uppercase tracking-wider text-[var(--text-muted)] font-semibold">Your Example Tweets (Karan&apos;s Voice)</h3>
             <div className="space-y-3">
               <div className="flex gap-2">
                 <textarea

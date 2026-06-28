@@ -40,7 +40,7 @@ export interface AudienceConfig {
 
 // ─── DUMP MODE ───────────────────────────────────────────────────────────────
 
-export type DumpMode = 'dev' | 'personal' | 'shitpost'
+export type DumpMode = 'dev' | 'personal' | 'shitpost' | 'auto'
 
 // ─── BRAIN DUMP ───────────────────────────────────────────────────────────────
 
