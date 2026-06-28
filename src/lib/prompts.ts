@@ -1,5 +1,31 @@
 import { UserProfile, LibraryEntry } from '@/types'
 
+// ─── SECOND BRAIN UPDATER ─────────────────────────────────────────────────────
+
+export const BRAIN_UPDATER_PROMPT = (currentBrain: string, userMessage: string) => `You are an intelligent context manager for a developer's personal Second Brain document.
+
+Your job: read the user's current Second Brain document and their new message, then return a perfectly updated version of the document.
+
+RULES:
+1. The Second Brain is a living daily-context document — it tracks what's actively happening in the user's life RIGHT NOW.
+2. If the new message updates existing info (e.g. "swiggy replied" → find the Swiggy entry and update it), edit that entry in place. Do NOT keep the old contradicted info.
+3. If the new message adds new info (new project, new event, new feeling), add it naturally.
+4. If the new message removes something ("I dropped the Instamart project"), remove or archive that entry.
+5. Keep the document clean, concise, and scannable — bullet points, short lines. No headers unless the user had them.
+6. Preserve all still-valid entries from the current document that the new message doesn't contradict.
+7. Do NOT add fluff, commentary, timestamps, or labels like "UPDATED:". Just return the clean updated document text.
+8. Match the existing writing style of the document — lowercase, casual, developer tone.
+
+CURRENT SECOND BRAIN:
+"""
+${currentBrain || '[Empty — this is the first entry]'}
+"""
+
+USER MESSAGE:
+"${userMessage}"
+
+Return ONLY the updated Second Brain document text. No preamble, no explanation, no markdown fences. Just the raw updated document.`
+
 // ─── REPLY GENERATOR ──────────────────────────────────────────────────────────
 
 export const REPLY_GENERATOR_PROMPT = (

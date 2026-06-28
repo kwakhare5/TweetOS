@@ -13,6 +13,7 @@ import { TweetDraft, AlgorithmScore, MomentType } from '@/types'
 import { createClient } from '@/lib/supabase/client'
 import { getProfile, getDrafts, saveDraft, getLibrary, saveLibraryEntry, saveProfile } from '@/lib/storage'
 import ScoreCard from '@/components/scorer/ScoreCard'
+import SecondBrainPanel from '@/components/brain/SecondBrainPanel'
 import { 
   Plus, 
   Sparkles, 
@@ -521,7 +522,10 @@ Result Notes: ${e.performanceNote}
           </button>
         </div>        {/* Unified Workspace Dashboard */}
         <div className="max-w-2xl mx-auto flex flex-col gap-6 w-full">
-          
+
+          {/* Second Brain — always visible, first thing */}
+          <SecondBrainPanel />
+
           {/* AI Composer Section */}
           <div className="glass-panel p-5 rounded-xl flex flex-col gap-4 border border-white/5 bg-white/[0.01]">
             

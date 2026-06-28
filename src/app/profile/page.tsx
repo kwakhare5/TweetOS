@@ -217,22 +217,18 @@ export default function ProfilePage() {
               </div>
             </section>
 
-            {/* Card: Second Brain */}
-            <section className="bg-white/[0.02] border border-white/[0.06] rounded-xl p-5 space-y-4">
-              <div className="flex items-center gap-2 mb-1">
+            {/* Card: Second Brain — now on Workspace */}
+            <section className="bg-purple-500/[0.04] border border-purple-500/20 rounded-xl p-5 space-y-2">
+              <div className="flex items-center gap-2">
                 <Brain className="w-4 h-4 text-purple-400" />
-                <h2 className="text-xs uppercase tracking-widest font-bold text-[var(--text-muted)]">Second Brain — Active Context</h2>
+                <h2 className="text-xs uppercase tracking-widest font-bold text-purple-400">Second Brain</h2>
               </div>
               <p className="text-[11px] text-[var(--text-muted)] leading-relaxed">
-                This is your <span className="text-white/70 font-semibold">live, daily context</span> — not your bio or projects (those are in the fields above). Write what&apos;s actually happening right now: what you&apos;re building, debugging, waiting on, thinking about, or feeling. Grok reads this to make every output feel like it came from <span className="text-white/60">you today</span>, not a generic version of you.
+                Your Second Brain now lives on the <span className="text-white/70 font-semibold">Workspace homepage</span> — it&apos;s the first panel you see. Type anything naturally (<span className="text-white/60">&ldquo;swiggy replied&rdquo;, &ldquo;started new project X&rdquo;, &ldquo;feeling blocked today&rdquo;</span>) and the AI updates the document intelligently. Hit Save to commit.
               </p>
-              <textarea
-                className={inputCls}
-                rows={8}
-                value={secondBrain}
-                onChange={e => setSecondBrain(e.target.value)}
-                placeholder={"ACTIVE NOW (update daily):\n– Swiggy Builders: applied, no reply yet. checked inbox 3 times.\n– Debugging Supabase auth session not persisting across tabs\n– Shipped the Grok packet rewrite this morning\n– Read about Claude 4 Sonnet context limit — has opinions\n– Feeling behind on DSA but shipped 2 things this week so net positive\n\nYour bio, niche, voice, and projects live in the fields above — this is just what changed today."}
-              />
+              <a href="/" className="inline-flex items-center gap-1.5 mt-1 text-[11px] font-semibold text-purple-400 hover:text-purple-300 transition-colors">
+                Go to Workspace →
+              </a>
             </section>
 
             {/* Card: API Config */}
