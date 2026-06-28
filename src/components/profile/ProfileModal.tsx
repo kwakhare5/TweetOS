@@ -291,12 +291,12 @@ export default function ProfileModal({ isOpen, onClose }: ProfileModalProps) {
                 />
               </div>
               <div>
-                <label className="block text-[11px] text-[var(--text-muted)] mb-1 uppercase tracking-wider">Gemini API Key</label>
+                <label className="block text-[11px] text-[var(--text-muted)] mb-1 uppercase tracking-wider font-semibold">Gemini API Key (For AI Extract & AI Composer)</label>
                 <input
-                  type="password"
+                  type="text"
                   value={geminiApiKey}
                   onChange={(e) => setGeminiApiKey(e.target.value)}
-                  className="glass-input w-full px-3 py-2 bg-transparent text-xs font-mono"
+                  className="glass-input w-full px-3 py-2 bg-transparent text-xs font-mono focus:border-[var(--accent)]"
                   placeholder="AIzaSy..."
                 />
               </div>
