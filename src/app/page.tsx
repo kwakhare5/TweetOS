@@ -11,7 +11,7 @@ import { UNIFIED_ROUTER_PROMPT } from '@/lib/prompts'
 import { generateDraftPacket, generateTrendingPacket } from '@/lib/grok-packager'
 import { TweetDraft, AlgorithmScore, MomentType } from '@/types'
 import { createClient } from '@/lib/supabase/client'
-import { getProfile, getDrafts, saveDraft, getLibrary, saveLibraryEntry } from '@/lib/storage'
+import { getProfile, getDrafts, saveDraft, getLibrary, saveLibraryEntry, saveProfile } from '@/lib/storage'
 import ScoreCard from '@/components/scorer/ScoreCard'
 import { 
   Plus, 
@@ -20,7 +20,8 @@ import {
   FileText, 
   Clipboard, 
   Check,
-  AlertTriangle
+  AlertTriangle,
+  Brain
 } from 'lucide-react'
 
 export default function WorkspacePage() {
@@ -49,11 +50,35 @@ export default function WorkspacePage() {
 
   // Clipboard notify
   const [toast, setToast] = useState<string | null>(null)
+  // Learning Note quick-capture
+  const [learningNote, setLearningNote] = useState('')
+  const [savingNote, setSavingNote] = useState(false)
 
   // Trigger toast notification
   function triggerToast(msg: string) {
     setToast(msg)
     setTimeout(() => setToast(null), 3000)
+  }
+
+  // Save a Grok session learning note back into profile.voice.learningNotes
+  async function handleSaveLearningNote() {
+    if (!learningNote.trim()) return
+    setSavingNote(true)
+    const updatedNotes = [learningNote.trim(), ...(profile.voice.learningNotes || [])].slice(0, 20)
+    const updatedProfile = {
+      ...profile,
+      voice: { ...profile.voice, learningNotes: updatedNotes },
+      updatedAt: new Date().toISOString()
+    }
+    setProfile(updatedProfile)
+    const supabase = createClient()
+    const { data: { user } } = await supabase.auth.getUser()
+    if (user) {
+      await saveProfile(user.id, updatedProfile)
+    }
+    setLearningNote('')
+    setSavingNote(false)
+    triggerToast('Learning note saved — Grok will read it next session.')
   }
 
   // Synchronize helper to change draft and content
@@ -875,6 +900,30 @@ Result Notes: ${e.performanceNote}
                 </div>
               )}
             </div>
+          </div>
+
+          {/* Quick Learning Note Capture */}
+          <div className="glass-panel p-4 rounded-xl flex flex-col gap-3 border border-white/5 bg-white/[0.01]">
+            <div className="flex items-center gap-1.5 border-b border-white/5 pb-2.5">
+              <Brain className="w-3.5 h-3.5 text-purple-400" />
+              <h3 className="text-xs uppercase tracking-wider text-[var(--text-muted)] font-bold">Log Learning Note</h3>
+              <span className="ml-auto text-[10px] text-[var(--text-muted)] font-mono">Grok reads these next session</span>
+            </div>
+            <textarea
+              value={learningNote}
+              onChange={e => setLearningNote(e.target.value)}
+              rows={2}
+              placeholder="e.g. frustration + fix format performs best · hooks with numbers in first 3 words get 2x replies · post at 7PM IST"
+              className="glass-input w-full p-2.5 text-xs font-sans leading-relaxed bg-transparent resize-none"
+            />
+            <button
+              onClick={handleSaveLearningNote}
+              disabled={savingNote || !learningNote.trim()}
+              className="glass-button py-2 bg-purple-500/10 hover:bg-purple-500/20 text-purple-300 font-bold text-xs border-purple-500/20 flex items-center justify-center gap-1.5 disabled:opacity-40"
+            >
+              <Brain className="w-3.5 h-3.5" />
+              <span>{savingNote ? 'Saving…' : 'Save to Second Brain'}</span>
+            </button>
           </div>
 
           {/* Dynamic Scorecard at the very bottom */}
