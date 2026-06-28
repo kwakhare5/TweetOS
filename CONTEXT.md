@@ -34,7 +34,8 @@ Grok is stateless, so "Grok Packets" are full text bundles carrying all context 
 
 ## Architectural Notes
 
-- **Three Consolidated Dashboards**: Restructured into 3 unified and simplified screens: Workspace (`/`) for creation & scoring, Engage Hub (`/engage`) for 3-step reply generation, and Library (`/analytics`) for chronological history of posted tweets.
+- **Single-Column ChatGPT-Style Workspace**: Restructured the workspace (`/`) into a simplified single-column layout. Completely removed the Action Mode and Content Pillar select dropdowns. A single ChatGPT-style text area routes natural language inputs to Gemini to automatically detect intent (`draft`, `hooks`, `thread`, `tighten`, or `replies`), dynamically updates the workspace state, and displays the dynamic ScoreCard at the very bottom.
+- **Three Consolidated Dashboards**: Restructured into 3 unified screens: Workspace (`/`) for creation & scoring, Engage Hub (`/engage`) for 3-step reply generation, and Library (`/analytics`) for chronological history of posted tweets.
 - **AI Voice Profile Extractor**: A single text area at the top of the Voice Settings modal where users can paste raw bios, description notes, or example tweets. The AI extracts and maps these into structured fields (`name`, `twitterHandle`, `niche`, `tone`, `writingStyle`, `avoidList`, `exampleTweets`) in the settings UI.
 - **Pure Client Logic**: All algorithm scorer computations in `src/lib/scorer.ts` are pure TypeScript functions. No network latency, database storage, or LLM tokens are wasted during scoring.
 - **Next.js 15 App Router**: Uses standard `page.tsx` layouts and client/server components.
