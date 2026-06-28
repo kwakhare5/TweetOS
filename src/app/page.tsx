@@ -17,7 +17,8 @@ import {
   TrendingUp, 
   FileText, 
   Clipboard, 
-  Check
+  Check,
+  AlertTriangle
 } from 'lucide-react'
 
 export default function WorkspacePage() {
@@ -246,7 +247,7 @@ Result Notes: ${e.performanceNote}
       
       const result = await geminiJSON<{
         intent: 'draft' | 'hooks' | 'thread' | 'tighten' | 'replies'
-        moments?: { id: string; insight: string; type: string; pillarName: string; tweet: string; hookVariations: string[]; isThread: boolean; threadTweets: string[] }[]
+        moments?: { id: string; insight: string; type: string; pillarName: string; tweet: string; hookVariations: string[]; isThread: boolean; threadTweets: string[]; factCheckNote?: string }[]
         hooks?: { technique: string; text: string }[]
         thread?: { number: number; content: string }[]
         tightenedText?: string
@@ -264,6 +265,7 @@ Result Notes: ${e.performanceNote}
             pillarId: m.pillarName,
             momentType: (m.type as MomentType) || 'progress',
             hookVariations: m.hookVariations || [],
+            factCheckNote: m.factCheckNote || '',
             algorithmScore: {
               overall: 0,
               hookStrength: { score: 0, label: 'Weak', reason: 'Not scored' },
@@ -512,6 +514,16 @@ Result Notes: ${e.performanceNote}
                   }}
                   className="glass-input w-full h-36 p-3 bg-transparent text-sm font-sans leading-relaxed focus:border-[var(--accent)] transition-all duration-200"
                 />
+              )}
+
+              {/* Fact Check Warning Box */}
+              {activeDraft?.factCheckNote && (
+                <div className="glass-panel p-3 rounded-lg border border-amber-500/20 bg-amber-500/[0.02] text-xs text-amber-300 flex items-start gap-2 mt-2">
+                  <AlertTriangle className="w-4 h-4 shrink-0 mt-0.5 text-amber-500" />
+                  <div>
+                    <span className="font-bold">Fact Check:</span> {activeDraft.factCheckNote}
+                  </div>
+                </div>
               )}
 
               {/* Action Buttons Row */}

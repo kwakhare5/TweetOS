@@ -11,6 +11,7 @@ export interface UserProfile {
   goals: string[]
   admiredAccounts: string[]
   postingFrequency: string
+  secondBrain?: string
   createdAt: string
   updatedAt: string
 }
@@ -78,6 +79,7 @@ export interface TweetDraft {
   hookVariations: string[]
   algorithmScore: AlgorithmScore
   sessionId?: string
+  factCheckNote?: string
   status: DraftStatus
   createdAt: string
   updatedAt: string

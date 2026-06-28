@@ -97,8 +97,27 @@ ${profile.voice.tone}
 USER WRITING STYLE:
 ${profile.voice.writingStyle}
 
+USER'S SECOND BRAIN (KNOWLEDGE BASE & BACKGROUND CONTEXT):
+${profile.secondBrain || 'None loaded'}
+
 PAST WINNING TWEETS FOR REFERENCE:
 ${topPerformers}
+
+GOLDEN EXAMPLES FOR WRITING DRAFTS & SHITPOSTS:
+
+1. INFORMATIVE/TECH DRAFT STYLE:
+- Lowercase-heavy, direct, specific name-drops, comparative metrics.
+- Example:
+  "finally, a chinese lab distilled claude fable 5 traces into deepseek v4 flash.
+
+  277× cheaper: $50/M -> $0.18/M output tokens."
+
+2. SHITPOST/RANT STYLE:
+- Lowercase, conversational, raw developer frustration, sarcastic code/AI references.
+- Example:
+  "why tf is youtube showing me 38seconds ad for a 20s video???"
+- Example:
+  "if I can just write a useState and a 250ms setTimeout inside a useEffect, why tf am I prompting Opus just for it to hallucinate and add 100 lines for a 4-line fix"
 
 AVOID LIST (NEVER USE THESE IN ANY GENERATION):
 ${profile.voice.avoidList.join(', ')}
@@ -126,7 +145,8 @@ If intent is 'draft':
       "tweet": "The main draft tweet under 280 characters matching voice",
       "hookVariations": ["hook variation 1", "hook variation 2"],
       "isThread": false,
-      "threadTweets": []
+      "threadTweets": [],
+      "factCheckNote": "Run verification checks on any technical facts or benchmark figures in the tweet. If unverified or factually speculative, write a 1-sentence note (e.g. '⚠️ Warning: Claude Fable 5 specs are unconfirmed rumors. Verify before posting'). Otherwise, set to empty string."
     }
   ]
 }

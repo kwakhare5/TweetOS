@@ -73,6 +73,9 @@ Voice: ${profile.voice.tone}
 Writing style: ${profile.voice.writingStyle}
 Audience: ${profile.audience.targetAudience}
 Goals: ${profile.goals.join(' | ')}
+Second Brain Context (my permanent knowledge base):
+${profile.secondBrain || 'None loaded'}
+
 Current follower count: [FOLLOWER COUNT — update weekly]
 
 Content Pillars:
@@ -89,6 +92,8 @@ ${(profile.voice.admiredExampleTweets || []).map((t, i) => `${i + 1}. "${t}"`).j
 
 Hard constraint: 280 chars MAX per tweet. Free X account. Non-negotiable.
 Any rewrite you generate must include a character count.
+
+FACT-CHECKING CONSTRAINT: Perform a live lookup/verification check on X search for any technical specs, prices, model details, or tech releases mentioned in the drafts. If a claim is speculative or unconfirmed, prefix that option with "⚠️ [UNVERIFIED: <reason>]".
 
 ═══ SELF-LEARNING: WHAT WORKS FOR ME ═══
 
@@ -228,6 +233,9 @@ Voice: ${profile.voice.tone}
 Projects I am building / have shipped:
 (Refer to my Niche and Goals sections above for the list of active projects I build, such as Tonal, Git-for-Prompts, Swiggy/Instamart agents, iPod emulator, TweetOS, etc. Only reference these projects if highly relevant and natural. Never force them if it feels artificial).
 
+Second Brain Context (my permanent knowledge base):
+${profile.secondBrain || 'None loaded'}
+
 My genuine value-add in replies (what I actually know):
 • Real failures and fixes when building with Claude/Gemini as a solo dev
 • Indian student context — Pune college life, tier-2 city constraints,
@@ -286,6 +294,8 @@ ${config.targetAccounts.map(h => `• @${h.replace(/^@/, '')}`).join('\n')}
 
 ALSO SEARCH THESE KEYWORDS (last 24-48 hrs on X):
 ${config.topicKeywords.map(k => `• ${k}`).join('\n')}
+• technical breakthroughs, model distillations, cost/pricing drops, LLM latency benchmarks
+• sarcastic developer complaints, tool/library bugs, UI/SaaS frustrations, coding memes
 
 ═══ WHAT I NEED ═══
 
@@ -306,6 +316,12 @@ For each tweet, output a clear, double-spaced block:
     • **Option C (Question):** [Reply draft under 280 chars ending with a specific question to drive conversation. Only reference projects if highly relevant and organic to the context.] ([Character count])
 
 All options must be under 280 characters, reference what they said, add genuine value, use a Pune CS student voice, and never start with generic openers like "Great point!" or "So true!". Ensure the core message of the target tweet is strictly preserved.
+
+GOLDEN WRITING STYLE PATTERNS TO IMITATE FOR REPLIES:
+• INFORMATIVE/TECH STYLE: Lowercase, highly specific model/tool name-drops, and metric/cost drops. E.g., "finally, a chinese lab distilled claude fable 5 traces into deepseek v4 flash.\n\n277× cheaper: $50/M -> $0.18/M output tokens."
+• SHITPOST/RANT STYLE: Lowercase, raw developer frustration/annoyance, sarcastic references to code/AI symbols (useState, useEffect, setTimeout, Opus). E.g., "if I can just write a useState and a 250ms setTimeout inside a useEffect, why tf am I prompting Opus just for it to hallucinate and add 100 lines for a 4-line fix"
+
+FACT-CHECKING CONSTRAINT: Run verification lookups on X search for all draft replies. If they contain technical claims, model releases, or benchmark numbers that are unverified or incorrect, prefix the suggestion with "⚠️ [UNVERIFIED: <reason>]".
 
 PART 2: QUOTE TWEET OPPORTUNITIES
 
@@ -396,6 +412,9 @@ ${profile.contentPillars.map(p => `• ${p.name}`).join('\n')}
 Projects I can reference (only if genuinely relevant):
 (Refer to my Niche and Goals sections above for the active projects I build, such as Tonal, Git-for-Prompts, Swiggy/Instamart agents, iPod emulator, TweetOS, etc. Integrate these only if highly relevant and natural. Never force them if it feels artificial).
 
+Second Brain Context (my permanent knowledge base):
+${profile.secondBrain || 'None loaded'}
+
 I WILL NOT tweet about:
 • Politics (any kind — not my lane)
 • Crypto/Web3
@@ -464,6 +483,12 @@ Give me 2 tweet angles I could take. Separate them with clear markdown headers:
     • *Tweet:* [Tweet text under 280 chars] ([Character count])
 
 Ensure both angles use a Pune student voice (punchy, lowercase-heavy), are original, are not empty dunks, and cannot hurt my internship chances.
+
+GOLDEN WRITING STYLE PATTERNS TO IMITATE FOR TRENDING TWEETS:
+• INFORMATIVE/TECH STYLE: Lowercase, highly specific model/tool name-drops, and metric/cost drops. E.g., "finally, a chinese lab distilled claude fable 5 traces into deepseek v4 flash.\n\n277× cheaper: $50/M -> $0.18/M output tokens."
+• SHITPOST/RANT STYLE: Lowercase, raw developer frustration/annoyance, sarcastic references to code/AI symbols (useState, useEffect, setTimeout, Opus). E.g., "if I can just write a useState and a 250ms setTimeout inside a useEffect, why tf am I prompting Opus just for it to hallucinate and add 100 lines for a 4-line fix"
+
+FACT-CHECKING CONSTRAINT: Run live verification searches for any tech specs, pricing, benchmarks, or tool release details you suggest. If a claim is speculative or unconfirmed, prefix that option with "⚠️ [UNVERIFIED: <reason>]".
 
 PART 3: QUICK CONTENT (low-effort, high-reach)
 

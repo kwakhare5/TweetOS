@@ -71,6 +71,20 @@ export default function ProfilePage() {
             <Field label="Writing Style" value={profile.voice.writingStyle} onChange={(v) => setProfile({ ...profile, voice: { ...profile.voice, writingStyle: v } })} multiline />
           </section>
 
+          {/* Second Brain Context */}
+          <section className="bg-[var(--surface)] border border-[var(--border)] rounded-lg p-4 space-y-3">
+            <h2 className="text-xs text-[var(--text-muted)] uppercase tracking-wider">🧠 Second Brain Context (Knowledge Base)</h2>
+            <p className="text-[11px] text-[var(--text-muted)] mt-0.5">
+              Dump details about your background, active projects, tech stacks, and daily life context here. The AI uses this permanent memory to craft highly specific, relevant tweets.
+            </p>
+            <Field 
+              label="Second Brain Context" 
+              value={profile.secondBrain || ''} 
+              onChange={(v) => update('secondBrain', v)} 
+              multiline 
+            />
+          </section>
+
           {/* Goals */}
           <section className="bg-[var(--surface)] border border-[var(--border)] rounded-lg p-4 space-y-3">
             <h2 className="text-xs text-[var(--text-muted)] uppercase tracking-wider">Goals</h2>
