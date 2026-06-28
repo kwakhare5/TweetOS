@@ -121,6 +121,11 @@ export interface LibraryEntry {
   grokRefinement?: string
   tags: string[]
   createdAt: string
+  views?: number
+  likes?: number
+  retweets?: number
+  replies?: number
+  bookmarks?: number
 }
 
 // ─── ENGAGEMENT ───────────────────────────────────────────────────────────────
