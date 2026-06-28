@@ -10,6 +10,8 @@ import { geminiJSON } from '@/lib/gemini'
 import { UNIFIED_ROUTER_PROMPT } from '@/lib/prompts'
 import { generateDraftPacket, generateTrendingPacket } from '@/lib/grok-packager'
 import { TweetDraft, AlgorithmScore, MomentType } from '@/types'
+import { createClient } from '@/lib/supabase/client'
+import { getProfile, getDrafts, saveDraft, getLibrary, saveLibraryEntry } from '@/lib/storage'
 import ScoreCard from '@/components/scorer/ScoreCard'
 import { 
   Plus, 
@@ -24,8 +26,8 @@ import {
 export default function WorkspacePage() {
   // Stores
   const { drafts, addDraft, updateDraft, setDrafts } = useDraftStore()
-  const { profile } = useProfileStore()
-  const { addEntry, entries } = useLibraryStore()
+  const { profile, setProfile } = useProfileStore()
+  const { addEntry, entries, setEntries } = useLibraryStore()
 
   // States
   const [activeDraft, setActiveDraft] = useState<TweetDraft | null>(null)
@@ -65,6 +67,67 @@ export default function WorkspacePage() {
     // eslint-disable-next-line react-hooks/set-state-in-effect
     setHasHydrated(true)
   }, [])
+
+  // 1. Initial Load from Supabase DB
+  useEffect(() => {
+    const supabase = createClient()
+    supabase.auth.getUser().then(async ({ data: { user } }) => {
+      if (!user) return
+      try {
+        const dbProfile = await getProfile(user.id)
+        if (dbProfile) {
+          setProfile(dbProfile)
+        }
+        const dbDrafts = await getDrafts(user.id)
+        if (dbDrafts && dbDrafts.length > 0) {
+          setDrafts(dbDrafts)
+          selectActiveDraft(dbDrafts[0])
+        }
+        const dbLibrary = await getLibrary(user.id)
+        if (dbLibrary && dbLibrary.length > 0) {
+          setEntries(dbLibrary)
+        }
+      } catch (err) {
+        console.error('Failed to initial sync with Supabase:', err)
+      }
+    })
+  }, [setProfile, setDrafts, setEntries])
+
+  // 2. Debounced Drafts Auto-Save to Supabase
+  useEffect(() => {
+    const supabase = createClient()
+    const timer = setTimeout(() => {
+      supabase.auth.getUser().then(async ({ data: { user } }) => {
+        if (!user) return
+        try {
+          for (const d of drafts) {
+            await saveDraft(user.id, d)
+          }
+        } catch (err) {
+          console.error('Failed to auto-save drafts to Supabase:', err)
+        }
+      })
+    }, 1500)
+    return () => clearTimeout(timer)
+  }, [drafts])
+
+  // 3. Debounced Library Auto-Save to Supabase
+  useEffect(() => {
+    const supabase = createClient()
+    const timer = setTimeout(() => {
+      supabase.auth.getUser().then(async ({ data: { user } }) => {
+        if (!user) return
+        try {
+          for (const entry of entries) {
+            await saveLibraryEntry(user.id, entry)
+          }
+        } catch (err) {
+          console.error('Failed to auto-save library to Supabase:', err)
+        }
+      })
+    }, 1500)
+    return () => clearTimeout(timer)
+  }, [entries])
 
   // Create new blank draft
   function handleCreateDraft() {
