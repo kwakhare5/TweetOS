@@ -59,14 +59,59 @@ export default function WorkspacePage() {
     setUnifiedText(d ? d.content : '')
   }
 
+  const [hasHydrated, setHasHydrated] = useState(false)
+  useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    setHasHydrated(true)
+  }, [])
+
+  // Create new blank draft
+  function handleCreateDraft() {
+    const now = new Date().toISOString()
+    const newDraft: TweetDraft = {
+      id: `draft_${Date.now()}`,
+      content: '',
+      isThread: false,
+      threadTweets: [],
+      pillarId: profile.contentPillars[0]?.name || 'General',
+      momentType: 'progress',
+      hookVariations: [],
+      algorithmScore: {
+        overall: 0,
+        hookStrength: { score: 0, label: 'Weak', reason: 'Empty' },
+        replyBait: { score: 0, label: 'Weak', reason: 'Empty' },
+        specificity: { score: 0, label: 'Weak', reason: 'Empty' },
+        emotionalTrigger: { score: 0, label: 'Weak', reason: 'Empty' },
+        length: { score: 0, label: 'Weak', reason: 'Empty' },
+        noLinksInBody: { score: 10, label: 'Strong', reason: 'Empty' },
+        ctaQuality: { score: 0, label: 'Weak', reason: 'Empty' },
+        threadPotential: { score: 0, label: 'Weak', reason: 'Empty' },
+        suggestions: [],
+        calculatedAt: now
+      },
+      status: 'draft',
+      createdAt: now,
+      updatedAt: now
+    }
+    addDraft(newDraft)
+    selectActiveDraft(newDraft)
+    triggerToast('New draft started!')
+  }
+
   // Load drafts if none on mount
   useEffect(() => {
-    if (drafts.length > 0 && !activeDraft) {
-      // eslint-disable-next-line react-hooks/set-state-in-effect
-      selectActiveDraft(drafts[0])
+    if (hasHydrated) {
+      if (drafts.length > 0) {
+        if (!activeDraft) {
+          // eslint-disable-next-line react-hooks/set-state-in-effect
+          selectActiveDraft(drafts[0])
+        }
+      } else {
+        handleCreateDraft()
+      }
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [drafts])
+  }, [drafts, hasHydrated, activeDraft])
 
   // Real-time score calculator
   useEffect(() => {
@@ -177,43 +222,12 @@ Result Notes: ${e.performanceNote}
   function handleDeleteDraft(id: string) {
     const updated = drafts.filter(d => d.id !== id)
     setDrafts(updated)
-    if (activeDraft?.id === id) {
-      selectActiveDraft(updated[0] || null)
+    if (updated.length === 0) {
+      handleCreateDraft()
+    } else if (activeDraft?.id === id) {
+      selectActiveDraft(updated[0])
     }
     triggerToast('Draft deleted!')
-  }
-
-  // Create new blank draft
-  function handleCreateDraft() {
-    const now = new Date().toISOString()
-    const newDraft: TweetDraft = {
-      id: `draft_${Date.now()}`,
-      content: '',
-      isThread: false,
-      threadTweets: [],
-      pillarId: profile.contentPillars[0]?.name || 'General',
-      momentType: 'progress',
-      hookVariations: [],
-      algorithmScore: {
-        overall: 0,
-        hookStrength: { score: 0, label: 'Weak', reason: 'Empty' },
-        replyBait: { score: 0, label: 'Weak', reason: 'Empty' },
-        specificity: { score: 0, label: 'Weak', reason: 'Empty' },
-        emotionalTrigger: { score: 0, label: 'Weak', reason: 'Empty' },
-        length: { score: 0, label: 'Weak', reason: 'Empty' },
-        noLinksInBody: { score: 10, label: 'Strong', reason: 'Empty' },
-        ctaQuality: { score: 0, label: 'Weak', reason: 'Empty' },
-        threadPotential: { score: 0, label: 'Weak', reason: 'Empty' },
-        suggestions: [],
-        calculatedAt: now
-      },
-      status: 'draft',
-      createdAt: now,
-      updatedAt: now
-    }
-    addDraft(newDraft)
-    selectActiveDraft(newDraft)
-    triggerToast('New draft started!')
   }  // Unified Action Generator
   async function handleRunUnifiedAction() {
     if (!unifiedText.trim()) return
@@ -390,7 +404,7 @@ Result Notes: ${e.performanceNote}
     if (updatedDrafts.length > 0) {
       selectActiveDraft(updatedDrafts[0])
     } else {
-      selectActiveDraft(null)
+      handleCreateDraft()
     }
 
     triggerToast('Tweet saved to Library! Loopback locked.')
@@ -428,40 +442,29 @@ Result Notes: ${e.performanceNote}
               </h3>
             </div>
 
-            {/* Active Draft Control Row (Pillar select & Thread toggle & Clear/New) */}
-            {activeDraft && (
-              <div className="flex justify-between items-center flex-wrap gap-3 bg-white/[0.02] border border-white/5 p-2.5 rounded-lg text-xs">
-                <div className="flex items-center gap-4 flex-wrap">
-                  {/* Pillar Label */}
-                  <div className="flex items-center gap-1.5">
-                    <span className="text-[var(--text-muted)] font-bold uppercase tracking-wider">Pillar:</span>
-                    <span className="text-zinc-200 font-semibold px-2 py-0.5 bg-white/[0.03] border border-white/5 rounded">
-                      {activeDraft.pillarId}
-                    </span>
-                  </div>
-
-                  {/* Thread Mode checkbox */}
-                  <label className="flex items-center gap-1.5 cursor-pointer font-bold text-[var(--text-muted)] uppercase tracking-wider">
-                    <input 
-                      type="checkbox"
-                      checked={activeDraft.isThread}
-                      onChange={(e) => handleThreadToggle(e.target.checked)}
-                      className="accent-[var(--accent)]"
-                    />
-                    <span>Thread Mode</span>
-                  </label>
+            {/* Active Draft Control Row (Pillar select & Thread toggle) */}
+            <div className="flex justify-between items-center flex-wrap gap-3 bg-white/[0.02] border border-white/5 p-2.5 rounded-lg text-xs">
+              <div className="flex items-center gap-4 flex-wrap">
+                {/* Pillar Label */}
+                <div className="flex items-center gap-1.5">
+                  <span className="text-[var(--text-muted)] font-bold uppercase tracking-wider">Pillar:</span>
+                  <span className="text-zinc-200 font-semibold px-2 py-0.5 bg-white/[0.03] border border-white/5 rounded">
+                    {activeDraft?.pillarId}
+                  </span>
                 </div>
 
-                {/* Deselect / New Draft */}
-                <button 
-                  onClick={() => selectActiveDraft(null)}
-                  className="text-[11px] text-[var(--text-muted)] hover:text-white underline"
-                  title="Deselect active draft to write raw thoughts dump"
-                >
-                  Write Raw Thoughts / New
-                </button>
+                {/* Thread Mode checkbox */}
+                <label className="flex items-center gap-1.5 cursor-pointer font-bold text-[var(--text-muted)] uppercase tracking-wider">
+                  <input 
+                    type="checkbox"
+                    checked={activeDraft?.isThread || false}
+                    onChange={(e) => handleThreadToggle(e.target.checked)}
+                    className="accent-[var(--accent)]"
+                  />
+                  <span>Thread Mode</span>
+                </label>
               </div>
-            )}
+            </div>
 
             {/* Input / Editor Textarea Box */}
             <div className="space-y-3">
@@ -537,49 +540,47 @@ Result Notes: ${e.performanceNote}
                 </div>
 
                 <div className="flex gap-2 flex-wrap items-center">
-                  {activeDraft && (
-                    <div className="flex gap-1.5 flex-wrap">
-                      <button 
-                        onClick={() => handleDeleteDraft(activeDraft.id)}
-                        className="glass-button px-2.5 py-1.5 bg-red-950/20 hover:bg-red-950/40 text-red-400 border-red-500/10 flex items-center gap-1 cursor-pointer font-semibold"
-                        title="Delete current draft"
-                      >
-                        Delete
-                      </button>
-                      <button 
-                        onClick={() => handleClipboardAction('trending')}
-                        className="glass-button px-2.5 py-1.5 bg-transparent text-[var(--text-muted)] flex items-center gap-1 cursor-pointer transition-colors duration-200 hover:text-white"
-                        title="Generate a Trending Radar packet to paste into Grok"
-                      >
-                        <TrendingUp className="w-3.5 h-3.5 text-sky-400" />
-                        <span>Trending</span>
-                      </button>
-                      <button 
-                        onClick={() => handleClipboardAction('grok')}
-                        disabled={!activeDraft.content.trim()}
-                        className="glass-button px-2.5 py-1.5 bg-transparent text-[var(--text-muted)] flex items-center gap-1 cursor-pointer transition-colors duration-200 hover:text-white disabled:opacity-50 disabled:cursor-not-allowed"
-                      >
-                        <Clipboard className="w-3.5 h-3.5 text-amber-400" />
-                        <span>Grok Packet</span>
-                      </button>
-                      <button 
-                        onClick={() => handleClipboardAction('raw')}
-                        disabled={!activeDraft.content.trim()}
-                        className="glass-button px-2.5 py-1.5 bg-transparent text-zinc-300 flex items-center gap-1 cursor-pointer transition-colors duration-200 hover:text-white disabled:opacity-50 disabled:cursor-not-allowed"
-                      >
-                        <Clipboard className="w-3.5 h-3.5" />
-                        <span>Copy Raw</span>
-                      </button>
-                      <button 
-                        onClick={handleMarkAsPosted}
-                        disabled={!activeDraft.content.trim() || activeDraft.content.length > 280}
-                        className="glass-button px-3 py-1.5 bg-[var(--accent)] hover:bg-[var(--accent-hover)] text-white border-transparent flex items-center gap-1 cursor-pointer transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed font-semibold shadow-md"
-                      >
-                        <Check className="w-3.5 h-3.5" />
-                        <span>Mark Posted</span>
-                      </button>
-                    </div>
-                  )}
+                  <div className="flex gap-1.5 flex-wrap">
+                    <button 
+                      onClick={() => activeDraft && handleDeleteDraft(activeDraft.id)}
+                      className="glass-button px-2.5 py-1.5 bg-red-950/20 hover:bg-red-950/40 text-red-400 border-red-500/10 flex items-center gap-1 cursor-pointer font-semibold"
+                      title="Delete current draft"
+                    >
+                      Delete
+                    </button>
+                    <button 
+                      onClick={() => handleClipboardAction('trending')}
+                      className="glass-button px-2.5 py-1.5 bg-transparent text-[var(--text-muted)] flex items-center gap-1 cursor-pointer transition-colors duration-200 hover:text-white"
+                      title="Generate a Trending Radar packet to paste into Grok"
+                    >
+                      <TrendingUp className="w-3.5 h-3.5 text-sky-400" />
+                      <span>Trending</span>
+                    </button>
+                    <button 
+                      onClick={() => handleClipboardAction('grok')}
+                      disabled={!activeDraft?.content.trim()}
+                      className="glass-button px-2.5 py-1.5 bg-transparent text-[var(--text-muted)] flex items-center gap-1 cursor-pointer transition-colors duration-200 hover:text-white disabled:opacity-50 disabled:cursor-not-allowed"
+                    >
+                      <Clipboard className="w-3.5 h-3.5 text-amber-400" />
+                      <span>Grok Packet</span>
+                    </button>
+                    <button 
+                      onClick={() => handleClipboardAction('raw')}
+                      disabled={!activeDraft?.content.trim()}
+                      className="glass-button px-2.5 py-1.5 bg-transparent text-zinc-300 flex items-center gap-1 cursor-pointer transition-colors duration-200 hover:text-white disabled:opacity-50 disabled:cursor-not-allowed"
+                    >
+                      <Clipboard className="w-3.5 h-3.5" />
+                      <span>Copy Raw</span>
+                    </button>
+                    <button 
+                      onClick={handleMarkAsPosted}
+                      disabled={!activeDraft?.content.trim() || (activeDraft?.content.length || 0) > 280}
+                      className="glass-button px-3 py-1.5 bg-[var(--accent)] hover:bg-[var(--accent-hover)] text-white border-transparent flex items-center gap-1 cursor-pointer transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed font-semibold shadow-md"
+                    >
+                      <Check className="w-3.5 h-3.5" />
+                      <span>Mark Posted</span>
+                    </button>
+                  </div>
 
                   <button
                     onClick={handleRunUnifiedAction}
@@ -760,14 +761,7 @@ Result Notes: ${e.performanceNote}
                 <span>Your Drafts ({drafts.length})</span>
               </span>
               
-              {drafts.length > 0 && activeDraft && (
-                <button 
-                  onClick={() => selectActiveDraft(null)} 
-                  className="text-[11px] text-[var(--text-muted)] hover:text-white"
-                >
-                  Deselect Active
-                </button>
-              )}
+
             </div>
 
             <div className="flex flex-col gap-2 max-h-[35vh] overflow-y-auto pr-1">
@@ -809,7 +803,7 @@ Result Notes: ${e.performanceNote}
           </div>
 
           {/* Dynamic Scorecard at the very bottom */}
-          {activeDraft && score && (
+          {score && (
             <div className="mt-2">
               <ScoreCard score={score} />
             </div>
