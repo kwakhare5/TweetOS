@@ -109,11 +109,23 @@ Return ONLY a valid JSON object matching the schema above. Do not include markdo
 export const UNIFIED_ROUTER_PROMPT = (
   userInput: string,
   profile: UserProfile,
-  topPerformers: string
-) => `You are the core AI routing engine for TweetOS, a custom workspace for Twitter creator @${profile.twitterHandle}.
+  topPerformers: string,
+  dumpMode: 'auto' | 'dev' | 'personal' | 'shitpost' = 'auto'
+) => {
+  let modeInstructions = ""
+  if (dumpMode === 'dev') {
+    modeInstructions = "FORCED TONE MODE: Focus heavily on public builder updates, tool learnings, specific code/technical errors, and screenshots of shipments. Keep it builder-centric."
+  } else if (dumpMode === 'personal') {
+    modeInstructions = "FORCED TONE MODE: Focus on casual life observations, relatable developer routines, college placements, email refreshing, late-night coding, rejections, and simple text tweets without heavy dev terminology."
+  } else if (dumpMode === 'shitpost') {
+    modeInstructions = "FORCED TONE MODE: Write chaotic, funny, absurd, high-meme, sarcastic Indian student tech takes (e.g. mocking tool bugs, using student slang, Pune CS student realities). Keep it dry and sarcastic."
+  }
+
+  return `You are the core AI routing engine for TweetOS, a custom workspace for Twitter creator @${profile.twitterHandle}.
 
 Your job: parse the user input, classify intent, then execute the task. Output JSON only.
 
+${modeInstructions ? `⚠️ IMPORTANT RULE:\n${modeInstructions}\n` : ''}
 ━━━ WHO THIS PERSON IS — READ THIS BEFORE DOING ANYTHING ━━━
 
 NAME: ${profile.name} | HANDLE: @${profile.twitterHandle}
@@ -231,6 +243,7 @@ ${userInput}
 """
 
 RESPOND ONLY IN VALID JSON matching the classified intent schema. No markdown fences, no explanation, no backticks. Start with '{' and end with '}'.`
+}
 
 // ─── GROK ANALYTICS PACKET ───────────────────────────────────────────────────
 
@@ -270,3 +283,40 @@ JSON Output Format:
   }
 ]`
 }
+
+export const DAILY_INSPIRATION_PROMPT = (profile: UserProfile, topPerformers: string) => `You are the Daily Inspiration engine for TweetOS.
+Your job is to read the user's profile and recent winning tweets, and generate 3 fresh, highly viral-ready tweet ideas/drafts for today.
+
+━━━ USER PROFILE ━━━
+NAME: ${profile.name} (@${profile.twitterHandle})
+NICHE: ${profile.niche}
+VOICE TONE: ${profile.voice.tone}
+WRITING STYLE RULES: ${profile.voice.writingStyle}
+SECOND BRAIN (Active daily context, frustrations, wins, opinions):
+${profile.secondBrain}
+
+TOP PERFORMING TWEETS FOR REFERENCE:
+${topPerformers}
+
+Generate 3 distinct tweet ideas/inspirations. Anchor each idea to a specific CONTENT PILLAR and format it as a complete draft tweet in their exact voice (lowercase, punchy, student builder, dry wit, under 280 characters).
+
+CONTENT PILLARS AVAILABLE:
+${profile.contentPillars.map(p => `• ${p.name}: ${p.description}`).join('\n')}
+
+RESPOND ONLY IN VALID JSON (no markdown fences, no preamble, no backticks, no markdown code block formatting):
+{
+  "inspirations": [
+    {
+      "pillarName": "Content Pillar Name",
+      "tweet": "The full drafted tweet under 280 characters matching the voice exactly."
+    },
+    {
+      "pillarName": "Content Pillar Name",
+      "tweet": "The full drafted tweet under 280 characters matching the voice exactly."
+    },
+    {
+      "pillarName": "Content Pillar Name",
+      "tweet": "The full drafted tweet under 280 characters matching the voice exactly."
+    }
+  ]
+}`

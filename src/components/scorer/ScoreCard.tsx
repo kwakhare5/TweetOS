@@ -2,13 +2,15 @@
 
 import React from 'react'
 import { AlgorithmScore, SignalScore } from '@/types'
-import { Flame, ThumbsUp, AlertTriangle, XCircle, Rocket, ArrowRight, HelpCircle } from 'lucide-react'
+import { Flame, ThumbsUp, AlertTriangle, XCircle, Rocket, ArrowRight, HelpCircle, Wand2, Loader2 } from 'lucide-react'
 
 interface ScoreCardProps {
   score: AlgorithmScore
+  onAutoFix?: (signalName: string) => Promise<void>
+  fixingSignal?: string | null
 }
 
-export default function ScoreCard({ score }: ScoreCardProps) {
+export default function ScoreCard({ score, onAutoFix, fixingSignal }: ScoreCardProps) {
   const {
     overall,
     hookStrength,
@@ -117,6 +119,23 @@ export default function ScoreCard({ score }: ScoreCardProps) {
               <div className="flex justify-between items-center mb-1">
                 <span className="text-xs font-semibold text-white/95">{sig.name}</span>
                 <div className="flex items-center gap-2">
+                  {sig.val.label !== 'Strong' && onAutoFix && (
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation()
+                        onAutoFix(sig.name)
+                      }}
+                      disabled={fixingSignal !== null}
+                      className="p-1 rounded hover:bg-white/10 text-amber-400 disabled:opacity-40 transition-colors shrink-0 flex items-center justify-center cursor-pointer"
+                      title={`Auto-Fix ${sig.name}`}
+                    >
+                      {fixingSignal === sig.name ? (
+                        <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                      ) : (
+                        <Wand2 className="w-3.5 h-3.5" />
+                      )}
+                    </button>
+                  )}
                   <span className="text-xs font-semibold font-mono text-[var(--text-muted)]">{sig.val.score}/10</span>
                   <span className={`text-xs font-bold px-2 py-0.5 rounded border ${getBadgeStyles(sig.val.label)}`}>
                     {sig.val.label}

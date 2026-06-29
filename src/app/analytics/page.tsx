@@ -26,23 +26,24 @@ export default function LibraryPage() {
   const [importError, setImportError] = useState<string | null>(null)
   const [toast, setToast] = useState<string | null>(null)
   const [hasHydrated, setHasHydrated] = useState(false)
+  const [now, setNow] = useState(0)
 
   useEffect(() => {
     // eslint-disable-next-line react-hooks/set-state-in-effect
     setHasHydrated(true)
+    setNow(Date.now())
   }, [])
 
   // 24hr Loopback: entries posted 24+ hours ago with no metrics synced yet
   const TWENTY_FOUR_HRS = 24 * 60 * 60 * 1000
   const dueForSync = useMemo(() => {
-    const now = Date.now()
     return entries.filter(e => {
       const posted = e.postedAt ? new Date(e.postedAt).getTime() : new Date(e.createdAt).getTime()
       const isOldEnough = now - posted >= TWENTY_FOUR_HRS
       const hasNoMetrics = e.views === undefined && e.likes === undefined
       return isOldEnough && hasNoMetrics
     })
-  }, [entries, TWENTY_FOUR_HRS])
+  }, [entries, now, TWENTY_FOUR_HRS])
 
   function triggerToast(msg: string) {
     setToast(msg)
@@ -187,7 +188,7 @@ export default function LibraryPage() {
           {hasHydrated && filteredEntries.map((entry) => {
             const TWENTY_FOUR = 24 * 60 * 60 * 1000
             const postedMs = entry.postedAt ? new Date(entry.postedAt).getTime() : new Date(entry.createdAt).getTime()
-            const isDue = (Date.now() - postedMs >= TWENTY_FOUR) && entry.views === undefined && entry.likes === undefined
+            const isDue = (now - postedMs >= TWENTY_FOUR) && entry.views === undefined && entry.likes === undefined
             return (
             <div key={entry.id} className={`glass-panel p-5 rounded-xl flex flex-col gap-3 ${isDue ? 'border border-amber-500/15' : ''}`}>
               <div className="flex justify-between items-center">

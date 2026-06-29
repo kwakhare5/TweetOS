@@ -2,9 +2,8 @@
 
 export const dynamic = 'force-dynamic'
 
-import { useEffect, useState } from 'react'
-import { createClient } from '@/lib/supabase/client'
-import { getProfile, saveProfile } from '@/lib/storage'
+import { useState } from 'react'
+import Link from 'next/link'
 import { useProfileStore } from '@/store/useProfileStore'
 import { geminiJSON } from '@/lib/gemini'
 import { VOICE_EXTRACTOR_PROMPT } from '@/lib/prompts'
@@ -20,9 +19,72 @@ const TABS: { id: Tab; label: string }[] = [
   { id: 'settings', label: 'Settings' },
 ]
 
+const inp = 'w-full bg-white/[0.03] border border-white/[0.08] rounded-lg px-3 py-2.5 text-sm text-[var(--text)] placeholder-[var(--text-muted)] focus:outline-none focus:border-[var(--accent)]/60 focus:bg-white/[0.05] transition-all duration-150 resize-none'
+const lbl = 'block text-[11px] text-[var(--text-muted)] uppercase tracking-wider mb-1.5 font-medium'
+
+function TagInput({ value, onChange, onAdd, onRemove, tags, placeholder, color = 'accent' }: {
+  value: string; onChange: (v: string) => void
+  onAdd: () => void; onRemove: (i: number) => void
+  tags: string[]; placeholder: string; color?: string
+}) {
+  const colorMap: Record<string, string> = {
+    accent: 'bg-[var(--accent)]/10 border-[var(--accent)]/20 text-[var(--accent)]',
+    fail: 'bg-[var(--fail)]/10 border-[var(--fail)]/20 text-[var(--fail)]',
+  }
+  return (
+    <div className="space-y-2">
+      <div className="flex gap-2">
+        <input
+          className={inp}
+          value={value}
+          onChange={e => onChange(e.target.value)}
+          onKeyDown={e => { if (e.key === 'Enter') { e.preventDefault(); onAdd() } }}
+          placeholder={placeholder}
+        />
+        <button onClick={onAdd} className="px-3 py-2 bg-white/[0.04] border border-white/[0.08] rounded-lg hover:bg-white/[0.08] transition-colors shrink-0">
+          <Plus className="w-4 h-4" />
+        </button>
+      </div>
+      {tags.length > 0 && (
+        <div className="flex flex-wrap gap-1.5">
+          {tags.map((t, i) => (
+            <span key={i} className={`flex items-center gap-1 px-2 py-0.5 border rounded-full text-[11px] ${colorMap[color]}`}>
+              {t}
+              <button onClick={() => onRemove(i)} className="hover:opacity-60 transition-opacity"><X className="w-2.5 h-2.5" /></button>
+            </span>
+          ))}
+        </div>
+      )}
+    </div>
+  )
+}
+
+function TweetList({ tweets, onRemove }: { tweets: string[]; onRemove: (i: number) => void }) {
+  return (
+    <div className="space-y-2 max-h-60 overflow-y-auto pr-1">
+      {tweets.length === 0 && <p className="text-[11px] text-[var(--text-muted)] italic">None added yet.</p>}
+      {tweets.map((t, i) => (
+        <div key={i} className="p-2.5 bg-white/[0.02] border border-white/[0.05] rounded-lg flex items-start gap-2 group">
+          <span className="text-[10px] text-[var(--text-muted)] font-mono mt-0.5 shrink-0">#{i + 1}</span>
+          <p className="flex-1 text-xs font-mono text-[var(--text)] whitespace-pre-wrap leading-relaxed">{t}</p>
+          <button onClick={() => onRemove(i)} className="opacity-0 group-hover:opacity-100 transition-opacity text-[var(--text-muted)] hover:text-[var(--fail)] shrink-0"><X className="w-3.5 h-3.5" /></button>
+        </div>
+      ))}
+    </div>
+  )
+}
+
+function TweetInput({ value, onChange, onAdd, placeholder }: { value: string; onChange: (v: string) => void; onAdd: () => void; placeholder: string }) {
+  return (
+    <div className="flex gap-2">
+      <textarea className={`${inp} font-mono text-xs`} rows={2} value={value} onChange={e => onChange(e.target.value)} placeholder={placeholder} />
+      <button onClick={onAdd} className="px-3 py-2 self-end bg-white/[0.04] border border-white/[0.08] rounded-lg hover:bg-white/[0.08] transition-colors shrink-0"><Plus className="w-4 h-4" /></button>
+    </div>
+  )
+}
+
 export default function ProfilePage() {
   const { profile, updateProfile } = useProfileStore()
-  const [userId, setUserId] = useState<string | null>(null)
   const [saving, setSaving] = useState(false)
   const [saved, setSaved] = useState(false)
   const [tab, setTab] = useState<Tab>('identity')
@@ -50,29 +112,21 @@ export default function ProfilePage() {
   const [extractError, setExtractError] = useState<string | null>(null)
   const [extractSuccess, setExtractSuccess] = useState(false)
 
-  useEffect(() => {
-    const supabase = createClient()
-    supabase.auth.getUser().then(async ({ data: { user } }) => {
-      const id = user?.id ?? null
-      if (!id) return
-      setUserId(id)
-      const p = await getProfile(id)
-      if (p) {
-        updateProfile(p)
-        setName(p.name)
-        setTwitterHandle(p.twitterHandle)
-        setBio(p.bio || '')
-        setNiche(p.niche)
-        setTone(p.voice.tone)
-        setWritingStyle(p.voice.writingStyle)
-        setGeminiApiKey(p.geminiApiKey || '')
-        setAvoidList(p.voice.avoidList)
-        setExampleTweets(p.voice.exampleTweets)
-        setAdmiredExampleTweets(p.voice.admiredExampleTweets || [])
-        setAdmiredAccounts(p.admiredAccounts || [])
-      }
-    })
-  }, [updateProfile])
+  const [prevProfile, setPrevProfile] = useState(profile)
+  if (profile !== prevProfile) {
+    setPrevProfile(profile)
+    setName(profile.name)
+    setTwitterHandle(profile.twitterHandle)
+    setBio(profile.bio || '')
+    setNiche(profile.niche)
+    setTone(profile.voice.tone)
+    setWritingStyle(profile.voice.writingStyle)
+    setGeminiApiKey(profile.geminiApiKey || '')
+    setAvoidList(profile.voice.avoidList)
+    setExampleTweets(profile.voice.exampleTweets)
+    setAdmiredExampleTweets(profile.voice.admiredExampleTweets || [])
+    setAdmiredAccounts(profile.admiredAccounts || [])
+  }
 
   async function handleAutoExtract() {
     if (!rawTextDump.trim()) return
@@ -103,8 +157,7 @@ export default function ProfilePage() {
     }
   }
 
-  async function handleSave() {
-    if (!userId) return
+  function handleSave() {
     setSaving(true)
     const updated = {
       ...profile, name, twitterHandle, bio, niche, geminiApiKey, admiredAccounts,
@@ -112,75 +165,12 @@ export default function ProfilePage() {
       updatedAt: new Date().toISOString(),
     }
     updateProfile(updated)
-    await saveProfile(userId, updated)
     setSaving(false)
     setSaved(true)
     setTimeout(() => setSaved(false), 2500)
   }
 
-  const inp = 'w-full bg-white/[0.03] border border-white/[0.08] rounded-lg px-3 py-2.5 text-sm text-[var(--text)] placeholder-[var(--text-muted)] focus:outline-none focus:border-[var(--accent)]/60 focus:bg-white/[0.05] transition-all duration-150 resize-none'
-  const lbl = 'block text-[11px] text-[var(--text-muted)] uppercase tracking-wider mb-1.5 font-medium'
 
-  function TagInput({ value, onChange, onAdd, onRemove, placeholder, color = 'accent' }: {
-    value: string; onChange: (v: string) => void
-    onAdd: () => void; onRemove: (i: number) => void
-    tags: string[]; placeholder: string; color?: string
-  } & { tags: string[] }) {
-    const colorMap: Record<string, string> = {
-      accent: 'bg-[var(--accent)]/10 border-[var(--accent)]/20 text-[var(--accent)]',
-      fail: 'bg-[var(--fail)]/10 border-[var(--fail)]/20 text-[var(--fail)]',
-    }
-    return (
-      <div className="space-y-2">
-        <div className="flex gap-2">
-          <input
-            className={inp}
-            value={value}
-            onChange={e => onChange(e.target.value)}
-            onKeyDown={e => { if (e.key === 'Enter') { e.preventDefault(); onAdd() } }}
-            placeholder={placeholder}
-          />
-          <button onClick={onAdd} className="px-3 py-2 bg-white/[0.04] border border-white/[0.08] rounded-lg hover:bg-white/[0.08] transition-colors shrink-0">
-            <Plus className="w-4 h-4" />
-          </button>
-        </div>
-        {(arguments[0] as { tags: string[] }).tags.length > 0 && (
-          <div className="flex flex-wrap gap-1.5">
-            {(arguments[0] as { tags: string[] }).tags.map((t, i) => (
-              <span key={i} className={`flex items-center gap-1 px-2 py-0.5 border rounded-full text-[11px] ${colorMap[color]}`}>
-                {t}
-                <button onClick={() => onRemove(i)} className="hover:opacity-60 transition-opacity"><X className="w-2.5 h-2.5" /></button>
-              </span>
-            ))}
-          </div>
-        )}
-      </div>
-    )
-  }
-
-  function TweetList({ tweets, onRemove }: { tweets: string[]; onRemove: (i: number) => void }) {
-    return (
-      <div className="space-y-2 max-h-60 overflow-y-auto pr-1">
-        {tweets.length === 0 && <p className="text-[11px] text-[var(--text-muted)] italic">None added yet.</p>}
-        {tweets.map((t, i) => (
-          <div key={i} className="p-2.5 bg-white/[0.02] border border-white/[0.05] rounded-lg flex items-start gap-2 group">
-            <span className="text-[10px] text-[var(--text-muted)] font-mono mt-0.5 shrink-0">#{i + 1}</span>
-            <p className="flex-1 text-xs font-mono text-[var(--text)] whitespace-pre-wrap leading-relaxed">{t}</p>
-            <button onClick={() => onRemove(i)} className="opacity-0 group-hover:opacity-100 transition-opacity text-[var(--text-muted)] hover:text-[var(--fail)] shrink-0"><X className="w-3.5 h-3.5" /></button>
-          </div>
-        ))}
-      </div>
-    )
-  }
-
-  function TweetInput({ value, onChange, onAdd, placeholder }: { value: string; onChange: (v: string) => void; onAdd: () => void; placeholder: string }) {
-    return (
-      <div className="flex gap-2">
-        <textarea className={`${inp} font-mono text-xs`} rows={2} value={value} onChange={e => onChange(e.target.value)} placeholder={placeholder} />
-        <button onClick={onAdd} className="px-3 py-2 self-end bg-white/[0.04] border border-white/[0.08] rounded-lg hover:bg-white/[0.08] transition-colors shrink-0"><Plus className="w-4 h-4" /></button>
-      </div>
-    )
-  }
 
   return (
     <AppShell>
@@ -194,7 +184,7 @@ export default function ProfilePage() {
           </div>
           <button
             onClick={handleSave}
-            disabled={saving || !userId}
+            disabled={saving}
             className="flex items-center gap-2 bg-[var(--accent)] hover:bg-[var(--accent-hover)] disabled:opacity-40 text-white text-sm font-semibold px-4 py-2 rounded-lg transition-all duration-200"
           >
             {saved ? <><Check className="w-4 h-4" /><span>Saved</span></> : saving ? <span>Saving…</span> : <span>Save</span>}
@@ -268,7 +258,7 @@ export default function ProfilePage() {
               <p className="text-[11px] text-[var(--text-muted)] leading-relaxed">
                 Your daily live context lives on the <span className="text-white/70 font-semibold">Workspace homepage</span> — type updates there naturally and the AI rewrites it for you.
               </p>
-              <a href="/" className="inline-block mt-2 text-[11px] font-semibold text-purple-400 hover:text-purple-300 transition-colors">Open Workspace →</a>
+              <Link href="/" className="inline-block mt-2 text-[11px] font-semibold text-purple-400 hover:text-purple-300 transition-colors">Open Workspace →</Link>
             </div>
           </div>
         )}

@@ -1,12 +1,10 @@
 'use client'
 
-import { useState, useRef, useEffect } from 'react'
+import { useState, useRef } from 'react'
 import { Brain, Send, Save, Loader2, ChevronDown, ChevronUp } from 'lucide-react'
 import { useProfileStore } from '@/store/useProfileStore'
 import { geminiText } from '@/lib/gemini'
 import { BRAIN_UPDATER_PROMPT } from '@/lib/prompts'
-import { createClient } from '@/lib/supabase/client'
-import { saveProfile } from '@/lib/storage'
 
 export default function SecondBrainPanel() {
   const { profile, setProfile } = useProfileStore()
@@ -19,10 +17,11 @@ export default function SecondBrainPanel() {
   const [collapsed, setCollapsed] = useState(false)
   const inputRef = useRef<HTMLTextAreaElement>(null)
 
-  // Keep in sync if profile loads from DB after mount
-  useEffect(() => {
+  const [prevSecondBrain, setPrevSecondBrain] = useState(profile.secondBrain)
+  if (profile.secondBrain !== prevSecondBrain) {
+    setPrevSecondBrain(profile.secondBrain)
     setBrainText(profile.secondBrain || '')
-  }, [profile.secondBrain])
+  }
 
   async function handleSend() {
     if (!input.trim() || loading) return
@@ -48,9 +47,6 @@ export default function SecondBrainPanel() {
       updatedAt: new Date().toISOString(),
     }
     setProfile(updatedProfile)
-    const supabase = createClient()
-    const { data: { user } } = await supabase.auth.getUser()
-    if (user) await saveProfile(user.id, updatedProfile)
     setDirty(false)
     setSaving(false)
     setSaved(true)

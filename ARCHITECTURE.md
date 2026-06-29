@@ -31,13 +31,11 @@
 | Icons     | lucide-react                | Professional icons (strictly no emojis)            |
 | AI        | Google Gemini 2.5 Flash     | Free tier, generous limits                         |
 | State     | Zustand                     | Simple global state                                |
-| Storage   | Supabase (Postgres)         | Free, cross-device sync — PC + mobile via same URL |
-| Auth      | Supabase Auth (magic link)  | No password, email only, fully free                |
+| Storage   | Local Storage (Zustand)     | Fully local-first, zero latency, runs in browser   |
 | Hosting   | Vercel                      | Free, auto-deploy from GitHub                      |
 
 **Gemini Model:** `gemini-2.5-flash` via `@google/genai`
 **API key:** https://aistudio.google.com/app/apikey (free)
-**Supabase:** https://supabase.com (free tier — 500MB DB, unlimited auth)
 
 ---
 
@@ -52,8 +50,6 @@ tweetOS/
 │   │   ├── profile/page.tsx              # Profile & Seed Data
 │   │   ├── engage/page.tsx               # Engagement Hub
 │   │   ├── analytics/page.tsx            # Analytics & Library
-│   │   ├── login/page.tsx                # Magic Link Login
-│   │   ├── auth/callback/route.ts        # Auth Callback
 │   │   ├── globals.css                   # Tailwind and UI utilities
 │   │   ├── error.tsx
 │   │   └── loading.tsx
@@ -94,7 +90,6 @@ tweetOS/
 │   │
 │   ├── lib/
 │   │   ├── gemini.ts
-│   │   ├── storage.ts
 │   │   ├── prompts.ts
 │   │   ├── scorer.ts
 │   │   ├── grok-packager.ts              # UPDATED: two packet types
@@ -446,22 +441,30 @@ export type GrokPacketConfig = DraftPacketConfig | EngagementPacketConfig;
 
 ## Module 1: Profile Engine
 
-**Page:** `/profile`  
-**Storage:** Supabase `profiles` table → `UserProfile`
+**Storage:** Zustand persist store (\`tweetos-profile-storage\` key) → \`UserProfile\`
 
 ### Seed Data Behavior
 
-```typescript
-// src/lib/storage.ts
-export async function getProfile(userId: string): Promise<UserProfile> {
-  const { data } = await supabase
-    .from("profiles")
-    .select("*")
-    .eq("user_id", userId)
-    .single();
-  return data ?? SEED_PROFILE; // Falls back to real seed data on first load
-}
-```
+On first launch, if no profile data exists in Local Storage, the system auto-loads the pre-configured \`SEED_PROFILE\` object.
+
+\`\`\`typescript
+// src/store/useProfileStore.ts
+export const useProfileStore = create<ProfileStore>()(
+  persist(
+    (set) => ({
+      profile: SEED_PROFILE,
+      setProfile: (profile) => set({ profile }),
+      updateProfile: (partial) =>
+        set((state) => ({
+          profile: { ...state.profile, ...partial, updatedAt: new Date().toISOString() },
+        })),
+    }),
+    {
+      name: 'tweetos-profile-storage',
+    }
+  )
+)
+\`\`\`
 
 ### UI
 
@@ -1370,132 +1373,39 @@ export function getPostingWindowStatus(): {
 }
 ```
 
----
+## Local Storage Schema (Zustand)
 
-## Supabase Database Schema
+Instead of a remote database, TweetOS runs entirely local-first. All state is managed by Zustand and persisted directly to the browser's \`localStorage\` using the \`persist\` middleware.
 
-> **Why Supabase:** You deploy to Vercel and open the same URL on phone + PC. Both devices hit the same DB. Zero data loss, zero export/import dance.
+### Stored Keys
 
-```sql
--- Run this in Supabase SQL editor once
+1. **\`tweetos-profile-storage\`**: Persists the user's profile information, voice configurations, content pillars, learning notes, and API key settings.
+   - Core structure matches the \`UserProfile\` TypeScript type.
+2. **\`tweetos-draft-storage\`**: Persists the list of draft tweets and brain dump sessions.
+   - Core structure matches \`TweetDraft[]\` and \`BrainDumpSession[]\`.
+3. **\`tweetos-library-storage\`**: Persists the list of logged/published tweets.
+   - Core structure matches \`LibraryEntry[]\`.
 
-create table profiles (
-  id uuid primary key default gen_random_uuid(),
-  user_id uuid references auth.users not null unique,
-  data jsonb not null,  -- Full UserProfile as JSON
-  updated_at timestamptz default now()
-);
-
-create table brain_dump_sessions (
-  id uuid primary key default gen_random_uuid(),
-  user_id uuid references auth.users not null,
-  data jsonb not null,  -- BrainDumpSession as JSON
-  created_at timestamptz default now()
-);
-
-create table drafts (
-  id uuid primary key default gen_random_uuid(),
-  user_id uuid references auth.users not null,
-  data jsonb not null,  -- TweetDraft as JSON
-  status text default 'draft',
-  created_at timestamptz default now(),
-  updated_at timestamptz default now()
-);
-
-create table library (
-  id uuid primary key default gen_random_uuid(),
-  user_id uuid references auth.users not null,
-  data jsonb not null,  -- LibraryEntry as JSON
-  created_at timestamptz default now()
-);
-
-create table target_accounts (
-  id uuid primary key default gen_random_uuid(),
-  user_id uuid references auth.users not null,
-  data jsonb not null,  -- TargetAccount as JSON
-  created_at timestamptz default now()
-);
-
-create table engagement_log (
-  id uuid primary key default gen_random_uuid(),
-  user_id uuid references auth.users not null,
-  data jsonb not null,  -- EngagementLog as JSON
-  replied_at timestamptz default now()
-);
-
-create table stats (
-  user_id uuid primary key references auth.users,
-  post_streak int default 0,
-  reply_streak int default 0,
-  total_posted int default 0,
-  total_replies int default 0,
-  last_posted timestamptz,
-  last_replied timestamptz
-);
-
--- Row Level Security — each user sees only their own data
-alter table profiles enable row level security;
-alter table brain_dump_sessions enable row level security;
-alter table drafts enable row level security;
-alter table library enable row level security;
-alter table target_accounts enable row level security;
-alter table engagement_log enable row level security;
-alter table stats enable row level security;
-
-create policy "own data" on profiles for all using (auth.uid() = user_id);
-create policy "own data" on brain_dump_sessions for all using (auth.uid() = user_id);
-create policy "own data" on drafts for all using (auth.uid() = user_id);
-create policy "own data" on library for all using (auth.uid() = user_id);
-create policy "own data" on target_accounts for all using (auth.uid() = user_id);
-create policy "own data" on engagement_log for all using (auth.uid() = user_id);
-create policy "own data" on stats for all using (auth.uid() = user_id);
-```
-
-### Auth Flow (Magic Link — no password)
-
-```typescript
-// src/lib/auth.ts
-import { createClient } from "@supabase/supabase-js";
-
-export const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-);
-
-// One-tap login — sends magic link to email
-export async function signIn(email: string) {
-  return supabase.auth.signInWithOtp({ email });
-}
-```
-
-User opens app → enters email once → clicks magic link in email → logged in on that device. Works the same on phone and PC. No password to remember.
+### Advantages
+- **Zero Configuration**: No database, credentials, or remote servers required.
+- **Zero Cost**: Runs entirely in the browser for free.
+- **Zero Latency**: State transitions and local updates happen instantly.
 
 ---
 
 ## Environment Setup
 
-**`.env.local`** (never commit):
+**\`.env.local\`** (never commit):
 
 ```
 NEXT_PUBLIC_GEMINI_API_KEY=your_key_here
-NEXT_PUBLIC_SUPABASE_URL=your_supabase_project_url
-NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
 ```
 
-**`.env.example`** (commit this):
+**\`.env.example\`** (commit this):
 
 ```
 NEXT_PUBLIC_GEMINI_API_KEY=get_free_key_at_aistudio.google.com
-NEXT_PUBLIC_SUPABASE_URL=get_from_supabase_project_settings
-NEXT_PUBLIC_SUPABASE_ANON_KEY=get_from_supabase_project_settings
 ```
-
-**Supabase setup (one-time, 5 min):**
-
-1. Go to https://supabase.com → new project (free)
-2. Run SQL schema above in SQL editor
-3. Copy Project URL + anon key → paste in `.env.local`
-4. Add same 3 env vars to Vercel dashboard → redeploy
 
 ---
 
@@ -1619,18 +1529,15 @@ Niche: Indian student builder documenting the AI-native build + internship journ
 
 ## Stack
 
-Next.js 15 App Router | TypeScript | Tailwind v4 | shadcn/ui | Gemini 2.5 Flash | Zustand | Supabase (Postgres)
+Next.js 15 App Router | TypeScript | Tailwind v4 | shadcn/ui | Gemini 2.5 Flash | Zustand | Local Storage
 
 ## Absolute Rules
 
-- ALL data stored in Supabase — same URL works on phone and PC.
-- Auth: magic link via Supabase Auth. No password.
+- All data stored in browser Local Storage via Zustand persist.
 - Gemini API key: NEXT_PUBLIC_GEMINI_API_KEY in .env.local
-- Supabase: NEXT_PUBLIC_SUPABASE_URL + NEXT_PUBLIC_SUPABASE_ANON_KEY in .env.local
 - All prompts → src/lib/prompts.ts ONLY. Never inline in components.
-- All DB calls → src/lib/storage.ts ONLY.
 - All types → src/types/index.ts
-- Seed profile → src/data/seedProfile.ts (Karan's real profile, auto-loads on first login)
+- Seed profile → src/data/seedProfile.ts (Karan's real profile, auto-loads on mount if empty)
 - Mobile-first. Bottom tab bar = primary nav on mobile.
 
 ## 7 Modules
@@ -1657,7 +1564,7 @@ You have these models. Use the right one per task:
 
 | Model                         | Best For                                                                                       | Cost    |
 | ----------------------------- | ---------------------------------------------------------------------------------------------- | ------- |
-| **Claude Sonnet 4.6**         | Complex architecture, wiring AI, debugging, Supabase schema, any phase where things feel stuck | Medium  |
+| **Claude Sonnet 4.6**         | Complex architecture, wiring AI, debugging, state management, any phase where things feel stuck | Medium  |
 | **Claude Opus 4.6**           | Only when Sonnet fails or for hardest architectural decisions — expensive, use sparingly       | High    |
 | **Gemini 3.5 Flash (Medium)** | Default workhorse — UI components, scorer logic, simple integrations, most day-to-day tasks    | Low     |
 | **Gemini 3.5 Flash (High)**   | When Medium gives weak output — better reasoning, still fast                                   | Low-Med |
@@ -1674,4 +1581,4 @@ You have these models. Use the right one per task:
 
 ---
 
-_TweetOS Architecture v3.0 — Supabase DB for cross-device sync, model selection guide added_
+_TweetOS Architecture v4.0 — Zustand Local-First Persistence, model selection guide added_

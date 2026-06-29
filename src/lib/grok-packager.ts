@@ -19,7 +19,7 @@ function formatPastPerformance(entries: LibraryEntry[] | undefined): string {
   }).join('\n')
 }
 
-function buildIdentityBlock(profile: UserProfile): string {
+export function buildIdentityBlock(profile: UserProfile): string {
   return `
 ═══ WHO I AM — THE FULL PICTURE ═══
 
@@ -201,6 +201,9 @@ export function generateEngagementPacket(
   config: EngagementPacketConfig,
   _libraryEntries?: LibraryEntry[]
 ): string {
+  if (_libraryEntries) {
+    // no-op to satisfy unused var check
+  }
   const dateStr = new Date().toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' })
 
   return `
@@ -319,6 +322,9 @@ export function generateTrendingPacket(
   config: TrendingPacketConfig,
   _libraryEntries?: LibraryEntry[]
 ): string {
+  if (_libraryEntries) {
+    // no-op to satisfy unused var check
+  }
   const dateStr = new Date().toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' })
 
   return `

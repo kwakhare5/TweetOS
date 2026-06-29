@@ -6,12 +6,10 @@ import { useDraftStore } from '@/store/useDraftStore'
 import { useProfileStore } from '@/store/useProfileStore'
 import { useLibraryStore } from '@/store/useLibraryStore'
 import { scoreTweet } from '@/lib/scorer'
-import { geminiJSON } from '@/lib/gemini'
-import { UNIFIED_ROUTER_PROMPT } from '@/lib/prompts'
-import { generateDraftPacket, generateTrendingPacket } from '@/lib/grok-packager'
+import { geminiJSON, geminiText } from '@/lib/gemini'
+import { UNIFIED_ROUTER_PROMPT, DAILY_INSPIRATION_PROMPT } from '@/lib/prompts'
+import { generateDraftPacket, generateTrendingPacket, buildIdentityBlock } from '@/lib/grok-packager'
 import { TweetDraft, AlgorithmScore, MomentType } from '@/types'
-import { createClient } from '@/lib/supabase/client'
-import { getProfile, getDrafts, saveDraft, getLibrary, saveLibraryEntry, saveProfile } from '@/lib/storage'
 import ScoreCard from '@/components/scorer/ScoreCard'
 import SecondBrainPanel from '@/components/brain/SecondBrainPanel'
 import { 
@@ -22,14 +20,15 @@ import {
   Clipboard, 
   Check,
   AlertTriangle,
-  Brain
+  Brain,
+  Loader2
 } from 'lucide-react'
 
 export default function WorkspacePage() {
   // Stores
   const { drafts, addDraft, updateDraft, setDrafts } = useDraftStore()
   const { profile, setProfile } = useProfileStore()
-  const { addEntry, entries, setEntries } = useLibraryStore()
+  const { addEntry, entries } = useLibraryStore()
 
   // States
   const [activeDraft, setActiveDraft] = useState<TweetDraft | null>(null)
@@ -54,6 +53,12 @@ export default function WorkspacePage() {
   // Learning Note quick-capture
   const [learningNote, setLearningNote] = useState('')
   const [savingNote, setSavingNote] = useState(false)
+  
+  // Super X Feature States
+  type DumpMode = 'auto' | 'dev' | 'personal' | 'shitpost'
+  const [dumpMode, setDumpMode] = useState<DumpMode>('auto')
+  const [generatingInspiration, setGeneratingInspiration] = useState(false)
+  const [fixingSignal, setFixingSignal] = useState<string | null>(null)
 
   // Trigger toast notification
   function triggerToast(msg: string) {
@@ -72,11 +77,6 @@ export default function WorkspacePage() {
       updatedAt: new Date().toISOString()
     }
     setProfile(updatedProfile)
-    const supabase = createClient()
-    const { data: { user } } = await supabase.auth.getUser()
-    if (user) {
-      await saveProfile(user.id, updatedProfile)
-    }
     setLearningNote('')
     setSavingNote(false)
     triggerToast('Learning note saved — Grok will read it next session.')
@@ -94,66 +94,13 @@ export default function WorkspacePage() {
     setHasHydrated(true)
   }, [])
 
-  // 1. Initial Load from Supabase DB
+  // Select first draft on load once drafts are hydrated from localStorage
   useEffect(() => {
-    const supabase = createClient()
-    supabase.auth.getUser().then(async ({ data: { user } }) => {
-      if (!user) return
-      try {
-        const dbProfile = await getProfile(user.id)
-        if (dbProfile) {
-          setProfile(dbProfile)
-        }
-        const dbDrafts = await getDrafts(user.id)
-        if (dbDrafts && dbDrafts.length > 0) {
-          setDrafts(dbDrafts)
-          selectActiveDraft(dbDrafts[0])
-        }
-        const dbLibrary = await getLibrary(user.id)
-        if (dbLibrary && dbLibrary.length > 0) {
-          setEntries(dbLibrary)
-        }
-      } catch (err) {
-        console.error('Failed to initial sync with Supabase:', err)
-      }
-    })
-  }, [setProfile, setDrafts, setEntries])
-
-  // 2. Debounced Drafts Auto-Save to Supabase
-  useEffect(() => {
-    const supabase = createClient()
-    const timer = setTimeout(() => {
-      supabase.auth.getUser().then(async ({ data: { user } }) => {
-        if (!user) return
-        try {
-          for (const d of drafts) {
-            await saveDraft(user.id, d)
-          }
-        } catch (err) {
-          console.error('Failed to auto-save drafts to Supabase:', err)
-        }
-      })
-    }, 1500)
-    return () => clearTimeout(timer)
-  }, [drafts])
-
-  // 3. Debounced Library Auto-Save to Supabase
-  useEffect(() => {
-    const supabase = createClient()
-    const timer = setTimeout(() => {
-      supabase.auth.getUser().then(async ({ data: { user } }) => {
-        if (!user) return
-        try {
-          for (const entry of entries) {
-            await saveLibraryEntry(user.id, entry)
-          }
-        } catch (err) {
-          console.error('Failed to auto-save library to Supabase:', err)
-        }
-      })
-    }, 1500)
-    return () => clearTimeout(timer)
-  }, [entries])
+    if (hasHydrated && drafts.length > 0 && !activeDraft) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
+      selectActiveDraft(drafts[0])
+    }
+  }, [hasHydrated, drafts, activeDraft])
 
   // Create new blank draft
   function handleCreateDraft() {
@@ -318,7 +265,110 @@ Result Notes: ${e.performanceNote}
       selectActiveDraft(updated[0])
     }
     triggerToast('Draft deleted!')
-  }  // Unified Action Generator
+  }
+
+  // Daily Inspiration Generator
+  async function handleGenerateDailyInspiration() {
+    setGeneratingInspiration(true)
+    try {
+      const topPerformers = getTopPerformersContext()
+      const prompt = DAILY_INSPIRATION_PROMPT(profile, topPerformers)
+      
+      const res = await geminiJSON<{ inspirations: { tweet: string; pillarName: string }[] }>(prompt)
+      if (res.inspirations && res.inspirations.length > 0) {
+        const now = new Date().toISOString()
+        const newDrafts = res.inspirations.map((idea, i) => ({
+          id: `draft_insp_${Date.now()}_${i}`,
+          content: idea.tweet,
+          isThread: false,
+          threadTweets: [],
+          pillarId: idea.pillarName || 'Inspiration',
+          momentType: 'opinion' as MomentType,
+          hookVariations: [],
+          status: 'draft' as const,
+          createdAt: now,
+          updatedAt: now,
+          algorithmScore: {
+            overall: 0,
+            hookStrength: { score: 0, label: 'Weak' as const, reason: '' },
+            replyBait: { score: 0, label: 'Weak' as const, reason: '' },
+            specificity: { score: 0, label: 'Weak' as const, reason: '' },
+            emotionalTrigger: { score: 0, label: 'Weak' as const, reason: '' },
+            length: { score: 0, label: 'Weak' as const, reason: '' },
+            noLinksInBody: { score: 10, label: 'Strong' as const, reason: '' },
+            ctaQuality: { score: 0, label: 'Weak' as const, reason: '' },
+            threadPotential: { score: 0, label: 'Weak' as const, reason: '' },
+            suggestions: [],
+            calculatedAt: now
+          }
+        }))
+        
+        newDrafts.forEach(d => addDraft(d))
+        selectActiveDraft(newDrafts[0])
+        triggerToast('Generated 3 daily inspirations!')
+      }
+    } catch (err: unknown) {
+      const errMsg = err instanceof Error ? err.message : String(err)
+      triggerToast(`Inspiration failed: ${errMsg}`)
+    } finally {
+      setGeneratingInspiration(false)
+    }
+  }
+
+  // Auto-Fix warning metrics surgically via Gemini
+  async function handleAutoFix(signalName: string) {
+    if (!activeDraft) return
+    setFixingSignal(signalName)
+    try {
+      const prompt = `You are the Auto-Fix engine for TweetOS.
+Your job is to surgically rewrite the following tweet draft to fix a scoring warning.
+
+WARNING TO FIX: ${signalName} (Currently scored low)
+REASON: ${score?.suggestions.find(s => s.toLowerCase().includes(signalName.toLowerCase())) || `Improve the ${signalName} of the tweet`}
+
+USER PROFILE NICHE: ${profile.niche}
+USER VOICE: ${profile.voice.tone}
+SECOND BRAIN (context to pull facts/details from if needed):
+${profile.secondBrain}
+
+ORIGINAL DRAFT:
+"""
+${activeDraft.content}
+"""
+
+RULES:
+1. Surgically rewrite ONLY what is needed to address the warning.
+2. Keep the length strictly under 280 characters.
+3. Maintain the lowercase, punchy, student builder tone.
+4. Output ONLY the new rewritten tweet. Do not include markdown blocks, quotes, or preambles. Just the plain tweet.
+
+REWRITTEN TWEET:`
+
+      const rewritten = await geminiText(prompt)
+      if (rewritten.trim()) {
+        const cleanText = rewritten.trim()
+        setUnifiedText(cleanText)
+        
+        const calculated = scoreTweet(cleanText, activeDraft.isThread)
+        const updated = {
+          ...activeDraft,
+          content: cleanText,
+          algorithmScore: calculated,
+          updatedAt: new Date().toISOString()
+        }
+        setActiveDraft(updated)
+        updateDraft(activeDraft.id, updated)
+        triggerToast(`Auto-fixed ${signalName}!`)
+      }
+    } catch (err: unknown) {
+      const errMsg = err instanceof Error ? err.message : String(err)
+      triggerToast(`Failed to auto-fix: ${errMsg}`)
+    } finally {
+      setFixingSignal(null)
+    }
+  }
+
+  // Unified Action Generator
   async function handleRunUnifiedAction() {
     if (!unifiedText.trim()) return
     setUnifiedLoading(true)
@@ -332,7 +382,7 @@ Result Notes: ${e.performanceNote}
 
     try {
       const topPerformers = getTopPerformersContext()
-      const prompt = UNIFIED_ROUTER_PROMPT(unifiedText, profile, topPerformers)
+      const prompt = UNIFIED_ROUTER_PROMPT(unifiedText, profile, topPerformers, dumpMode)
       
       const result = await geminiJSON<{
         intent: 'draft' | 'hooks' | 'thread' | 'tighten' | 'replies'
@@ -458,13 +508,20 @@ Result Notes: ${e.performanceNote}
         mode: 'draft' as const,
         selectedDraftIds: [activeDraft.id],
         includeScores: true,
-        dumpMode: 'auto' as const,
+        dumpMode: dumpMode,
         customRequest: 'Standard validation feedback'
       }
       textToCopy = generateDraftPacket(profile, [activeDraft], config, entries)
     }
     navigator.clipboard.writeText(textToCopy)
     triggerToast(type === 'grok' ? 'Grok Critique Packet copied!' : 'Raw tweet copied!')
+  }
+
+  // Copy Master Identity block for initializing blank Grok sessions
+  function handleCopyMasterPacket() {
+    const packet = buildIdentityBlock(profile)
+    navigator.clipboard.writeText(packet)
+    triggerToast('Master Profile Packet copied! Paste into Grok.')
   }
 
   // Save to Library & Mark Posted
@@ -513,13 +570,34 @@ Result Notes: ${e.performanceNote}
               Draft, polish, run through automated scorer, and export content for validation.
             </p>
           </div>
-          <button 
-            onClick={handleCreateDraft}
-            className="glass-button px-4 py-2 bg-[var(--accent)] hover:bg-[var(--accent-hover)] text-white font-bold text-xs border-transparent flex items-center gap-1.5 cursor-pointer shadow-md transition-all duration-200 hover:scale-[1.02]"
-          >
-            <Plus className="w-4 h-4" />
-            <span>Write Draft</span>
-          </button>
+          <div className="flex gap-2.5">
+            <button 
+              onClick={handleGenerateDailyInspiration}
+              disabled={generatingInspiration}
+              className="glass-button px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white font-bold text-xs border-transparent flex items-center gap-1.5 cursor-pointer shadow-md transition-all duration-200 hover:scale-[1.02] disabled:opacity-40"
+            >
+              {generatingInspiration ? (
+                <Loader2 className="w-4 h-4 animate-spin" />
+              ) : (
+                <Sparkles className="w-4 h-4" />
+              )}
+              <span>{generatingInspiration ? 'Generating...' : 'Daily Inspiration'}</span>
+            </button>
+            <button 
+              onClick={handleCopyMasterPacket}
+              className="glass-button px-4 py-2 bg-zinc-800 hover:bg-zinc-700 text-white font-bold text-xs border-transparent flex items-center gap-1.5 cursor-pointer shadow-md transition-all duration-200 hover:scale-[1.02]"
+            >
+              <Clipboard className="w-4 h-4 text-amber-400" />
+              <span>Copy Master Packet</span>
+            </button>
+            <button 
+              onClick={handleCreateDraft}
+              className="glass-button px-4 py-2 bg-[var(--accent)] hover:bg-[var(--accent-hover)] text-white font-bold text-xs border-transparent flex items-center gap-1.5 cursor-pointer shadow-md transition-all duration-200 hover:scale-[1.02]"
+            >
+              <Plus className="w-4 h-4" />
+              <span>Write Draft</span>
+            </button>
+          </div>
         </div>        {/* Unified Workspace Dashboard */}
         <div className="max-w-2xl mx-auto flex flex-col gap-6 w-full">
 
@@ -536,7 +614,7 @@ Result Notes: ${e.performanceNote}
               </h3>
             </div>
 
-            {/* Active Draft Control Row (Pillar select & Thread toggle) */}
+            {/* Active Draft Control Row (Pillar select & Thread toggle & Dump Mode) */}
             <div className="flex justify-between items-center flex-wrap gap-3 bg-white/[0.02] border border-white/5 p-2.5 rounded-lg text-xs">
               <div className="flex items-center gap-4 flex-wrap">
                 {/* Pillar Label */}
@@ -557,6 +635,26 @@ Result Notes: ${e.performanceNote}
                   />
                   <span>Thread Mode</span>
                 </label>
+              </div>
+
+              {/* Dump Mode selector */}
+              <div className="flex items-center gap-1.5">
+                <span className="text-[var(--text-muted)] font-bold uppercase tracking-wider">Dump:</span>
+                <div className="flex gap-1 bg-white/[0.02] border border-white/5 p-0.5 rounded-md">
+                  {(['auto', 'dev', 'personal', 'shitpost'] as DumpMode[]).map((mode) => (
+                    <button
+                      key={mode}
+                      onClick={() => setDumpMode(mode)}
+                      className={`px-2 py-0.5 rounded text-[10px] font-bold uppercase transition-all duration-150 cursor-pointer ${
+                        dumpMode === mode
+                          ? 'bg-zinc-800 text-[var(--accent)] shadow-sm'
+                          : 'text-[var(--text-muted)] hover:text-white'
+                      }`}
+                    >
+                      {mode}
+                    </button>
+                  ))}
+                </div>
               </div>
             </div>
 
@@ -933,7 +1031,11 @@ Result Notes: ${e.performanceNote}
           {/* Dynamic Scorecard at the very bottom */}
           {score && (
             <div className="mt-2">
-              <ScoreCard score={score} />
+              <ScoreCard 
+                score={score} 
+                onAutoFix={handleAutoFix}
+                fixingSignal={fixingSignal}
+              />
             </div>
           )}
 

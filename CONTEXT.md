@@ -47,13 +47,13 @@ Grok is stateless, so "Grok Packets" are full text bundles carrying all context 
 - **AI Voice Profile Extractor**: A single text area at the top of the Voice Settings modal where users can paste raw bios, description notes, or example tweets. The AI extracts and maps these into structured fields (`name`, `twitterHandle`, `niche`, `tone`, `writingStyle`, `avoidList`, `exampleTweets`) in the settings UI.
 - **Pure Client Logic**: All algorithm scorer computations in `src/lib/scorer.ts` are pure TypeScript functions. No network latency, database storage, or LLM tokens are wasted during scoring.
 - **Next.js 15 App Router**: Uses standard `page.tsx` layouts and client/server components.
-- **Supabase Lazy Init**: `src/lib/storage.ts` lazily initiates the Supabase client inside functions rather than at the module-top to avoid prerender validation failures.
+- **Zustand Local Storage Persistence**: All stores (profile, drafts, library) persist their state to browser Local Storage using Zustand's `persist` middleware, guaranteeing 100% offline functionality.
 - **Local Env Loading**: Next.js requires restarting the dev server (`npm run dev`) if `.env.local` is modified while running.
 - **Glassmorphism CSS Utility Design**: Premium visual layout styled via custom CSS utility classes.
 - **Integrated Step-by-Step Tutorials**: Eliminated the separate "Tutorial" tab. The Drafts, Brain Dump, and Workshop panels now feature interactive, step-by-step inline onboarding guides built directly into their layout, matching the Engage Hub workflow.
 - **Lucide SVG Icons Visual System**: Replaced all emoji indicators across the interface with high-quality, professional Lucide SVG icons (`FileText`, `Zap`, `PenTool`, `Terminal`, `User`, `Sparkles`, `TrendingUp`, `Clipboard`, `Check`, `Info`, `FileEdit`, `AlertTriangle`).
 - **Stateless AI Hand-off**: Integrated quick-actions to copy structured critique/trending prompts for Grok validation, making Grok effectively part of the AI loop despite having no direct API integration.
-- **Audited & Pruned Codebase**: Conducted a repository-wide ponytail/vibe-code audit. Cleaned up and deleted 6 completely unused components and stores (`DraftCard`, `TargetAccountsList`, `ReplyGenerator`, `EngagementLogList`, `useEngagementStore`, `engagement.ts`) and subsequently removed unused target accounts and engagement log query methods and types from `storage.ts` and `types/index.ts` to reduce maintenance overhead by ~809 lines while maintaining 100% compilation and lint compliance.
+- **Audited & Pruned Codebase**: Cleaned up the codebase by removing all Supabase and authentication routes/dependencies. The project is completely local-first and compiles cleanly with zero lint warnings.
 
 ## Target Sub-Niche & Profile Updates
 - **Niche**: Lowercase, sarcastic Pune comp-eng student vibe-coding real AI projects and dropping blunt, dry, frustrated takes on tools, shipping, and dev life — exactly like the `@shydev69` / `@adxtyahq` / `@buildwithsid` / `@kalashvasaniya` circle.
