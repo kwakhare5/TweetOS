@@ -31,8 +31,6 @@ const ProfileIcon = () => (
 
 const TABS = [
   { href: '/', label: 'Workspace', Icon: WorkspaceIcon },
-  { href: '/engage', label: 'Engage', Icon: EngageIcon },
-  { href: '/analytics', label: 'Analytics', Icon: AnalyticsIcon },
   { href: '/profile', label: 'Profile', Icon: ProfileIcon },
 ]
 

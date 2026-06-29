@@ -1,4 +1,4 @@
-import { UserProfile, LibraryEntry } from '@/types'
+import { UserProfile } from '@/types'
 
 // ─── SECOND BRAIN UPDATER ─────────────────────────────────────────────────────
 
@@ -136,6 +136,9 @@ This is not a bio. This is the live version of who this person is right now. Eve
 
 ${profile.secondBrain || '[Second Brain empty — generate from generic voice profile below]'}
 
+INSPIRATIONS CONTEXT (Creator DNA Blueprint — merge their structural style/framing with your voice):
+${profile.inspirationsContext || '[No inspiration context yet]'}
+
 VOICE TONE:
 ${profile.voice.tone}
 
@@ -245,45 +248,6 @@ ${userInput}
 RESPOND ONLY IN VALID JSON matching the classified intent schema. No markdown fences, no explanation, no backticks. Start with '{' and end with '}'.`
 }
 
-// ─── GROK ANALYTICS PACKET ───────────────────────────────────────────────────
-
-export const GROK_ANALYTICS_PACKET_PROMPT = (
-  entries: LibraryEntry[],
-  twitterHandle: string
-) => {
-  // Take last 10 posted tweets
-  const recent = [...entries]
-    .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
-    .slice(0, 10)
-
-  const tweetsList = recent
-    .map((e) => `ID: ${e.id}\nSnippet: "${e.tweet.slice(0, 80)}..."`)
-    .join('\n\n')
-
-  return `Here is a context packet from TweetOS. Please scan my live Twitter/X profile @${twitterHandle} for my recent posts.
-  
-Identify the organic metrics (views, likes, retweets, replies, bookmarks) for the last 10 tweets that match these text snippets:
-
-${tweetsList}
-
-Directions:
-1. Search my live profile @${twitterHandle} for posts matching the text snippets above.
-2. Read their actual views, likes, reposts/retweets, replies, and bookmarks metrics from the UI.
-3. Respond ONLY with a valid JSON array matching the schema below. Do not include markdown blocks, code formatting, or explanations. Start response with [ and end with ].
-
-JSON Output Format:
-[
-  {
-    "id": "tweet_id_from_above",
-    "views": 1050,
-    "likes": 34,
-    "retweets": 2,
-    "replies": 5,
-    "bookmarks": 1
-  }
-]`
-}
-
 export const DAILY_INSPIRATION_PROMPT = (profile: UserProfile, topPerformers: string) => `You are the Daily Inspiration engine for TweetOS.
 Your job is to read the user's profile and recent winning tweets, and generate 3 fresh, highly viral-ready tweet ideas/drafts for today.
 
@@ -294,6 +258,10 @@ VOICE TONE: ${profile.voice.tone}
 WRITING STYLE RULES: ${profile.voice.writingStyle}
 SECOND BRAIN (Active daily context, frustrations, wins, opinions):
 ${profile.secondBrain}
+
+INSPIRATIONS CONTEXT (Creator DNA Blueprint):
+Merge the structural habits, psychological framing, and formatting habits from this blueprint with your voice to generate the tweets:
+${profile.inspirationsContext || '[No inspiration context yet]'}
 
 TOP PERFORMING TWEETS FOR REFERENCE:
 ${topPerformers}

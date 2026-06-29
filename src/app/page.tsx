@@ -1,1041 +1,223 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import AppShell from '@/components/layout/AppShell'
-import { useDraftStore } from '@/store/useDraftStore'
 import { useProfileStore } from '@/store/useProfileStore'
-import { useLibraryStore } from '@/store/useLibraryStore'
-import { scoreTweet } from '@/lib/scorer'
-import { geminiJSON, geminiText } from '@/lib/gemini'
-import { UNIFIED_ROUTER_PROMPT, DAILY_INSPIRATION_PROMPT } from '@/lib/prompts'
-import { generateDraftPacket, generateTrendingPacket, buildIdentityBlock } from '@/lib/grok-packager'
-import { TweetDraft, AlgorithmScore, MomentType } from '@/types'
-import ScoreCard from '@/components/scorer/ScoreCard'
-import SecondBrainPanel from '@/components/brain/SecondBrainPanel'
-import { 
-  Plus, 
-  Sparkles, 
-  TrendingUp, 
-  FileText, 
-  Clipboard, 
-  Check,
-  AlertTriangle,
-  Brain,
-  Loader2
-} from 'lucide-react'
+import { geminiText } from '@/lib/gemini'
+import { generateDraftPacket, generateTrendingPacket, generateEngagementPacket } from '@/lib/grok-packager'
+import { Sparkles, Clipboard, Check, Loader2, Search, MessageSquare } from 'lucide-react'
+import { TweetDraft } from '@/types'
 
 export default function WorkspacePage() {
-  // Stores
-  const { drafts, addDraft, updateDraft, setDrafts } = useDraftStore()
-  const { profile, setProfile } = useProfileStore()
-  const { addEntry, entries } = useLibraryStore()
+  const { profile } = useProfileStore()
 
-  // States
-  const [activeDraft, setActiveDraft] = useState<TweetDraft | null>(null)
+  const [dumpText, setDumpText] = useState('')
+  const [draftOutput, setDraftOutput] = useState('')
+  const [loading, setLoading] = useState(false)
+  const [error, setError] = useState<string | null>(null)
   
-  // Unified Composer States
-  const [unifiedText, setUnifiedText] = useState('')
-  const [unifiedLoading, setUnifiedLoading] = useState(false)
-  const [unifiedError, setUnifiedError] = useState<string | null>(null)
-  const [replyResult, setReplyResult] = useState<{ context: string; replies: { option: string; tone: string; content: string }[] } | null>(null)
-  const [copiedText, setCopiedText] = useState<string | null>(null)
-  
-  // Tool Results
-  const [hookResults, setHookResults] = useState<{ technique: string; text: string }[]>([])
-  const [threadResults, setThreadResults] = useState<{ number: number; content: string }[]>([])
-  const [tightenResult, setTightenResult] = useState<string | null>(null)
-
-  // Scorer State (dynamic scoring)
-  const [score, setScore] = useState<AlgorithmScore | null>(null)
-
-  // Clipboard notify
   const [toast, setToast] = useState<string | null>(null)
-  // Learning Note quick-capture
-  const [learningNote, setLearningNote] = useState('')
-  const [savingNote, setSavingNote] = useState(false)
-  
-  // Super X Feature States
-  type DumpMode = 'auto' | 'dev' | 'personal' | 'shitpost'
-  const [dumpMode, setDumpMode] = useState<DumpMode>('auto')
-  const [generatingInspiration, setGeneratingInspiration] = useState(false)
-  const [fixingSignal, setFixingSignal] = useState<string | null>(null)
+  const [copiedGrok, setCopiedGrok] = useState(false)
+  const [copiedHunt, setCopiedHunt] = useState(false)
+  const [copiedEngage, setCopiedEngage] = useState(false)
 
-  // Trigger toast notification
   function triggerToast(msg: string) {
     setToast(msg)
     setTimeout(() => setToast(null), 3000)
   }
 
-  // Save a Grok session learning note back into profile.voice.learningNotes
-  async function handleSaveLearningNote() {
-    if (!learningNote.trim()) return
-    setSavingNote(true)
-    const updatedNotes = [learningNote.trim(), ...(profile.voice.learningNotes || [])].slice(0, 20)
-    const updatedProfile = {
-      ...profile,
-      voice: { ...profile.voice, learningNotes: updatedNotes },
-      updatedAt: new Date().toISOString()
-    }
-    setProfile(updatedProfile)
-    setLearningNote('')
-    setSavingNote(false)
-    triggerToast('Learning note saved — Grok will read it next session.')
-  }
+  async function handleTailor() {
+    if (!dumpText.trim()) return
+    setLoading(true)
+    setError(null)
+    setDraftOutput('')
+    setCopiedGrok(false)
 
-  // Synchronize helper to change draft and content
-  function selectActiveDraft(d: TweetDraft | null) {
-    setActiveDraft(d)
-    setUnifiedText(d ? d.content : '')
-  }
-
-  const [hasHydrated, setHasHydrated] = useState(false)
-  useEffect(() => {
-    // eslint-disable-next-line react-hooks/set-state-in-effect
-    setHasHydrated(true)
-  }, [])
-
-  // Select first draft on load once drafts are hydrated from localStorage
-  useEffect(() => {
-    if (hasHydrated && drafts.length > 0 && !activeDraft) {
-      // eslint-disable-next-line react-hooks/set-state-in-effect
-      selectActiveDraft(drafts[0])
-    }
-  }, [hasHydrated, drafts, activeDraft])
-
-  // Create new blank draft
-  function handleCreateDraft() {
-    const now = new Date().toISOString()
-    const newDraft: TweetDraft = {
-      id: `draft_${Date.now()}`,
-      content: '',
-      isThread: false,
-      threadTweets: [],
-      pillarId: profile.contentPillars[0]?.name || 'General',
-      momentType: 'progress',
-      hookVariations: [],
-      algorithmScore: {
-        overall: 0,
-        hookStrength: { score: 0, label: 'Weak', reason: 'Empty' },
-        replyBait: { score: 0, label: 'Weak', reason: 'Empty' },
-        specificity: { score: 0, label: 'Weak', reason: 'Empty' },
-        emotionalTrigger: { score: 0, label: 'Weak', reason: 'Empty' },
-        length: { score: 0, label: 'Weak', reason: 'Empty' },
-        noLinksInBody: { score: 10, label: 'Strong', reason: 'Empty' },
-        ctaQuality: { score: 0, label: 'Weak', reason: 'Empty' },
-        threadPotential: { score: 0, label: 'Weak', reason: 'Empty' },
-        suggestions: [],
-        calculatedAt: now
-      },
-      status: 'draft',
-      createdAt: now,
-      updatedAt: now
-    }
-    addDraft(newDraft)
-    selectActiveDraft(newDraft)
-    triggerToast('New draft started!')
-  }
-
-  // Load drafts if none on mount
-  useEffect(() => {
-    if (hasHydrated) {
-      if (drafts.length > 0) {
-        if (!activeDraft) {
-          // eslint-disable-next-line react-hooks/set-state-in-effect
-          selectActiveDraft(drafts[0])
-        }
-      } else {
-        handleCreateDraft()
-      }
-    }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [drafts, hasHydrated, activeDraft])
-
-  // Real-time score calculator
-  useEffect(() => {
-    if (activeDraft) {
-      const calculated = scoreTweet(activeDraft.content, activeDraft.isThread)
-      // eslint-disable-next-line react-hooks/set-state-in-effect
-      setScore(calculated)
-      updateDraft(activeDraft.id, { algorithmScore: calculated })
-    } else {
-      setScore(null)
-    }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [activeDraft?.content, activeDraft?.isThread])
-
-  // Get Top 10 posted tweets for Closed-Loop prompt learning
-  function getTopPerformersContext(): string {
-    const postedWithNotes = [...entries]
-      .filter(e => e.postedAt && e.performanceNote)
-      .sort((a, b) => new Date(b.postedAt!).getTime() - new Date(a.postedAt!).getTime())
-      .slice(0, 10)
-
-    if (postedWithNotes.length === 0) return ''
-
-    return postedWithNotes.map((e, idx) => {
-      return `[Past Tweet #${idx + 1}]
-Tweet: ${e.tweet}
-Original Score: ${e.algorithmScore?.overall ?? 'N/A'}/100
-Result Notes: ${e.performanceNote}
----`
-    }).join('\n')
-  }
-
-  // Active editor updates
-  function handleContentChange(val: string) {
-    if (!activeDraft) return
-    
-    let cleanVal = val
-    let matchedPillarId = activeDraft.pillarId
-    const pillars = profile?.contentPillars || []
-
-    // Try to match content pillar prefix
-    for (const pillar of pillars) {
-      const name = pillar.name
-      const escapedName = name.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&')
-      const regexes = [
-        new RegExp(`^\\[Pillar:\\s*${escapedName}\\]\\s*`, 'i'),
-        new RegExp(`^\\[${escapedName}\\]\\s*`, 'i'),
-        new RegExp(`^${escapedName}\\s*[|:]\\s*`, 'i'),
-        new RegExp(`^•\\s*\\*\\*.*?\\[Pillar:\\s*${escapedName}\\]\\s*\\*\\*:\\s*`, 'i'),
-        new RegExp(`^\\*\\s*\\*\\*.*?\\[Pillar:\\s*${escapedName}\\]\\s*\\*\\*:\\s*`, 'i'),
-        new RegExp(`^\\*\\*.*?\\[Pillar:\\s*${escapedName}\\]\\s*\\*\\*:\\s*`, 'i')
-      ]
-
-      let matched = false
-      for (const rx of regexes) {
-        if (rx.test(cleanVal)) {
-          cleanVal = cleanVal.replace(rx, '')
-          matchedPillarId = name
-          matched = true
-          break
-        }
-      }
-      if (matched) break
-    }
-
-    // Strip trailing character counts like " (120)" or " (120 chars)"
-    cleanVal = cleanVal.replace(/\s*\(\d+(?:\s*chars)?\)\s*$/, '')
-
-    setActiveDraft({ ...activeDraft, content: cleanVal, pillarId: matchedPillarId })
-    updateDraft(activeDraft.id, { content: cleanVal, pillarId: matchedPillarId })
-  }
-
-  function handleThreadToggle(isThread: boolean) {
-    if (!activeDraft) return
-    const initialThread = isThread ? [activeDraft.content, ''] : []
-    setActiveDraft({ ...activeDraft, isThread, threadTweets: initialThread })
-    updateDraft(activeDraft.id, { isThread, threadTweets: initialThread })
-  }
-
-  function handleThreadTweetChange(index: number, val: string) {
-    if (!activeDraft || !activeDraft.threadTweets) return
-    const updated = [...activeDraft.threadTweets]
-    updated[index] = val
-    
-    // Combine thread text for main scorer evaluation or calculate score per item
-    const combinedText = updated.join('\n\n')
-    
-    setActiveDraft({ ...activeDraft, content: combinedText, threadTweets: updated })
-    updateDraft(activeDraft.id, { content: combinedText, threadTweets: updated })
-  }
-
-  function handleAddThreadTweet() {
-    if (!activeDraft || !activeDraft.threadTweets) return
-    const updated = [...activeDraft.threadTweets, '']
-    setActiveDraft({ ...activeDraft, threadTweets: updated })
-    updateDraft(activeDraft.id, { threadTweets: updated })
-  }
-
-  function handleRemoveThreadTweet(index: number) {
-    if (!activeDraft || !activeDraft.threadTweets || activeDraft.threadTweets.length <= 2) return
-    const updated = activeDraft.threadTweets.filter((_, i) => i !== index)
-    const combinedText = updated.join('\n\n')
-    setActiveDraft({ ...activeDraft, content: combinedText, threadTweets: updated })
-    updateDraft(activeDraft.id, { content: combinedText, threadTweets: updated })
-  }
-
-  // Delete draft
-  function handleDeleteDraft(id: string) {
-    const updated = drafts.filter(d => d.id !== id)
-    setDrafts(updated)
-    if (updated.length === 0) {
-      handleCreateDraft()
-    } else if (activeDraft?.id === id) {
-      selectActiveDraft(updated[0])
-    }
-    triggerToast('Draft deleted!')
-  }
-
-  // Daily Inspiration Generator
-  async function handleGenerateDailyInspiration() {
-    setGeneratingInspiration(true)
     try {
-      const topPerformers = getTopPerformersContext()
-      const prompt = DAILY_INSPIRATION_PROMPT(profile, topPerformers)
-      
-      const res = await geminiJSON<{ inspirations: { tweet: string; pillarName: string }[] }>(prompt)
-      if (res.inspirations && res.inspirations.length > 0) {
-        const now = new Date().toISOString()
-        const newDrafts = res.inspirations.map((idea, i) => ({
-          id: `draft_insp_${Date.now()}_${i}`,
-          content: idea.tweet,
-          isThread: false,
-          threadTweets: [],
-          pillarId: idea.pillarName || 'Inspiration',
-          momentType: 'opinion' as MomentType,
-          hookVariations: [],
-          status: 'draft' as const,
-          createdAt: now,
-          updatedAt: now,
-          algorithmScore: {
-            overall: 0,
-            hookStrength: { score: 0, label: 'Weak' as const, reason: '' },
-            replyBait: { score: 0, label: 'Weak' as const, reason: '' },
-            specificity: { score: 0, label: 'Weak' as const, reason: '' },
-            emotionalTrigger: { score: 0, label: 'Weak' as const, reason: '' },
-            length: { score: 0, label: 'Weak' as const, reason: '' },
-            noLinksInBody: { score: 10, label: 'Strong' as const, reason: '' },
-            ctaQuality: { score: 0, label: 'Weak' as const, reason: '' },
-            threadPotential: { score: 0, label: 'Weak' as const, reason: '' },
-            suggestions: [],
-            calculatedAt: now
-          }
-        }))
-        
-        newDrafts.forEach(d => addDraft(d))
-        selectActiveDraft(newDrafts[0])
-        triggerToast('Generated 3 daily inspirations!')
-      }
-    } catch (err: unknown) {
-      const errMsg = err instanceof Error ? err.message : String(err)
-      triggerToast(`Inspiration failed: ${errMsg}`)
-    } finally {
-      setGeneratingInspiration(false)
-    }
-  }
+      const prompt = `You are a world-class ghostwriter for @${profile.twitterHandle}.
+Take the user's raw brain dump below and turn it into a single, highly-polished tweet (strictly under 280 characters).
 
-  // Auto-Fix warning metrics surgically via Gemini
-  async function handleAutoFix(signalName: string) {
-    if (!activeDraft) return
-    setFixingSignal(signalName)
-    try {
-      const prompt = `You are the Auto-Fix engine for TweetOS.
-Your job is to surgically rewrite the following tweet draft to fix a scoring warning.
+USER PROFILE & NICHE: ${profile.niche}
+VOICE & TONE: ${profile.voice.tone}
+AVOID THESE WORDS: ${profile.voice.avoidList.join(', ')}
 
-WARNING TO FIX: ${signalName} (Currently scored low)
-REASON: ${score?.suggestions.find(s => s.toLowerCase().includes(signalName.toLowerCase())) || `Improve the ${signalName} of the tweet`}
+SECOND BRAIN (Live context):
+${profile.secondBrain || 'None'}
 
-USER PROFILE NICHE: ${profile.niche}
-USER VOICE: ${profile.voice.tone}
-SECOND BRAIN (context to pull facts/details from if needed):
-${profile.secondBrain}
+INSPIRATIONS CONTEXT (Creator DNA to clone):
+${profile.inspirationsContext || 'None'}
 
-ORIGINAL DRAFT:
+RAW BRAIN DUMP:
 """
-${activeDraft.content}
+${dumpText}
 """
 
 RULES:
-1. Surgically rewrite ONLY what is needed to address the warning.
-2. Keep the length strictly under 280 characters.
-3. Maintain the lowercase, punchy, student builder tone.
-4. Output ONLY the new rewritten tweet. Do not include markdown blocks, quotes, or preambles. Just the plain tweet.
+1. Output ONLY the raw tailored tweet. No quotes, no markdown, no preamble, no hashtags unless strictly necessary.
+2. Ensure it sounds exactly like their Inspirations Context merged with their own Voice Tone.
+3. Must be under 280 characters.`
 
-REWRITTEN TWEET:`
-
-      const rewritten = await geminiText(prompt)
-      if (rewritten.trim()) {
-        const cleanText = rewritten.trim()
-        setUnifiedText(cleanText)
-        
-        const calculated = scoreTweet(cleanText, activeDraft.isThread)
-        const updated = {
-          ...activeDraft,
-          content: cleanText,
-          algorithmScore: calculated,
-          updatedAt: new Date().toISOString()
-        }
-        setActiveDraft(updated)
-        updateDraft(activeDraft.id, updated)
-        triggerToast(`Auto-fixed ${signalName}!`)
-      }
-    } catch (err: unknown) {
-      const errMsg = err instanceof Error ? err.message : String(err)
-      triggerToast(`Failed to auto-fix: ${errMsg}`)
-    } finally {
-      setFixingSignal(null)
-    }
-  }
-
-  // Unified Action Generator
-  async function handleRunUnifiedAction() {
-    if (!unifiedText.trim()) return
-    setUnifiedLoading(true)
-    setUnifiedError(null)
-
-    // Clear previous results
-    setHookResults([])
-    setThreadResults([])
-    setTightenResult(null)
-    setReplyResult(null)
-
-    try {
-      const topPerformers = getTopPerformersContext()
-      const prompt = UNIFIED_ROUTER_PROMPT(unifiedText, profile, topPerformers, dumpMode)
-      
-      const result = await geminiJSON<{
-        intent: 'draft' | 'hooks' | 'thread' | 'tighten' | 'replies'
-        moments?: { id: string; insight: string; type: string; pillarName: string; tweet: string; hookVariations: string[]; isThread: boolean; threadTweets: string[]; factCheckNote?: string }[]
-        hooks?: { technique: string; text: string }[]
-        thread?: { number: number; content: string }[]
-        tightenedText?: string
-        replies?: { option: string; tone: string; content: string }[]
-      }>(prompt)
-
-      if (result.intent === 'draft' && result.moments) {
-        const newDrafts: TweetDraft[] = result.moments.map(m => {
-          const now = new Date().toISOString()
-          return {
-            id: `draft_${Date.now()}_${m.id}`,
-            content: m.tweet,
-            isThread: m.isThread,
-            threadTweets: m.threadTweets || [],
-            pillarId: m.pillarName,
-            momentType: (m.type as MomentType) || 'progress',
-            hookVariations: m.hookVariations || [],
-            factCheckNote: m.factCheckNote || '',
-            algorithmScore: {
-              overall: 0,
-              hookStrength: { score: 0, label: 'Weak', reason: 'Not scored' },
-              replyBait: { score: 0, label: 'Weak', reason: 'Not scored' },
-              specificity: { score: 0, label: 'Weak', reason: 'Not scored' },
-              emotionalTrigger: { score: 0, label: 'Weak', reason: 'Not scored' },
-              length: { score: 0, label: 'Weak', reason: 'Not scored' },
-              noLinksInBody: { score: 10, label: 'Strong', reason: 'Not scored' },
-              ctaQuality: { score: 0, label: 'Weak', reason: 'Not scored' },
-              threadPotential: { score: 0, label: 'Weak', reason: 'Not scored' },
-              suggestions: [],
-              calculatedAt: now
-            },
-            status: 'draft',
-            createdAt: now,
-            updatedAt: now
-          }
-        })
-
-        newDrafts.forEach(d => addDraft(d))
-        if (newDrafts.length > 0) {
-          selectActiveDraft(newDrafts[0])
-        }
-        setUnifiedText('')
-        triggerToast(`Auto-detected: Draft writing. Extracted ${newDrafts.length} drafts!`)
-      } else if (result.intent === 'hooks' && result.hooks) {
-        setHookResults(result.hooks)
-        triggerToast(`Auto-detected: Hook generation. Generated ${result.hooks.length} hooks!`)
-      } else if (result.intent === 'thread' && result.thread) {
-        setThreadResults(result.thread)
-        triggerToast(`Auto-detected: Thread builder. Structured thread!`)
-      } else if (result.intent === 'tighten' && result.tightenedText) {
-        setTightenResult(result.tightenedText)
-        triggerToast(`Auto-detected: Tighten Copy. Condensed tweet text!`)
-      } else if (result.intent === 'replies' && result.replies) {
-        setReplyResult({
-          context: 'Replies generated via ChatGPT intent analysis',
-          replies: result.replies
-        })
-        triggerToast(`Auto-detected: Reply generator. Suggested ${result.replies.length} replies!`)
-      } else {
-        // Fallback if schema match failed
-        throw new Error('Unrecognized response format from routing engine.')
-      }
+      const result = await geminiText(prompt)
+      setDraftOutput(result.trim())
+      triggerToast('Tailored draft ready!')
     } catch (e) {
-      setUnifiedError(e instanceof Error ? e.message : 'Action execution failed')
+      setError(e instanceof Error ? e.message : 'Failed to tailor draft.')
     } finally {
-      setUnifiedLoading(false)
+      setLoading(false)
     }
   }
 
-  // Apply Refinement Content
-  function applyWorkshopContent(newText: string, isThread = false, threadList: string[] = []) {
-    if (!activeDraft) return
-    setActiveDraft({
-      ...activeDraft,
-      content: newText,
-      isThread,
-      threadTweets: threadList
-    })
-    updateDraft(activeDraft.id, {
-      content: newText,
-      isThread,
-      threadTweets: threadList
-    })
-    // Clear the active tool outputs after applying
-    setHookResults([])
-    setThreadResults([])
-    setTightenResult(null)
-    triggerToast('Applied refined text to editor!')
-  }
-
-  // Copy reply text
-  function handleCopyReply(content: string, type: 'raw' | 'grok') {
-    let finalContent = content
-    if (type === 'grok') {
-      finalContent = `Please review and optimize this tweet reply in my Pune CS student voice:\n"${content}"`
-    }
-    navigator.clipboard.writeText(finalContent)
-    setCopiedText(content)
-    triggerToast(type === 'grok' ? 'Grok Critique Prompt copied!' : 'Tweet copied to clipboard!')
-    setTimeout(() => setCopiedText(null), 2000)
-  }
-
-  // Copy Option C payload (critique prompt or raw text)
-  function handleClipboardAction(type: 'raw' | 'grok' | 'trending') {
-    if (type === 'trending') {
-      const packet = generateTrendingPacket(profile, {
-        mode: 'trending',
-        focusAreas: [],
-        customRequest: ''
-      }, entries)
-      navigator.clipboard.writeText(packet)
-      triggerToast('Trending Radar Packet copied! Paste into Grok.')
-      return
-    }
-    if (!activeDraft) return
-    let textToCopy = activeDraft.content
-    if (type === 'grok') {
-      const config = {
-        mode: 'draft' as const,
-        selectedDraftIds: [activeDraft.id],
-        includeScores: true,
-        dumpMode: dumpMode,
-        customRequest: 'Standard validation feedback'
+  function handleCopyToGrok() {
+    if (!draftOutput) return
+    
+    // Create a temporary mock draft object to reuse the grok packager
+    const tempDraft: TweetDraft = {
+      id: 'temp_draft',
+      content: draftOutput,
+      isThread: false,
+      pillarId: 'General',
+      momentType: 'opinion',
+      hookVariations: [],
+      status: 'draft',
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+      algorithmScore: {
+        overall: 0,
+        hookStrength: { score: 0, label: 'Weak', reason: '' },
+        replyBait: { score: 0, label: 'Weak', reason: '' },
+        specificity: { score: 0, label: 'Weak', reason: '' },
+        emotionalTrigger: { score: 0, label: 'Weak', reason: '' },
+        length: { score: 0, label: 'Weak', reason: '' },
+        noLinksInBody: { score: 0, label: 'Weak', reason: '' },
+        ctaQuality: { score: 0, label: 'Weak', reason: '' },
+        threadPotential: { score: 0, label: 'Weak', reason: '' },
+        suggestions: [],
+        calculatedAt: new Date().toISOString()
       }
-      textToCopy = generateDraftPacket(profile, [activeDraft], config, entries)
     }
-    navigator.clipboard.writeText(textToCopy)
-    triggerToast(type === 'grok' ? 'Grok Critique Packet copied!' : 'Raw tweet copied!')
-  }
 
-  // Copy Master Identity block for initializing blank Grok sessions
-  function handleCopyMasterPacket() {
-    const packet = buildIdentityBlock(profile)
+    const config = {
+      mode: 'draft' as const,
+      selectedDraftIds: [tempDraft.id],
+      includeScores: false,
+      customRequest: 'Review this draft against my Creator DNA Blueprint and give me 1 final polish suggestion.'
+    }
+
+    // Generate the packet
+    const packet = generateDraftPacket(profile, [tempDraft], config)
     navigator.clipboard.writeText(packet)
-    triggerToast('Master Profile Packet copied! Paste into Grok.')
+    
+    setCopiedGrok(true)
+    triggerToast('Copied Draft Review Packet to clipboard!')
+    setTimeout(() => setCopiedGrok(false), 2000)
   }
 
-  // Save to Library & Mark Posted
-  function handleMarkAsPosted() {
-    if (!activeDraft || !activeDraft.content.trim()) return
-    
-    const now = new Date().toISOString()
-    const newEntryObj = {
-      id: `lib_${Date.now()}`,
-      tweet: activeDraft.content,
-      isThread: activeDraft.isThread,
-      threadTweets: activeDraft.threadTweets,
-      pillarId: activeDraft.pillarId,
-      algorithmScore: score || undefined,
-      postedAt: now,
-      performanceNote: '',
-      tags: [activeDraft.pillarId.toLowerCase()],
-      createdAt: now
+  function handleTopicHunt() {
+    const config = {
+      mode: 'trending' as const,
+      focusAreas: [], // Uses defaults in packager
+      customRequest: 'Find 3 trending topics and craft tweet ideas using my Inspiration DNA.'
     }
+    
+    const packet = generateTrendingPacket(profile, config)
+    navigator.clipboard.writeText(packet)
+    
+    setCopiedHunt(true)
+    triggerToast('Copied Topic Hunt Packet to clipboard!')
+    setTimeout(() => setCopiedHunt(false), 2000)
+  }
 
-    // Save library entry
-    addEntry(newEntryObj)
-    
-    // Remove from drafts store (or mark it archived)
-    const updatedDrafts = drafts.filter(d => d.id !== activeDraft.id)
-    setDrafts(updatedDrafts)
-    
-    if (updatedDrafts.length > 0) {
-      selectActiveDraft(updatedDrafts[0])
-    } else {
-      handleCreateDraft()
+  function handleEngagementHunt() {
+    const config = {
+      mode: 'engagement' as const,
+      targetAccounts: [], 
+      topicKeywords: [], // Relies on Identity Block defaults
+      opportunityTypes: ['add_value' as const, 'share_experience' as const, 'ask_question' as const],
+      customRequest: 'Find 10 high-value reply opportunities and 3 quote tweets for me right now.'
     }
-
-    triggerToast('Tweet saved to Library! Loopback locked.')
+    
+    const packet = generateEngagementPacket(profile, config)
+    navigator.clipboard.writeText(packet)
+    
+    setCopiedEngage(true)
+    triggerToast('Copied Engagement Hunt Packet to clipboard!')
+    setTimeout(() => setCopiedEngage(false), 2000)
   }
 
   return (
     <AppShell>
-      <div className="p-4 md:p-6 max-w-6xl mx-auto flex flex-col gap-6">
-        
-        {/* Workspace Title bar */}
-        <div className="flex justify-between items-center flex-wrap gap-4 border-b border-white/5 pb-4">
-          <div>
-            <h1 className="text-xl font-bold tracking-tight text-white">Creator Workspace</h1>
-            <p className="text-[var(--text-muted)] text-xs mt-0.5">
-              Draft, polish, run through automated scorer, and export content for validation.
-            </p>
+      <div className="min-h-full flex items-center justify-center p-4 md:p-6">
+        <div className="w-full max-w-2xl flex flex-col gap-6">
+          
+          <div className="text-center space-y-2 mb-2">
+            <h1 className="text-2xl font-bold tracking-tight text-white">Command Center</h1>
+            <p className="text-[var(--text-muted)] text-sm">Dump thoughts → Tailor → Grok</p>
           </div>
-          <div className="flex gap-2.5">
-            <button 
-              onClick={handleGenerateDailyInspiration}
-              disabled={generatingInspiration}
-              className="glass-button px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white font-bold text-xs border-transparent flex items-center gap-1.5 cursor-pointer shadow-md transition-all duration-200 hover:scale-[1.02] disabled:opacity-40"
-            >
-              {generatingInspiration ? (
-                <Loader2 className="w-4 h-4 animate-spin" />
-              ) : (
-                <Sparkles className="w-4 h-4" />
-              )}
-              <span>{generatingInspiration ? 'Generating...' : 'Daily Inspiration'}</span>
-            </button>
-            <button 
-              onClick={handleCopyMasterPacket}
-              className="glass-button px-4 py-2 bg-zinc-800 hover:bg-zinc-700 text-white font-bold text-xs border-transparent flex items-center gap-1.5 cursor-pointer shadow-md transition-all duration-200 hover:scale-[1.02]"
-            >
-              <Clipboard className="w-4 h-4 text-amber-400" />
-              <span>Copy Master Packet</span>
-            </button>
-            <button 
-              onClick={handleCreateDraft}
-              className="glass-button px-4 py-2 bg-[var(--accent)] hover:bg-[var(--accent-hover)] text-white font-bold text-xs border-transparent flex items-center gap-1.5 cursor-pointer shadow-md transition-all duration-200 hover:scale-[1.02]"
-            >
-              <Plus className="w-4 h-4" />
-              <span>Write Draft</span>
-            </button>
-          </div>
-        </div>        {/* Unified Workspace Dashboard */}
-        <div className="max-w-2xl mx-auto flex flex-col gap-6 w-full">
 
-          {/* Second Brain — always visible, first thing */}
-          <SecondBrainPanel />
-
-          {/* AI Composer Section */}
-          <div className="glass-panel p-5 rounded-xl flex flex-col gap-4 border border-white/5 bg-white/[0.01]">
+          <div className="glass-panel p-5 rounded-2xl flex flex-col gap-4 border border-white/5 shadow-2xl bg-[#0a0a0a]/80 backdrop-blur-xl">
+            <textarea
+              placeholder="Dump raw thoughts, code snippets, rants, or ideas here..."
+              value={dumpText}
+              onChange={(e) => setDumpText(e.target.value)}
+              className="w-full h-40 bg-transparent text-sm font-sans leading-relaxed text-zinc-200 placeholder-zinc-600 resize-none outline-none focus:outline-none"
+            />
             
-            <div className="flex justify-between items-center border-b border-white/5 pb-3">
-              <h3 className="text-xs uppercase tracking-wider text-[var(--text-muted)] font-bold flex items-center gap-1.5">
-                <Sparkles className="w-3.5 h-3.5 text-[var(--accent)]" />
-                <span>AI Composer</span>
-              </h3>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+              <button
+                onClick={handleTailor}
+                disabled={loading || !dumpText.trim()}
+                className="w-full py-3 bg-[var(--accent)] hover:bg-[var(--accent-hover)] text-white font-bold text-sm rounded-xl flex items-center justify-center gap-2 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed shadow-lg shadow-[var(--accent)]/20"
+              >
+                {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Sparkles className="w-4 h-4" />}
+                {loading ? 'Tailoring...' : 'Tailor Draft'}
+              </button>
+              
+              <button
+                onClick={handleTopicHunt}
+                className={"w-full py-3 font-bold text-sm rounded-xl flex items-center justify-center gap-2 transition-all duration-200 " + (copiedHunt ? 'bg-purple-500/10 text-purple-400 border border-purple-500/20' : 'bg-white/5 hover:bg-white/10 text-white border border-white/10')}
+              >
+                {copiedHunt ? <Check className="w-4 h-4" /> : <Search className="w-4 h-4" />}
+                {copiedHunt ? 'Packet Copied!' : 'Topic Hunt Packet'}
+              </button>
+
+              <button
+                onClick={handleEngagementHunt}
+                className={"w-full py-3 font-bold text-sm rounded-xl flex items-center justify-center gap-2 transition-all duration-200 " + (copiedEngage ? 'bg-blue-500/10 text-blue-400 border border-blue-500/20' : 'bg-white/5 hover:bg-white/10 text-white border border-white/10')}
+              >
+                {copiedEngage ? <Check className="w-4 h-4" /> : <MessageSquare className="w-4 h-4" />}
+                {copiedEngage ? 'Packet Copied!' : 'Engage Packet'}
+              </button>
             </div>
-
-            {/* Active Draft Control Row (Pillar select & Thread toggle & Dump Mode) */}
-            <div className="flex justify-between items-center flex-wrap gap-3 bg-white/[0.02] border border-white/5 p-2.5 rounded-lg text-xs">
-              <div className="flex items-center gap-4 flex-wrap">
-                {/* Pillar Label */}
-                <div className="flex items-center gap-1.5">
-                  <span className="text-[var(--text-muted)] font-bold uppercase tracking-wider">Pillar:</span>
-                  <span className="text-zinc-200 font-semibold px-2 py-0.5 bg-white/[0.03] border border-white/5 rounded">
-                    {activeDraft?.pillarId}
-                  </span>
-                </div>
-
-                {/* Thread Mode checkbox */}
-                <label className="flex items-center gap-1.5 cursor-pointer font-bold text-[var(--text-muted)] uppercase tracking-wider">
-                  <input 
-                    type="checkbox"
-                    checked={activeDraft?.isThread || false}
-                    onChange={(e) => handleThreadToggle(e.target.checked)}
-                    className="accent-[var(--accent)]"
-                  />
-                  <span>Thread Mode</span>
-                </label>
-              </div>
-
-              {/* Dump Mode selector */}
-              <div className="flex items-center gap-1.5">
-                <span className="text-[var(--text-muted)] font-bold uppercase tracking-wider">Dump:</span>
-                <div className="flex gap-1 bg-white/[0.02] border border-white/5 p-0.5 rounded-md">
-                  {(['auto', 'dev', 'personal', 'shitpost'] as DumpMode[]).map((mode) => (
-                    <button
-                      key={mode}
-                      onClick={() => setDumpMode(mode)}
-                      className={`px-2 py-0.5 rounded text-[10px] font-bold uppercase transition-all duration-150 cursor-pointer ${
-                        dumpMode === mode
-                          ? 'bg-zinc-800 text-[var(--accent)] shadow-sm'
-                          : 'text-[var(--text-muted)] hover:text-white'
-                      }`}
-                    >
-                      {mode}
-                    </button>
-                  ))}
-                </div>
-              </div>
-            </div>
-
-            {/* Input / Editor Textarea Box */}
-            <div className="space-y-3">
-              {activeDraft?.isThread ? (
-                /* Thread Mode Editor */
-                <div className="space-y-4 max-h-[45vh] overflow-y-auto pr-1">
-                  {(activeDraft.threadTweets || []).map((tText, idx) => (
-                    <div key={idx} className="flex gap-3 items-start border-l-2 border-white/5 pl-3 focus-within:border-[var(--accent)]">
-                      <span className="text-xs font-bold text-[var(--accent)] mt-2 shrink-0">{idx + 1}/</span>
-                      <textarea
-                        value={tText}
-                        onChange={(e) => handleThreadTweetChange(idx, e.target.value)}
-                        placeholder={idx === 0 ? "Thread hook tweet..." : "Next thread point..."}
-                        rows={3}
-                        className="w-full bg-transparent text-sm font-sans p-1 resize-none outline-none focus:outline-none whitespace-pre-wrap leading-relaxed text-zinc-200 border-none"
-                      />
-                      {idx > 1 && (
-                        <button 
-                          onClick={() => handleRemoveThreadTweet(idx)}
-                          className="text-xs text-[var(--fail)] hover:text-red-400 p-1 shrink-0 font-bold text-lg"
-                        >
-                          ×
-                        </button>
-                      )}
-                    </div>
-                  ))}
-                  <button 
-                    onClick={handleAddThreadTweet}
-                    className="glass-button py-1.5 px-3 text-xs w-full justify-center"
-                  >
-                    + Add Tweet to Thread
-                  </button>
-                </div>
-              ) : (
-                /* Standard Composer Textarea */
-                <textarea
-                  placeholder="Type anything... Dump raw thoughts, write a topic for a thread, paste a tweet to reply to, or ask to generate hooks/shorten text."
-                  value={unifiedText}
-                  onChange={(e) => {
-                    const val = e.target.value
-                    setUnifiedText(val)
-                    if (activeDraft) {
-                      handleContentChange(val)
-                    }
-                  }}
-                  className="glass-input w-full h-36 p-3 bg-transparent text-sm font-sans leading-relaxed focus:border-[var(--accent)] transition-all duration-200"
-                />
-              )}
-
-              {/* Fact Check Warning Box */}
-              {activeDraft?.factCheckNote && (
-                <div className="glass-panel p-3 rounded-lg border border-amber-500/20 bg-amber-500/[0.02] text-xs text-amber-300 flex items-start gap-2 mt-2">
-                  <AlertTriangle className="w-4 h-4 shrink-0 mt-0.5 text-amber-500" />
-                  <div>
-                    <span className="font-bold">Fact Check:</span> {activeDraft.factCheckNote}
-                  </div>
-                </div>
-              )}
-
-              {/* Action Buttons Row */}
-              <div className="flex justify-between items-center gap-3 flex-wrap text-xs pt-1">
-                <div className="flex items-center gap-2">
-                  {activeDraft && !activeDraft.isThread && (
-                    <span className={`font-semibold ${
-                      unifiedText.length > 280 ? 'text-[var(--fail)] font-bold animate-pulse' : 'text-[var(--text-muted)]'
-                    }`}>
-                      {unifiedText.length} / 280
-                    </span>
-                  )}
-                  {activeDraft && activeDraft.isThread && (
-                    <span className="text-[var(--text-muted)] font-semibold">
-                      {activeDraft.threadTweets?.length || 0} tweets in thread
-                    </span>
-                  )}
-                  {activeDraft && unifiedText !== activeDraft.content && (
-                    <button 
-                      onClick={() => setUnifiedText(activeDraft.content)} 
-                      className="text-[11px] text-[var(--accent)] hover:underline flex items-center gap-1 font-semibold"
-                    >
-                      Reset input to Active Draft
-                    </button>
-                  )}
-                </div>
-
-                <div className="flex gap-2 flex-wrap items-center">
-                  <div className="flex gap-1.5 flex-wrap">
-                    <button 
-                      onClick={() => activeDraft && handleDeleteDraft(activeDraft.id)}
-                      className="glass-button px-2.5 py-1.5 bg-red-950/20 hover:bg-red-950/40 text-red-400 border-red-500/10 flex items-center gap-1 cursor-pointer font-semibold"
-                      title="Delete current draft"
-                    >
-                      Delete
-                    </button>
-                    <button 
-                      onClick={() => handleClipboardAction('trending')}
-                      className="glass-button px-2.5 py-1.5 bg-transparent text-[var(--text-muted)] flex items-center gap-1 cursor-pointer transition-colors duration-200 hover:text-white"
-                      title="Generate a Trending Radar packet to paste into Grok"
-                    >
-                      <TrendingUp className="w-3.5 h-3.5 text-sky-400" />
-                      <span>Trending</span>
-                    </button>
-                    <button 
-                      onClick={() => handleClipboardAction('grok')}
-                      disabled={!activeDraft?.content.trim()}
-                      className="glass-button px-2.5 py-1.5 bg-transparent text-[var(--text-muted)] flex items-center gap-1 cursor-pointer transition-colors duration-200 hover:text-white disabled:opacity-50 disabled:cursor-not-allowed"
-                    >
-                      <Clipboard className="w-3.5 h-3.5 text-amber-400" />
-                      <span>Grok Packet</span>
-                    </button>
-                    <button 
-                      onClick={() => handleClipboardAction('raw')}
-                      disabled={!activeDraft?.content.trim()}
-                      className="glass-button px-2.5 py-1.5 bg-transparent text-zinc-300 flex items-center gap-1 cursor-pointer transition-colors duration-200 hover:text-white disabled:opacity-50 disabled:cursor-not-allowed"
-                    >
-                      <Clipboard className="w-3.5 h-3.5" />
-                      <span>Copy Raw</span>
-                    </button>
-                    <button 
-                      onClick={handleMarkAsPosted}
-                      disabled={!activeDraft?.content.trim() || (activeDraft?.content.length || 0) > 280}
-                      className="glass-button px-3 py-1.5 bg-[var(--accent)] hover:bg-[var(--accent-hover)] text-white border-transparent flex items-center gap-1 cursor-pointer transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed font-semibold shadow-md"
-                    >
-                      <Check className="w-3.5 h-3.5" />
-                      <span>Mark Posted</span>
-                    </button>
-                  </div>
-
-                  <button
-                    onClick={handleRunUnifiedAction}
-                    disabled={unifiedLoading || !unifiedText.trim()}
-                    className="glass-button px-4 py-2 bg-[var(--accent)] hover:bg-[var(--accent-hover)] text-white text-xs font-bold border-transparent flex items-center justify-center gap-1.5 cursor-pointer shadow-md disabled:opacity-50 disabled:cursor-not-allowed"
-                  >
-                    {unifiedLoading ? (
-                      <>
-                        <span className="animate-spin inline-block w-3.5 h-3.5 border-2 border-white/50 border-t-transparent rounded-full" />
-                        <span>Running...</span>
-                      </>
-                    ) : (
-                      <>
-                        <Sparkles className="w-3.5 h-3.5 text-amber-300 animate-pulse" />
-                        <span>Run Prompt</span>
-                      </>
-                    )}
-                  </button>
-                </div>
-              </div>
-            </div>
-
-            {unifiedError && (
-              <p className="text-xs text-[var(--fail)] bg-[var(--fail)]/5 border border-[var(--fail)]/20 p-2.5 rounded-lg">
-                {unifiedError}
+            
+            {error && (
+              <p className="text-xs text-[var(--fail)] bg-[var(--fail)]/5 border border-[var(--fail)]/20 p-3 rounded-lg text-center">
+                {error}
               </p>
             )}
           </div>
 
-          {/* AI Action Results View (Hooks, Threads, Replies) */}
-          {(hookResults.length > 0 || threadResults.length > 0 || tightenResult || replyResult) && (
-            <div className="glass-panel p-5 rounded-xl border border-white/5 bg-white/[0.01] flex flex-col gap-4">
-              <div className="flex justify-between items-center border-b border-white/5 pb-2">
-                <h4 className="text-xs uppercase tracking-wider text-white font-bold">Generation Results</h4>
-                <button 
-                  onClick={() => {
-                    setHookResults([])
-                    setThreadResults([])
-                    setTightenResult(null)
-                    setReplyResult(null)
-                  }} 
-                  className="text-[11px] text-[var(--text-muted)] hover:text-white"
-                >
-                  Clear
-                </button>
+          {draftOutput && (
+            <div className="glass-panel p-5 rounded-2xl flex flex-col gap-4 border border-[var(--accent)]/30 shadow-2xl bg-white/[0.02] animate-in fade-in slide-in-from-bottom-4 duration-300">
+              <div className="flex justify-between items-center border-b border-white/5 pb-3">
+                <span className="text-xs font-bold uppercase tracking-wider text-[var(--accent)]">Tailored Draft</span>
+                <span className={"text-xs font-bold " + (draftOutput.length > 280 ? 'text-[var(--fail)]' : 'text-zinc-400')}>
+                  {draftOutput.length} / 280
+                </span>
               </div>
-
-              {/* Hook Results */}
-              {hookResults.length > 0 && (
-                <div className="space-y-2 max-h-60 overflow-y-auto pr-1">
-                  <p className="text-[10px] text-[var(--text-muted)] font-semibold uppercase tracking-wider mb-1">Click a hook to apply as first line of active draft:</p>
-                  {hookResults.map((h, i) => (
-                    <div 
-                      key={i}
-                      onClick={() => {
-                        if (activeDraft) {
-                          const lines = activeDraft.content.split('\n')
-                          lines[0] = h.text
-                          applyWorkshopContent(lines.join('\n'))
-                        } else {
-                          triggerToast("Select a draft first to apply hooks!")
-                        }
-                      }}
-                      className="p-2.5 bg-white/[0.02] hover:bg-white/[0.05] border border-white/5 rounded-lg text-xs cursor-pointer text-zinc-300 leading-relaxed font-sans transition-all duration-200 group"
-                    >
-                      <p className="font-bold text-[9px] text-[var(--accent)] uppercase tracking-wide mb-1 group-hover:text-white transition-colors">{h.technique}</p>
-                      <p>{h.text}</p>
-                    </div>
-                  ))}
-                </div>
-              )}
-
-              {/* Tighten Result */}
-              {tightenResult && (
-                <div className="p-3 bg-white/[0.02] border border-white/5 rounded-lg text-xs text-zinc-300 leading-relaxed font-sans space-y-3">
-                  <p>{tightenResult}</p>
-                  <button 
-                    onClick={() => applyWorkshopContent(tightenResult)}
-                    className="glass-button w-full py-1.5 text-xs bg-[var(--accent)] text-white hover:bg-[var(--accent-hover)] border-transparent flex items-center justify-center gap-1.5 cursor-pointer shadow-md"
-                  >
-                    <Check className="w-3.5 h-3.5" />
-                    <span>Apply Tightened Text to Active Draft</span>
-                  </button>
-                </div>
-              )}
-
-              {/* Thread Results */}
-              {threadResults.length > 0 && (
-                <div className="p-3 bg-white/[0.02] border border-white/5 rounded-lg flex flex-col gap-3">
-                  <div className="space-y-2 max-h-48 overflow-y-auto pr-1">
-                    {threadResults.map((tweet) => (
-                      <div key={tweet.number} className="text-xs text-zinc-300 leading-relaxed font-sans flex gap-2">
-                        <span className="font-bold text-[var(--accent)]">{tweet.number}/</span>
-                        <span className="flex-1">{tweet.content}</span>
-                      </div>
-                    ))}
-                  </div>
-                  <button 
-                    onClick={() => applyWorkshopContent(
-                      threadResults.map(t => t.content).join('\n\n'), 
-                      true, 
-                      threadResults.map(t => t.content)
-                    )}
-                    className="glass-button w-full py-1.5 text-xs bg-[var(--accent)] text-white hover:bg-[var(--accent-hover)] border-transparent flex items-center justify-center gap-1.5 cursor-pointer shadow-md"
-                  >
-                    <Check className="w-3.5 h-3.5" />
-                    <span>Apply as Multi-Tweet Thread</span>
-                  </button>
-                </div>
-              )}
-
-              {/* Reply Results */}
-              {replyResult && (
-                <div className="space-y-3">
-                  <p className="text-[10px] text-[var(--text-muted)] font-semibold uppercase tracking-wider">{replyResult.context}</p>
-                  {replyResult.replies.map((reply) => {
-                    const chars = reply.content.length
-                    const isOver = chars > 280
-                    const isCopied = copiedText === reply.content
-
-                    return (
-                      <div 
-                        key={reply.option} 
-                        className={`p-3 bg-white/[0.02] border rounded-xl flex flex-col gap-2 ${
-                          isOver ? 'border-red-500/20 bg-red-500/[0.01]' : 'border-white/5'
-                        }`}
-                      >
-                        <div className="flex justify-between items-center text-xs">
-                          <span className="font-bold text-[var(--accent)]">
-                            OPTION {reply.option} ({reply.tone})
-                          </span>
-                          <span className={`text-[10px] font-semibold ${isOver ? 'text-[var(--fail)] font-bold' : 'text-[var(--text-muted)]'}`}>
-                            {chars} / 280 chars
-                          </span>
-                        </div>
-
-                        <p className="text-xs leading-relaxed text-zinc-200 whitespace-pre-wrap select-all font-sans">
-                          {reply.content}
-                        </p>
-
-                        <div className="flex justify-end gap-1.5 text-xs mt-1">
-                          <button 
-                            onClick={() => handleCopyReply(reply.content, 'grok')} 
-                            className="glass-button px-2.5 py-1 text-[10px] bg-transparent text-[var(--text-muted)]"
-                          >
-                            Grok Prompt
-                          </button>
-                          <button 
-                            onClick={() => handleCopyReply(reply.content, 'raw')} 
-                            className="glass-button px-2.5 py-1 text-[10px] bg-transparent text-zinc-300"
-                          >
-                            {isCopied ? (
-                              <span className="flex items-center gap-1">
-                                <Check className="w-3 h-3 text-emerald-400" />
-                                <span>Copied</span>
-                              </span>
-                            ) : (
-                              <span className="flex items-center gap-1">
-                                <Clipboard className="w-3 h-3 text-zinc-400" />
-                                <span>Copy</span>
-                              </span>
-                            )}
-                          </button>
-                        </div>
-                      </div>
-                    )
-                  })}
-                </div>
-              )}
-            </div>
-          )}
-
-          {/* Saved Drafts List (Underneath composer) */}
-          <div className="flex flex-col gap-3">
-            <div className="flex justify-between items-center">
-              <span className="text-xs uppercase tracking-wider text-[var(--text-muted)] font-bold flex items-center gap-1">
-                <FileText className="w-3.5 h-3.5 text-blue-400" />
-                <span>Your Drafts ({drafts.length})</span>
-              </span>
               
-
-            </div>
-
-            <div className="flex flex-col gap-2 max-h-[35vh] overflow-y-auto pr-1">
-              {drafts.map(d => {
-                const isActive = activeDraft?.id === d.id
-                const snippet = d.content.trim() ? d.content.slice(0, 80) + (d.content.length > 80 ? '...' : '') : 'Empty draft...'
-                return (
-                  <div 
-                    key={d.id}
-                    onClick={() => selectActiveDraft(d)}
-                    className={`p-3 rounded-lg border transition-all duration-200 cursor-pointer ${
-                      isActive 
-                        ? 'bg-white/[0.05] border-[var(--accent)] shadow-md' 
-                        : 'bg-[#111111]/45 border-white/5 hover:border-white/10'
-                    }`}
-                  >
-                    <div className="flex justify-between items-start gap-2">
-                      <span className="text-[10px] uppercase font-semibold text-[var(--text-muted)] px-1.5 py-0.5 bg-white/[0.02] border border-white/5 rounded">
-                        {d.pillarId}
-                      </span>
-                      {d.algorithmScore?.overall > 0 && (
-                        <span className="text-[11px] text-zinc-300 font-medium">
-                          Score: {d.algorithmScore.overall}/100
-                        </span>
-                      )}
-                    </div>
-                    <p className="text-xs text-zinc-200 mt-2 line-clamp-2 leading-relaxed">
-                      {snippet}
-                    </p>
-                  </div>
-                )
-              })}
-              {drafts.length === 0 && (
-                <div className="text-center py-6 text-xs text-[var(--text-muted)] border border-white/5 border-dashed rounded-lg">
-                  No drafts. Use composer above to generate drafts!
-                </div>
-              )}
-            </div>
-          </div>
-
-          {/* Quick Learning Note Capture */}
-          <div className="glass-panel p-4 rounded-xl flex flex-col gap-3 border border-white/5 bg-white/[0.01]">
-            <div className="flex items-center gap-1.5 border-b border-white/5 pb-2.5">
-              <Brain className="w-3.5 h-3.5 text-purple-400" />
-              <h3 className="text-xs uppercase tracking-wider text-[var(--text-muted)] font-bold">Log Learning Note</h3>
-              <span className="ml-auto text-[10px] text-[var(--text-muted)] font-mono">Grok reads these next session</span>
-            </div>
-            <textarea
-              value={learningNote}
-              onChange={e => setLearningNote(e.target.value)}
-              rows={2}
-              placeholder="e.g. frustration + fix format performs best · hooks with numbers in first 3 words get 2x replies · post at 7PM IST"
-              className="glass-input w-full p-2.5 text-xs font-sans leading-relaxed bg-transparent resize-none"
-            />
-            <button
-              onClick={handleSaveLearningNote}
-              disabled={savingNote || !learningNote.trim()}
-              className="glass-button py-2 bg-purple-500/10 hover:bg-purple-500/20 text-purple-300 font-bold text-xs border-purple-500/20 flex items-center justify-center gap-1.5 disabled:opacity-40"
-            >
-              <Brain className="w-3.5 h-3.5" />
-              <span>{savingNote ? 'Saving…' : 'Save to Second Brain'}</span>
-            </button>
-          </div>
-
-          {/* Dynamic Scorecard at the very bottom */}
-          {score && (
-            <div className="mt-2">
-              <ScoreCard 
-                score={score} 
-                onAutoFix={handleAutoFix}
-                fixingSignal={fixingSignal}
+              <textarea
+                value={draftOutput}
+                onChange={(e) => setDraftOutput(e.target.value)}
+                className="w-full bg-transparent text-sm font-sans leading-relaxed text-white resize-none outline-none focus:outline-none min-h-[80px]"
               />
+
+              <button
+                onClick={handleCopyToGrok}
+                className={"w-full py-3 font-bold text-sm rounded-xl flex items-center justify-center gap-2 transition-all duration-200 " + (copiedGrok ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20' : 'bg-white/5 hover:bg-white/10 text-white border border-white/10')}
+              >
+                {copiedGrok ? <Check className="w-4 h-4" /> : <Clipboard className="w-4 h-4" />}
+                {copiedGrok ? 'Packet Copied!' : 'Copy to Grok'}
+              </button>
             </div>
           )}
 
@@ -1050,7 +232,6 @@ REWRITTEN TWEET:`
             </span>
           </div>
         )}
-
       </div>
     </AppShell>
   )

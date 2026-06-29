@@ -106,6 +106,9 @@ export default function ProfilePage() {
   const [admiredExampleTweets, setAdmiredExampleTweets] = useState<string[]>(profile.voice.admiredExampleTweets || [])
   const [newAdmiredItem, setNewAdmiredItem] = useState('')
 
+  const [secondBrain, setSecondBrain] = useState(profile.secondBrain || '')
+  const [inspirationsContext, setInspirationsContext] = useState(profile.inspirationsContext || '')
+
   const [geminiApiKey, setGeminiApiKey] = useState(profile.geminiApiKey || '')
   const [rawTextDump, setRawTextDump] = useState('')
   const [isExtracting, setIsExtracting] = useState(false)
@@ -122,6 +125,8 @@ export default function ProfilePage() {
     setTone(profile.voice.tone)
     setWritingStyle(profile.voice.writingStyle)
     setGeminiApiKey(profile.geminiApiKey || '')
+    setSecondBrain(profile.secondBrain || '')
+    setInspirationsContext(profile.inspirationsContext || '')
     setAvoidList(profile.voice.avoidList)
     setExampleTweets(profile.voice.exampleTweets)
     setAdmiredExampleTweets(profile.voice.admiredExampleTweets || [])
@@ -160,7 +165,7 @@ export default function ProfilePage() {
   function handleSave() {
     setSaving(true)
     const updated = {
-      ...profile, name, twitterHandle, bio, niche, geminiApiKey, admiredAccounts,
+      ...profile, name, twitterHandle, bio, niche, geminiApiKey, admiredAccounts, secondBrain, inspirationsContext,
       voice: { ...profile.voice, tone, writingStyle, avoidList, exampleTweets, admiredExampleTweets },
       updatedAt: new Date().toISOString(),
     }
@@ -248,17 +253,6 @@ export default function ProfilePage() {
                 placeholder="@shydev69"
                 color="accent"
               />
-            </div>
-
-            <div className="p-3.5 bg-purple-500/[0.04] border border-purple-500/20 rounded-xl">
-              <div className="flex items-center gap-2 mb-1.5">
-                <Brain className="w-3.5 h-3.5 text-purple-400" />
-                <span className="text-[11px] font-bold text-purple-400">Second Brain</span>
-              </div>
-              <p className="text-[11px] text-[var(--text-muted)] leading-relaxed">
-                Your daily live context lives on the <span className="text-white/70 font-semibold">Workspace homepage</span> — type updates there naturally and the AI rewrites it for you.
-              </p>
-              <Link href="/" className="inline-block mt-2 text-[11px] font-semibold text-purple-400 hover:text-purple-300 transition-colors">Open Workspace →</Link>
             </div>
           </div>
         )}
@@ -395,13 +389,41 @@ export default function ProfilePage() {
 
             <div className="border-t border-white/[0.05] pt-6">
               <div className="flex items-center gap-2 mb-3">
+                <Brain className="w-4 h-4 text-purple-400" />
+                <span className="text-xs font-bold uppercase tracking-widest text-[var(--text-muted)]">Second Brain (Live Context)</span>
+              </div>
+              <p className="text-[11px] text-[var(--text-muted)] mb-3">Permanent memory that gets injected into all prompts and drafts.</p>
+              <textarea
+                className={`${inp} font-sans text-xs h-32`}
+                value={secondBrain}
+                onChange={e => setSecondBrain(e.target.value)}
+                placeholder="Log permanent facts, current projects, and context here..."
+              />
+            </div>
+
+            <div className="border-t border-white/[0.05] pt-6">
+              <div className="flex items-center gap-2 mb-3">
+                <User className="w-4 h-4 text-blue-400" />
+                <span className="text-xs font-bold uppercase tracking-widest text-[var(--text-muted)]">Inspirations Context</span>
+              </div>
+              <p className="text-[11px] text-[var(--text-muted)] mb-3">Paste the Grok 'Creator DNA Blueprint' analysis here to automatically clone their voice.</p>
+              <textarea
+                className={`${inp} font-sans text-xs h-48`}
+                value={inspirationsContext}
+                onChange={e => setInspirationsContext(e.target.value)}
+                placeholder="Paste Grok Blueprint JSON-like text here..."
+              />
+            </div>
+
+            <div className="border-t border-white/[0.05] pt-6">
+              <div className="flex items-center gap-2 mb-3">
                 <BookOpen className="w-4 h-4 text-purple-400" />
                 <span className="text-xs font-bold uppercase tracking-widest text-[var(--text-muted)]">Learning Notes</span>
                 <span className="text-[10px] text-[var(--text-muted)] ml-auto">{(profile.voice.learningNotes || []).length} saved</span>
               </div>
-              <p className="text-[11px] text-[var(--text-muted)] mb-3">Observations logged from past Grok sessions. Added from Workspace via &ldquo;Log Learning Note&rdquo;.</p>
+              <p className="text-[11px] text-[var(--text-muted)] mb-3">Observations logged from past Grok sessions.</p>
               <div className="space-y-1.5 max-h-48 overflow-y-auto">
-                {(profile.voice.learningNotes || []).length === 0 && <p className="text-[11px] text-[var(--text-muted)] italic">No notes yet — add them from the Workspace.</p>}
+                {(profile.voice.learningNotes || []).length === 0 && <p className="text-[11px] text-[var(--text-muted)] italic">No notes yet.</p>}
                 {(profile.voice.learningNotes || []).map((n, i) => (
                   <div key={i} className="flex items-start gap-2 p-2.5 bg-white/[0.02] border border-white/[0.05] rounded-lg text-xs text-[var(--text)]">
                     <span className="text-[10px] text-[var(--text-muted)] font-mono shrink-0 mt-0.5">#{i + 1}</span>

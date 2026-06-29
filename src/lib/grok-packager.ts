@@ -1,22 +1,9 @@
-import { UserProfile, TweetDraft, DraftPacketConfig, EngagementPacketConfig, TrendingPacketConfig, LibraryEntry } from '@/types'
+import { UserProfile, TweetDraft, DraftPacketConfig, EngagementPacketConfig, TrendingPacketConfig } from '@/types'
 
 const DUMP_MODE_LABEL: Record<string, string> = {
   dev: 'Dev / AI Content',
   personal: 'Personal Life',
   shitpost: 'Shit Post / Chaos'
-}
-
-function formatPastPerformance(entries: LibraryEntry[] | undefined): string {
-  if (!entries || entries.length === 0) return '[Not enough data yet]'
-  const targets = [...entries]
-    .filter(e => e.postedAt && e.performanceNote && e.performanceNote.trim())
-    .sort((a, b) => new Date(b.postedAt!).getTime() - new Date(a.postedAt!).getTime())
-    .slice(0, 5)
-  if (targets.length === 0) return '[Not enough data yet]'
-  return targets.map((e) => {
-    const content = e.isThread && e.threadTweets ? e.threadTweets.map((t, n) => `${n + 1}/ ${t}`).join('\n') : e.tweet
-    return `---\nTweet: "${content}"\nPosted: ${new Date(e.postedAt!).toLocaleDateString()} | Performance: ${e.performanceNote}\nPillar: ${e.pillarId} | Type: ${e.isThread ? 'Thread' : 'Tweet'}\n---`
-  }).join('\n')
 }
 
 export function buildIdentityBlock(profile: UserProfile): string {
@@ -44,6 +31,10 @@ SECOND BRAIN — WHAT CHANGED TODAY (read this carefully):
 This is NOT bio or projects — those are above. This is the live, daily version of who I am right now: what I built, broke, shipped, failed at, waited on, thought about, and felt today. Every output you generate must be anchored to this current context, not a generic version of me.
 
 ${profile.secondBrain || '[Second Brain empty — user has not updated today\'s context yet. Use profile identity fields above only.]'}
+
+INSPIRATIONS CONTEXT (Creator DNA Blueprint):
+This is the extracted DNA of creators I admire. Merge their structural habits, psychological framing, and formatting habits with my voice when generating ideas or tweets.
+${profile.inspirationsContext || '[No inspiration context yet]'}
 
 CONTENT PILLARS (weight and description):
 ${profile.contentPillars.map(p => `• ${p.name} (${p.percentage}%): ${p.description}`).join('\n')}
@@ -88,12 +79,10 @@ HARD CONSTRAINTS:
 export function generateDraftPacket(
   profile: UserProfile,
   drafts: TweetDraft[],
-  config: DraftPacketConfig,
-  libraryEntries?: LibraryEntry[]
+  config: DraftPacketConfig
 ): string {
   const dateStr = new Date().toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' })
   const modeLabel = DUMP_MODE_LABEL[config.dumpMode ?? 'dev']
-  const performanceSection = formatPastPerformance(libraryEntries)
 
   return `
 ═══════════════════════════════════════════════════
@@ -107,10 +96,6 @@ Do not assume or invent anything not stated here.
 Before generating output, internalize the SECOND BRAIN section — that is the live version of who this person is right now.
 
 ${buildIdentityBlock(profile)}
-
-═══ TOP PERFORMING TWEETS (self-learning) ═══
-
-${performanceSection}
 
 ═══ SESSION ═══
 
@@ -160,16 +145,17 @@ STEP 3 — REAL-TIME X DATA (use live access):
 • Find 2-3 real tweets from last 48 hours on today's topic that performed well. Give me links + what made them work
 • Any active conversation or trending topic I can hook onto RIGHT NOW? Score 1-10 for my niche
 
-STEP 4 — REWRITE ALL DRAFTS:
-Keep my exact voice from the examples above. Add character count to every version.
+STEP 4 — REWRITE ALL DRAFTS (INSPIRATION DNA OVERRIDE):
+This is critical. You must rewrite the drafts using the exact tone, psychological framing, formatting habits, and vocabulary from the INSPIRATIONS CONTEXT in the Identity Block.
+Keep my character count under 280.
 • For threads: output each tweet as numbered list (1/, 2/, etc.) separated by blank lines
 • Preserve the core intent — don't sanitize the frustration or sarcasm
 • Inject Second Brain context where it makes the tweet MORE specific, not longer
 
-STEP 5 — FRESH ANGLES:
-Give me 2 completely new angles on today's theme I haven't tried:
-• Angle A (Safe): lower risk, still sharp
-• Angle B (Spicy): higher risk, more authentic, bolder
+STEP 5 — FRESH ANGLES USING INSPIRATION DNA:
+Give me 2 completely new angles on today's theme I haven't tried, perfectly cloning the style of my Inspirations:
+• Angle A (Safe): lower risk, still sharp, styled like Inspiration DNA
+• Angle B (Spicy): higher risk, more authentic, bolder, styled like Inspiration DNA
 
 STEP 6 — STRATEGY:
 • Which draft do I post first and exactly why?
@@ -198,12 +184,8 @@ FACT-CHECK: For any technical claim, price, benchmark, or model spec you write �
 
 export function generateEngagementPacket(
   profile: UserProfile,
-  config: EngagementPacketConfig,
-  _libraryEntries?: LibraryEntry[]
+  config: EngagementPacketConfig
 ): string {
-  if (_libraryEntries) {
-    // no-op to satisfy unused var check
-  }
   const dateStr = new Date().toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' })
 
   return `
@@ -272,16 +254,16 @@ For each:
 RULES FOR ALL REPLIES:
 ✅ Under 280 chars always (check count)
 ✅ Reference what they actually said — not generic
-✅ Sound like me (see voice examples above) — lowercase, dry, direct
+✅ Clone the exact psychological tone and vocabulary from the INSPIRATIONS CONTEXT in my Identity Block
 ✅ Only mention my projects if 100% organic to the conversation
 ❌ Never open with "Great point!" / "So true!" / "This!" / "Love this!"
 ❌ No promotional energy
 ❌ No vague validation
 
-GOLDEN STYLE PATTERNS:
-• TECH INSIGHT: lowercase, specific model names + real metrics. e.g. "finally, a chinese lab distilled claude fable 5 traces into deepseek v4 flash. 277× cheaper: $50/M -> $0.18/M output tokens."
-• FRUSTRATED DEV: lowercase, raw, sarcastic code references. e.g. "if I can just write a useState and a 250ms setTimeout inside a useEffect, why tf am I prompting Opus just for it to hallucinate and add 100 lines for a 4-line fix"
-• DRY LIST/TAKE: like @shydev69. Short. 1-3 items. Dry. No explanation needed.
+GOLDEN STYLE PATTERNS (Combine these with the Inspiration DNA):
+• TECH INSIGHT: lowercase, specific model names + real metrics.
+• FRUSTRATED DEV: lowercase, raw, sarcastic code references.
+• DRY LIST: Short. 1-3 items. Dry. No explanation needed.
 
 PART 2 — QUOTE TWEET OPPORTUNITIES (find 3-4):
 
@@ -319,12 +301,8 @@ FACT-CHECK: Verify any technical claim in draft replies using live X search. If 
 
 export function generateTrendingPacket(
   profile: UserProfile,
-  config: TrendingPacketConfig,
-  _libraryEntries?: LibraryEntry[]
+  config: TrendingPacketConfig
 ): string {
-  if (_libraryEntries) {
-    // no-op to satisfy unused var check
-  }
   const dateStr = new Date().toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' })
 
   return `
@@ -386,17 +364,18 @@ PART 2 — MY ANGLES (for every topic rated 6+ relevance):
 #### [Topic Name]
 • **Angle A (From My Second Brain — Personal):**
   - Strategy: [why this angle is authentic to who I am right now]
-  - Tweet: [under 280 chars] ([char count])
+  - Tweet: [under 280 chars, perfectly matching my INSPIRATIONS CONTEXT style and vocabulary] ([char count])
 • **Angle B (Sharp Take / Hot Take):**
   - Strategy: [why this angle cuts through, who it resonates with]
-  - Tweet: [under 280 chars] ([char count])
+  - Tweet: [under 280 chars, perfectly matching my INSPIRATIONS CONTEXT style and vocabulary] ([char count])
 
-IMPORTANT: Angle A must be anchored to something real in my Second Brain — a current frustration, active project, daily experience, or live opinion. Do not write a generic "student dev" angle. Write MY angle.
+IMPORTANT: Angle A must be anchored to something real in my Second Brain. 
+CRITICAL: You MUST write these tweets using the exact tone, psychology, formatting rules, and vocabulary listed in the INSPIRATIONS CONTEXT (Creator DNA) provided in my Identity Block. Do not write like generic Grok. Clone their brain.
 
-GOLDEN STYLE PATTERNS:
-• TECH INFO: lowercase, specific name-drops + real metrics. e.g. "finally, a chinese lab distilled claude fable 5 traces into deepseek v4 flash. 277× cheaper: $50/M -> $0.18/M output tokens."
-• FRUSTRATED DEV: lowercase, raw sarcasm with code symbols. e.g. "if I can just write a useState and a 250ms setTimeout inside a useEffect, why tf am I prompting Opus just for it to hallucinate and add 100 lines for a 4-line fix"
-• DRY LIST: like @shydev69 / @adxtyahq. Short. Dry. 1-3 lines. Self-evident. No explanation.
+GOLDEN STYLE PATTERNS (Combine these with the Inspiration DNA):
+• TECH INFO: lowercase, specific name-drops + real metrics.
+• FRUSTRATED DEV: lowercase, raw sarcasm with code symbols.
+• DRY LIST: Short. Dry. 1-3 lines. Self-evident. No explanation.
 
 PART 3 — QUICK CONTENT:
 

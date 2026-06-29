@@ -4,12 +4,11 @@ TweetOS is a personal content studio and Twitter growth system tailored for deve
 
 ## Core Features
 
-1. **Creator Workspace**: Dynamic draft management, a zero-prompt **Daily Inspiration** generator, and real-time scorecard metrics.
-2. **Auto-Fix Wands**: Surgical AI rewrites next to weak scorecard metrics to instantly optimize openers, specificity, CTAs, and length.
-3. **Dump Mode Selectors**: Steer raw thoughts into custom tones (**Dev | Personal | Shitpost**).
-4. **Engage Hub**: Pre-loaded cold/warm target account feeds and reply suggestion flows.
-5. **Grok Packet Packagers**: Creates optimized, stateless prompt payloads (Master packets, Draft reviews, Trending radars) to validate content using Grok.
-6. **Local-First Architecture**: 100% serverless and offline-first, running on Zustand state persistent storage (`localStorage`).
+1. **Hyper-Minimal Command Center**: A single distraction-free dashboard that acts as the node between your brain dumps and Grok.
+2. **Inspiration Engine**: Extract "Creator DNA" from X using Grok, and TweetOS will seamlessly format all drafts and packet instructions using that precise psychological tone and vocabulary.
+3. **Draft Tailoring (Local)**: Paste a raw dump; local Gemini instantly formats it into a 280-char draft using your Voice and Inspiration DNA.
+4. **Grok Hunt Packets (Cloud)**: 1-click generators that create massive, context-rich prompts for Grok to execute (Topic Hunting, Engagement Hunting, Draft Reviewing).
+5. **Local-First Architecture**: 100% serverless and offline-first, running on Zustand state persistent storage (`localStorage`).
 
 ## Tech Stack
 
