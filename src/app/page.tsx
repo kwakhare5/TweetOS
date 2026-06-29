@@ -171,8 +171,8 @@ ${dumpText}
               placeholder="Dump raw thoughts, code snippets, rants, or ideas here..."
               value={dumpText}
               onChange={setDumpText}
-              className="w-full h-40 bg-transparent text-sm font-sans leading-relaxed text-zinc-200 placeholder-zinc-600 resize-none outline-none focus:outline-none"
-              rows={6}
+              className="w-full h-32 bg-transparent text-sm font-sans leading-relaxed text-zinc-200 placeholder-zinc-600 resize-none outline-none focus:outline-none"
+              rows={4}
             />
             
             <div className="grid grid-cols-1 md:grid-cols-3 gap-3">

@@ -190,11 +190,11 @@ Output this as a structured text block I can save as my master Creator DNA Bluep
 
             <ModalTextarea
               label="Inspirations Context"
-              className={`${inp} font-mono text-xs min-h-[350px] leading-relaxed border border-white/[0.08] focus:border-indigo-500/50 focus:bg-white/[0.04]`}
+              className={`${inp} font-mono text-xs h-32 leading-relaxed border border-white/[0.08] focus:border-indigo-500/50 focus:bg-white/[0.04]`}
               value={inspirationsContext}
               onChange={setInspirationsContext}
               placeholder="Paste the Grok DNA Blueprint output here..."
-              rows={15}
+              rows={4}
               fontClass="font-mono text-xs"
             />
           </div>
@@ -207,11 +207,11 @@ Output this as a structured text block I can save as my master Creator DNA Bluep
               <p className="text-[10px] text-[var(--text-muted)]">Describe what you do, who you talk to, and your expertise.</p>
               <ModalTextarea
                 label="Niche & Bio"
-                className={`${inp} min-h-[140px] leading-relaxed`}
+                className={`${inp} h-32 leading-relaxed`}
                 value={niche}
                 onChange={setNiche}
                 placeholder="CS student building full-stack AI apps in Pune..."
-                rows={6}
+                rows={4}
               />
             </div>
 
@@ -220,11 +220,11 @@ Output this as a structured text block I can save as my master Creator DNA Bluep
               <p className="text-[10px] text-[var(--text-muted)]">Describe your primary speaking tone (e.g., dry humor, student jargon).</p>
               <ModalTextarea
                 label="Voice & Tone"
-                className={`${inp} min-h-[140px] leading-relaxed`}
+                className={`${inp} h-32 leading-relaxed`}
                 value={tone}
                 onChange={setTone}
                 placeholder="relatable Pune student, casual slang, punchy sentence lengths..."
-                rows={6}
+                rows={4}
               />
             </div>
 
@@ -238,11 +238,11 @@ Output this as a structured text block I can save as my master Creator DNA Bluep
               <p className="text-[10px] text-[var(--text-muted)]">List words or phrases that sound fake, corporate, or unnatural.</p>
               <ModalTextarea
                 label="Avoid List"
-                className={`${inp} min-h-[120px] leading-relaxed font-mono text-xs`}
+                className={`${inp} h-32 leading-relaxed font-mono text-xs`}
                 value={avoidListString}
                 onChange={setAvoidListString}
                 placeholder="excited, announcement, game-changer, revolutionary, pleased to share..."
-                rows={5}
+                rows={4}
                 fontClass="font-mono text-xs"
               />
             </div>
@@ -252,11 +252,11 @@ Output this as a structured text block I can save as my master Creator DNA Bluep
               <p className="text-[10px] text-[var(--text-muted)]">Rules for formatting (e.g., lower-case, short hooks, no emojis).</p>
               <ModalTextarea
                 label="Writing Style Rules"
-                className={`${inp} min-h-[120px] leading-relaxed`}
+                className={`${inp} h-32 leading-relaxed`}
                 value={writingStyle}
                 onChange={setWritingStyle}
                 placeholder="Use 1 hook sentence. Never use emojis. Use numbers where possible."
-                rows={5}
+                rows={4}
               />
             </div>
 
@@ -273,11 +273,11 @@ Output this as a structured text block I can save as my master Creator DNA Bluep
             </p>
             <ModalTextarea
               label="My Example Tweets"
-              className={`${inp} font-mono text-xs min-h-[220px] leading-relaxed`}
+              className={`${inp} font-mono text-xs h-32 leading-relaxed`}
               value={exampleTweetsString}
               onChange={setExampleTweetsString}
               placeholder={"vibe coding git-for-prompts today. Claude wrote 80%...\n\npune college life + code: lectures till 4, code till 2am..."}
-              rows={10}
+              rows={4}
               fontClass="font-mono text-xs"
             />
           </div>
