@@ -37,6 +37,15 @@ export default function ModalTextarea({
     }
   }, [isOpen, value])
 
+  // Auto-grow height of textarea based on content
+  useEffect(() => {
+    const textarea = modalTextareaRef.current
+    if (textarea && isOpen) {
+      textarea.style.height = 'auto'
+      textarea.style.height = `${textarea.scrollHeight + 4}px`
+    }
+  }, [tempValue, isOpen])
+
   function handleSave() {
     onChange(tempValue)
     setIsOpen(false)
@@ -81,10 +90,10 @@ export default function ModalTextarea({
       {/* Full Screen Modal */}
       {isOpen && (
         <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4 bg-[#050505]/95 backdrop-blur-md transition-all duration-300">
-          <div className="w-full max-w-4xl h-[60vh] min-h-[450px] max-h-[90vh] bg-[#0f0f11] border border-white/[0.08] rounded-2xl shadow-2xl flex flex-col overflow-hidden">
+          <div className="w-full max-w-4xl bg-[#0f0f11] border border-white/[0.08] rounded-2xl shadow-2xl flex flex-col overflow-hidden max-h-[85vh]">
             
             {/* Modal Header */}
-            <div className="flex items-center justify-between px-6 py-4 border-b border-white/[0.05] bg-white/[0.01]">
+            <div className="flex items-center justify-between px-6 py-4 border-b border-white/[0.05] bg-white/[0.01] shrink-0">
               <div>
                 <h3 className="text-sm font-bold text-white uppercase tracking-wider">{label}</h3>
                 <p className="text-[11px] text-[var(--text-muted)] mt-0.5">Editing in Full Screen</p>
@@ -98,18 +107,18 @@ export default function ModalTextarea({
             </div>
 
             {/* Modal Content */}
-            <div className="flex-1 p-6 flex flex-col">
+            <div className="p-6 overflow-y-auto flex flex-col shrink min-h-0">
               <textarea
                 ref={modalTextareaRef}
                 value={tempValue}
                 onChange={e => setTempValue(e.target.value)}
                 placeholder={placeholder}
-                className={`flex-1 w-full bg-[#050505] border border-white/[0.06] rounded-xl p-4 text-sm text-[var(--text)] placeholder-[var(--text-muted)] focus:outline-none focus:border-[var(--accent)]/60 focus:bg-white/[0.04] transition-all resize-none outline-none leading-relaxed ${fontClass}`}
+                className={`w-full bg-[#050505] border border-white/[0.06] rounded-xl p-4 text-sm text-[var(--text)] placeholder-[var(--text-muted)] focus:outline-none focus:border-[var(--accent)]/60 focus:bg-white/[0.04] transition-all resize-none outline-none leading-relaxed min-h-[140px] max-h-[50vh] overflow-y-auto ${fontClass}`}
               />
             </div>
 
             {/* Modal Footer */}
-            <div className="flex items-center justify-end gap-3 px-6 py-4 border-t border-white/[0.05] bg-white/[0.01]">
+            <div className="flex items-center justify-end gap-3 px-6 py-4 border-t border-white/[0.05] bg-white/[0.01] shrink-0">
               <button
                 onClick={handleCancel}
                 className="px-4 py-2 border border-white/[0.08] bg-white/[0.02] hover:bg-white/[0.06] text-xs font-semibold rounded-lg text-[var(--text-muted)] hover:text-white transition-all cursor-pointer"
