@@ -5,6 +5,7 @@ import { Brain, Send, Save, Loader2, ChevronDown, ChevronUp } from 'lucide-react
 import { useProfileStore } from '@/store/useProfileStore'
 import { geminiText } from '@/lib/gemini'
 import { BRAIN_UPDATER_PROMPT } from '@/lib/prompts'
+import ModalTextarea from '@/components/ui/ModalTextarea'
 
 export default function SecondBrainPanel() {
   const { profile, setProfile } = useProfileStore()
@@ -95,12 +96,14 @@ export default function SecondBrainPanel() {
       {!collapsed && (
         <div className="border-t border-white/[0.05]">
           {/* Brain text — editable */}
-          <textarea
+          <ModalTextarea
+            label="Second Brain"
             value={brainText}
-            onChange={e => { setBrainText(e.target.value); setDirty(true) }}
+            onChange={val => { setBrainText(val); setDirty(true) }}
             rows={6}
             placeholder={"Tell me what's happening today...\n– new project started\n– swiggy replied\n– shipped X, broke Y\n– feeling productive / burned out"}
             className="w-full bg-transparent px-4 pt-3 pb-2 text-xs text-[var(--text)] placeholder-[var(--text-muted)] font-mono leading-relaxed resize-none focus:outline-none"
+            fontClass="font-mono text-xs"
           />
 
           {/* Chat input */}

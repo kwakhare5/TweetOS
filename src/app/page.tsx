@@ -2,11 +2,13 @@
 
 import { useState } from 'react'
 import AppShell from '@/components/layout/AppShell'
+import SecondBrainPanel from '@/components/brain/SecondBrainPanel'
 import { useProfileStore } from '@/store/useProfileStore'
 import { geminiText } from '@/lib/gemini'
 import { generateDraftPacket, generateTrendingPacket, generateEngagementPacket } from '@/lib/grok-packager'
 import { Sparkles, Clipboard, Check, Loader2, Search, MessageSquare } from 'lucide-react'
 import { TweetDraft } from '@/types'
+import ModalTextarea from '@/components/ui/ModalTextarea'
 
 export default function WorkspacePage() {
   const { profile } = useProfileStore()
@@ -34,28 +36,29 @@ export default function WorkspacePage() {
     setCopiedGrok(false)
 
     try {
-      const prompt = `You are a world-class ghostwriter for @${profile.twitterHandle}.
-Take the user's raw brain dump below and turn it into a single, highly-polished tweet (strictly under 280 characters).
+      const prompt = `SYSTEM: You are an expert ghostwriter for @${profile.twitterHandle}.
+Rewrite the user's raw draft below. Adopt the provided INSPIRATIONS CONTEXT (Creator DNA) but merge it with the user's specific VOICE & TONE and SECOND BRAIN facts.
 
-USER PROFILE & NICHE: ${profile.niche}
-VOICE & TONE: ${profile.voice.tone}
-AVOID THESE WORDS: ${profile.voice.avoidList.join(', ')}
+# PROFILE
+Niche: ${profile.niche}
+Voice Tone: ${profile.voice.tone}
+Avoid Words: ${profile.voice.avoidList.join(', ')}
 
-SECOND BRAIN (Live context):
+# SECOND BRAIN (LIVE CONTEXT)
 ${profile.secondBrain || 'None'}
 
-INSPIRATIONS CONTEXT (Creator DNA to clone):
+# INSPIRATIONS CONTEXT (CREATOR DNA)
 ${profile.inspirationsContext || 'None'}
 
-RAW BRAIN DUMP:
+# RAW DRAFT
 """
 ${dumpText}
 """
 
-RULES:
-1. Output ONLY the raw tailored tweet. No quotes, no markdown, no preamble, no hashtags unless strictly necessary.
-2. Ensure it sounds exactly like their Inspirations Context merged with their own Voice Tone.
-3. Must be under 280 characters.`
+# RULES
+1. Output ONLY the raw tailored tweet. No quotes, no markdown, no preamble.
+2. Ensure exact stylistic match with Inspirations Context.
+3. Max limit: 280 characters.`
 
       const result = await geminiText(prompt)
       setDraftOutput(result.trim())
@@ -146,20 +149,30 @@ RULES:
 
   return (
     <AppShell>
-      <div className="min-h-full flex items-center justify-center p-4 md:p-6">
-        <div className="w-full max-w-2xl flex flex-col gap-6">
+      <div className="min-h-full flex flex-col items-center p-4 md:p-6 pb-24">
+        <div className="w-full max-w-3xl flex flex-col gap-8">
           
-          <div className="text-center space-y-2 mb-2">
+          <div className="text-center space-y-2">
             <h1 className="text-2xl font-bold tracking-tight text-white">Command Center</h1>
-            <p className="text-[var(--text-muted)] text-sm">Dump thoughts → Tailor → Grok</p>
+            <p className="text-[var(--text-muted)] text-sm">Update context → Draft tweets → Export to Grok</p>
           </div>
 
+          {/* Second Brain Panel (Moved to Home for constant updates) */}
+          <SecondBrainPanel />
+
+          {/* 1. BRAIN DUMP INPUT */}
           <div className="glass-panel p-5 rounded-2xl flex flex-col gap-4 border border-white/5 shadow-2xl bg-[#0a0a0a]/80 backdrop-blur-xl">
-            <textarea
+            <div className="flex items-center gap-2 mb-2">
+              <Sparkles className="w-5 h-5 text-indigo-400" />
+              <h2 className="text-lg font-bold text-white tracking-tight">Raw Tweet Draft</h2>
+            </div>
+            <ModalTextarea
+              label="Raw Tweet Draft"
               placeholder="Dump raw thoughts, code snippets, rants, or ideas here..."
               value={dumpText}
-              onChange={(e) => setDumpText(e.target.value)}
+              onChange={setDumpText}
               className="w-full h-40 bg-transparent text-sm font-sans leading-relaxed text-zinc-200 placeholder-zinc-600 resize-none outline-none focus:outline-none"
+              rows={6}
             />
             
             <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
