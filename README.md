@@ -41,5 +41,4 @@ TweetOS is a personal content studio and Twitter growth system tailored for deve
 - [CLAUDE.md](file:///d:/TweetOS/CLAUDE.md) - Local project guidelines & mistakes tracker.
 - [CONTEXT.md](file:///d:/TweetOS/CONTEXT.md) - Core domain terminology and status.
 - [ARCHITECTURE.md](file:///d:/TweetOS/ARCHITECTURE.md) - Detailed modules, local schemas, and development guidelines.
-- [GROK_TEMPLATES.md](file:///d:/TweetOS/GROK_TEMPLATES.md) - Prompt playbooks and data payloads for Grok.
 - [AGENTS.md](file:///d:/TweetOS/AGENTS.md) - Local rules for coding models.

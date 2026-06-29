@@ -27,10 +27,9 @@ The entire workspace has been aggressively stripped down to a single minimal int
 ## Architectural Notes
 
 - **Aggressive Minimalism**: The Scorecard, Engage Hub (`/engage`), Workshop utility buttons, and Learning Notes have been completely deleted or hidden from the main dashboard to remove friction.
+- **Premium Command Center Visuals**: The UI has been overhauled to a dark-mode Vercel/Linear-inspired visual layout. Features a CSS Grid Split-Pane (editor on left, output/packets on right), glowing violet accents, glassmorphic panels, and smooth micro-animations. It supports lock-to-screen on desktop for speed, and full scroll responsiveness on mobile viewports.
+- **Power Features**: Keyboard shortcuts like `Ctrl+Enter` to tailor drafts instantly, and a floating Command Palette (`Ctrl+K` dialog modal) for quick navigation.
 - **Pure Client Logic & Zustand**: All stores persist their state to browser Local Storage using Zustand's `persist` middleware, guaranteeing 100% offline functionality.
-- **Next.js 15 App Router**: Uses standard client components.
-- **No Direct API for Grok**: Grok has no API, so TweetOS generates highly structured "Packets" (prompts) copied to the clipboard for manual execution in the Grok UI.
-- **Glassmorphism CSS**: Premium visual layout styled via custom CSS utility classes.
 
 ## Target Sub-Niche & Profile
 - **Niche**: Lowercase, sarcastic Pune comp-eng student vibe-coding real AI projects and dropping blunt, dry, frustrated takes on tools, shipping, and dev life.

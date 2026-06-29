@@ -53,7 +53,8 @@ tweetOS/
 │   │   │   ├── ExampleTweetInput.tsx
 │   │   │   ├── ProfileModal.tsx
 │   │   │   └── ProfileCard.tsx
-│   │   └── brain/
+│   │   ├── CommandPalette.tsx            # Floating Ctrl+K Command Dialog
+│   │   ├── brain/
 │   │       └── SecondBrainPanel.tsx      
 │   │
 │   ├── lib/
@@ -139,7 +140,12 @@ export interface TweetDraft {
   pillarId: string
   momentType: string
   hookVariations: string[]
-  algorithmScore: any // Kept for type stability, unused locally
+  algorithmScore: {
+    overall: number
+    suggestions: string[]
+    calculatedAt: string
+    [key: string]: unknown
+  } // Kept for type stability, unused locally
   sessionId?: string
   factCheckNote?: string
   status: 'draft' | 'polished' | 'posted' | 'archived'

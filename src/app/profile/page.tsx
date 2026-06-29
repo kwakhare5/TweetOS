@@ -4,10 +4,11 @@ import { useState } from 'react'
 import { useProfileStore } from '@/store/useProfileStore'
 import AppShell from '@/components/layout/AppShell'
 import ModalTextarea from '@/components/ui/ModalTextarea'
-import { Check, Save, Sparkles, Key, User, BookOpen, AlertCircle } from 'lucide-react'
+import { Check, Save, Sparkles, Key, BookOpen, Settings } from 'lucide-react'
+import { Button } from '@/components/ui/button'
 
-const inp = 'w-full bg-white/[0.03] border border-white/[0.08] rounded-xl px-4 py-3 text-sm text-[var(--text)] placeholder-[var(--text-muted)] focus:outline-none focus:border-[var(--accent)]/60 focus:bg-white/[0.05] transition-all duration-150 resize-none font-sans'
-const lbl = 'block text-[11px] text-[var(--text-muted)] uppercase tracking-wider mb-2 font-bold flex items-center gap-1.5'
+const inp = 'w-full bg-background border border-border rounded px-3 py-2 text-sm text-foreground placeholder:text-muted-foreground/60 focus:outline-none focus:border-border/80 focus:ring-1 focus:ring-ring transition-all duration-150 font-sans'
+const lbl = 'block text-xs font-bold tracking-wide text-muted-foreground uppercase mb-1.5 flex items-center gap-1.5'
 
 export default function ProfilePage() {
   const { profile, updateProfile } = useProfileStore()
@@ -84,47 +85,58 @@ Output this as a structured text block I can save as my master Creator DNA Bluep
 
   return (
     <AppShell>
-      <div className="min-h-full p-4 md:p-6 max-w-3xl mx-auto pb-24">
+      <div className="w-full max-w-3xl mx-auto px-6 md:px-12 py-5 font-sans">
         
-        {/* Header */}
-        <div className="flex items-center justify-between border-b border-white/[0.05] pb-6 mb-8">
-          <div>
-            <h1 className="text-2xl font-bold tracking-tight text-white flex items-center gap-2">
-              <User className="w-6 h-6 text-indigo-400" />
-              Creator Settings
-            </h1>
-            <p className="text-[var(--text-muted)] text-xs mt-1">Configure your target voice, API settings, and Inspiration DNA</p>
+        {/* Notion Breadcrumbs */}
+        <div className="flex items-center gap-1.5 text-xs text-muted-foreground mb-12 select-none">
+          <span>Workspace</span>
+          <span className="text-muted-foreground/40">/</span>
+          <span className="text-foreground/80 font-medium">Settings</span>
+        </div>
+
+        {/* Notion Title & Icon Header */}
+        <div className="flex items-center justify-between border-b border-border/80 pb-6 mb-8">
+          <div className="flex items-start gap-4">
+            <div className="flex items-center justify-center size-14 rounded-lg bg-secondary text-foreground/80 select-none shrink-0">
+              <Settings className="w-8 h-8" />
+            </div>
+            <div>
+              <h1 className="text-4xl font-bold tracking-tight text-foreground select-text outline-none">
+                Settings
+              </h1>
+              <p className="text-muted-foreground text-xs mt-1.5">Configure your voice tone, API keys, and Creator DNA profile.</p>
+            </div>
           </div>
           
-          <button
+          <Button
             onClick={handleSave}
             disabled={saving}
-            className="flex items-center gap-2 bg-indigo-600 hover:bg-indigo-500 disabled:opacity-40 text-white text-sm font-semibold px-5 py-2.5 rounded-xl transition-all duration-200 shadow-lg shadow-indigo-600/10 cursor-pointer"
+            className="text-xs font-semibold h-9 bg-foreground text-background hover:bg-foreground/90 px-4 shrink-0"
           >
             {saved ? (
               <>
-                <Check className="w-4 h-4 text-green-300" />
-                <span>Saved Settings</span>
+                <Check className="w-3.5 h-3.5 mr-1.5 text-green-400" />
+                <span>Saved</span>
               </>
             ) : saving ? (
-              <span>Saving Changes…</span>
+              <span>Saving...</span>
             ) : (
               <>
-                <Save className="w-4 h-4" />
+                <Save className="w-3.5 h-3.5 mr-1.5" />
                 <span>Save Settings</span>
               </>
             )}
-          </button>
+          </Button>
         </div>
 
         {/* Form Sections */}
-        <div className="space-y-8">
+        <div className="space-y-10">
           
-          {/* 1. API & HANDLE CONFIG (Core Settings) */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 bg-white/[0.01] border border-white/[0.03] p-6 rounded-2xl">
-            <div>
+          {/* 1. Core Profile & API key */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 p-5 border border-border rounded-lg bg-secondary/20">
+            <div className="md:col-span-3">
               <label className={lbl}>
-                <Key className="w-3.5 h-3.5 text-amber-400" />
+                <Key className="w-3.5 h-3.5 text-muted-foreground/80" />
                 Gemini API Key
               </label>
               <input
@@ -132,11 +144,11 @@ Output this as a structured text block I can save as my master Creator DNA Bluep
                 className={`${inp} font-mono text-xs`}
                 value={geminiApiKey}
                 onChange={e => setGeminiApiKey(e.target.value)}
-                placeholder="AIzaSy..."
+                placeholder="Paste Gemini API Key..."
               />
-              <p className="text-[10px] text-gray-500 mt-1.5 leading-relaxed">
-                Powers local draft tailoring. Get a free key from{' '}
-                <a href="https://aistudio.google.com/app/apikey" target="_blank" className="text-indigo-400 hover:underline">Google AI Studio</a>.
+              <p className="text-[10px] text-muted-foreground mt-1.5 leading-relaxed">
+                Used to analyze and rewrite your raw drafts locally. Get a free key from{' '}
+                <a href="https://aistudio.google.com/app/apikey" target="_blank" rel="noreferrer" className="underline hover:text-foreground">Google AI Studio</a>.
               </p>
             </div>
             
@@ -147,137 +159,137 @@ Output this as a structured text block I can save as my master Creator DNA Bluep
                 className={inp}
                 value={name}
                 onChange={e => setName(e.target.value)}
-                placeholder="Karan"
+                placeholder="Your Name"
               />
             </div>
 
-            <div>
+            <div className="md:col-span-2">
               <label className={lbl}>Twitter Handle</label>
               <input
                 type="text"
                 className={`${inp} font-mono`}
                 value={twitterHandle}
                 onChange={e => setTwitterHandle(e.target.value)}
-                placeholder="kwakhare5"
+                placeholder="username (no @)"
               />
             </div>
           </div>
 
-          {/* 2. INSPIRATIONS CONTEXT (The Creator DNA Blueprint) */}
+          {/* 2. Creator DNA Blueprint Callout & Input */}
           <div className="space-y-4">
-            <div className="flex items-center justify-between">
-              <label className={lbl}>
-                <Sparkles className="w-3.5 h-3.5 text-indigo-400 animate-pulse" />
-                Inspirations Context (Creator DNA Blueprint)
-              </label>
-            </div>
+            <label className={lbl}>
+              <Sparkles className="w-3.5 h-3.5 text-muted-foreground/80" />
+              Creator DNA Blueprint
+            </label>
             
-            {/* Grok Prompt Generator */}
-            <div className="flex flex-col md:flex-row gap-4 items-start md:items-center bg-indigo-500/10 border border-indigo-500/20 p-4 rounded-xl">
-              <div className="flex-1 space-y-1">
-                <p className="text-xs font-bold text-indigo-200 uppercase tracking-widest">Get the DNA Blueprint from Grok</p>
-                <p className="text-[11px] text-indigo-200/70 leading-relaxed">
-                  Copy this prompt, paste it into Grok, and replace <b>@[CREATOR]</b> with their actual handle. Grok will analyze their style. Paste the result in the box below.
-                </p>
+            {/* Notion Callout Banner */}
+            <div className="flex items-start gap-3 p-4 bg-secondary/40 border border-border/65 rounded-lg select-text">
+              <Sparkles className="w-4 h-4 text-muted-foreground/80 mt-0.5 shrink-0" />
+              <div className="flex-1 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                <div className="space-y-0.5">
+                  <h4 className="text-sm font-semibold text-foreground">Style Analysis Prompt</h4>
+                  <p className="text-xs text-muted-foreground leading-relaxed">
+                    Paste this prompt into Grok to analyze your target creator profile, then copy-paste the output blueprint below.
+                  </p>
+                </div>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={copyGrokPrompt}
+                  className="h-8 text-xs font-semibold border-border bg-background hover:bg-secondary shrink-0"
+                >
+                  {copiedPrompt ? <Check className="w-3.5 h-3.5 mr-1.5" /> : null}
+                  {copiedPrompt ? 'Copied' : 'Copy Prompt'}
+                </Button>
               </div>
-              <button
-                onClick={copyGrokPrompt}
-                className="px-5 py-2.5 bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-semibold rounded-xl whitespace-nowrap transition-all shadow-md shadow-indigo-600/15 cursor-pointer"
-              >
-                {copiedPrompt ? 'Copied Prompt!' : 'Copy Grok Prompt'}
-              </button>
             </div>
 
             <ModalTextarea
               label="Inspirations Context"
-              className={`${inp} font-mono text-xs h-32 leading-relaxed border border-white/[0.08] focus:border-indigo-500/50 focus:bg-white/[0.04]`}
+              className={`${inp} font-mono text-xs h-36 leading-relaxed bg-transparent`}
               value={inspirationsContext}
               onChange={setInspirationsContext}
               placeholder="Paste the Grok DNA Blueprint output here..."
-              rows={4}
+              rows={5}
               fontClass="font-mono text-xs"
             />
           </div>
 
-          {/* 3. CORE IDENTITY DETAILS */}
+          {/* 3. Core Persona Details */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            
             <div className="space-y-2">
-              <label className={lbl}>Niche & Bio</label>
-              <p className="text-[10px] text-[var(--text-muted)]">Describe what you do, who you talk to, and your expertise.</p>
+              <label className={lbl}>Niche & Content Focus</label>
+              <p className="text-[10px] text-muted-foreground">Describe your core topics, audience, and area of expertise.</p>
               <ModalTextarea
                 label="Niche & Bio"
-                className={`${inp} h-32 leading-relaxed`}
+                className={`${inp} h-36 leading-relaxed bg-transparent`}
                 value={niche}
                 onChange={setNiche}
-                placeholder="CS student building full-stack AI apps in Pune..."
-                rows={4}
+                placeholder="E.g. fullstack developer sharing startup coding logs..."
+                rows={5}
               />
             </div>
 
             <div className="space-y-2">
-              <label className={lbl}>Voice & Tone</label>
-              <p className="text-[10px] text-[var(--text-muted)]">Describe your primary speaking tone (e.g., dry humor, student jargon).</p>
+              <label className={lbl}>Voice & Style Rules</label>
+              <p className="text-[10px] text-muted-foreground">Describe your main speaking style (e.g., student slang, lower-case).</p>
               <ModalTextarea
                 label="Voice & Tone"
-                className={`${inp} h-32 leading-relaxed`}
+                className={`${inp} h-36 leading-relaxed bg-transparent`}
                 value={tone}
                 onChange={setTone}
-                placeholder="relatable Pune student, casual slang, punchy sentence lengths..."
-                rows={4}
+                placeholder="E.g. dry humor, lowercase, short sentences..."
+                rows={5}
               />
             </div>
-
           </div>
 
-          {/* 4. WRITING STYLE RULES & AVOID LIST */}
+          {/* 4. Format & Avoid Rules */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            
             <div className="space-y-2">
-              <label className={lbl}>Avoid List (Comma-separated)</label>
-              <p className="text-[10px] text-[var(--text-muted)]">List words or phrases that sound fake, corporate, or unnatural.</p>
+              <label className={lbl}>Words to Avoid (Comma-separated)</label>
+              <p className="text-[10px] text-muted-foreground">Words that sound robotic, corporate, or artificial.</p>
               <ModalTextarea
                 label="Avoid List"
-                className={`${inp} h-32 leading-relaxed font-mono text-xs`}
+                className={`${inp} h-36 leading-relaxed bg-transparent font-mono text-xs`}
                 value={avoidListString}
                 onChange={setAvoidListString}
-                placeholder="excited, announcement, game-changer, revolutionary, pleased to share..."
-                rows={4}
+                placeholder="excited, announce, game-changer, revolutionary..."
+                rows={5}
                 fontClass="font-mono text-xs"
               />
             </div>
 
             <div className="space-y-2">
-              <label className={lbl}>Writing Style Rules</label>
-              <p className="text-[10px] text-[var(--text-muted)]">Rules for formatting (e.g., lower-case, short hooks, no emojis).</p>
+              <label className={lbl}>Writing Rules</label>
+              <p className="text-[10px] text-muted-foreground">Formatting constraints (e.g. no links, no emojis, max 1 hook sentence).</p>
               <ModalTextarea
                 label="Writing Style Rules"
-                className={`${inp} h-32 leading-relaxed`}
+                className={`${inp} h-36 leading-relaxed bg-transparent`}
                 value={writingStyle}
                 onChange={setWritingStyle}
-                placeholder="Use 1 hook sentence. Never use emojis. Use numbers where possible."
-                rows={4}
+                placeholder="E.g. No emojis. Bold first line. Maximum 3 bullet points."
+                rows={5}
               />
             </div>
-
           </div>
 
-          {/* 5. MY VOICE EXAMPLES */}
-          <div className="space-y-2 border-t border-white/[0.05] pt-8">
+          {/* 5. Example Tweets */}
+          <div className="space-y-2 pt-6 border-t border-border/80">
             <label className={lbl}>
-              <BookOpen className="w-3.5 h-3.5 text-emerald-400" />
-              My Example Tweets (Separate with double newlines)
+              <BookOpen className="w-3.5 h-3.5 text-muted-foreground/80" />
+              Example Tweets (Separate with double newlines)
             </label>
-            <p className="text-[11px] text-[var(--text-muted)] leading-relaxed">
-              Paste your best, highest-performing historical tweets here. Separate each tweet with an empty line (double newlines) so the parser can index them.
+            <p className="text-[10px] text-muted-foreground leading-relaxed mb-4">
+              Add your best performing past tweets here as styling references. Use double blank lines to separate multiple tweets.
             </p>
             <ModalTextarea
               label="My Example Tweets"
-              className={`${inp} font-mono text-xs h-32 leading-relaxed`}
+              className={`${inp} font-mono text-xs h-36 leading-relaxed bg-transparent`}
               value={exampleTweetsString}
               onChange={setExampleTweetsString}
-              placeholder={"vibe coding git-for-prompts today. Claude wrote 80%...\n\npune college life + code: lectures till 4, code till 2am..."}
-              rows={4}
+              placeholder="Paste historical tweets here..."
+              rows={5}
               fontClass="font-mono text-xs"
             />
           </div>

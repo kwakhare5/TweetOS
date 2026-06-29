@@ -55,7 +55,12 @@ export interface TweetDraft {
   pillarId: string
   momentType: string
   hookVariations: string[]
-  algorithmScore: any // Maintained for store compatibility but unused locally
+  algorithmScore: {
+    overall: number
+    suggestions: string[]
+    calculatedAt: string
+    [key: string]: unknown
+  } // Maintained for store compatibility but unused locally
   sessionId?: string
   factCheckNote?: string
   status: DraftStatus

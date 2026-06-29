@@ -28,7 +28,7 @@
 3. **280-char limit is a HARD FAIL in scorer, not a weak signal.** Enforce at UI level too (live counter everywhere).
 4. **Mobile-first.** Bottom tab bar is primary nav. Sidebar = desktop only.
 5. **Seed profile auto-loads on mount** (`src/data/seedProfile.ts`) if no profile is found in local storage.
-6. **UI Aesthetic:** Use Lucide icons (no emojis), glassmorphic panels, and consistent dark mode gradients.
+6. **UI Aesthetic:** Premium Vercel/Linear dark mode theme layout: full-screen split-pane layout on desktop (scrollable editor on left, responsive tools/outputs on right), glowing violet accents, glassmorphic panels, and Plus Jakarta Sans font. Native page scrolling is enabled on mobile viewports.
 7. **Inline Tutorials:** No separate tutorial pages; onboarding instructions are integrated directly into the UI.
 
 ## 4. AI COMMAND CHEAT SHEET
@@ -51,12 +51,18 @@ _Autonomously updated by the AI whenever it encounters a project-specific error,
 - Do not add duplicate or excessive state management files for unused features. E.g., standalone `engagement` state has been pruned in favor of streamlined page-level and grok-based interactions.
 - Avoid using emojis in the UI; use `lucide-react` icons for a cleaner, professional look.
 - Calling `setState` synchronously inside a `useEffect` (e.g., during store rehydration sync or component updates) triggers React cascading render warnings. Perform render-time synchronization checks using previous prop/state references instead.
+- Google API keys require the 'AIzaSy' prefix. In `.env.local`, check for key truncation and verify parsing logic prepends it if missing.
+- Always load mandatory skills (e.g. `ui-ux-pro-max`, `shadcn`) and format response starting with `[SKILLS ACTIVE: ...]` before performing UI design revisions.
+- Next.js App Router locks page scroll if `h-screen overflow-hidden` is applied on layout wrappers (like `AppShell`). To allow scrolling on settings and details pages, pass `scrollable={true}` to `AppShell` or always default `overflow-y-auto` on mobile viewport viewports.
+- Accessing custom properties on properties of type `Record<string, unknown>` triggers TypeScript compilation errors. Declare precise interfaces/types (e.g. for `algorithmScore` in `TweetDraft` type) instead of generic records or `any` to satisfy the strict type-checker and build pipeline.
 
 ## 6. CURRENT BUILD PHASE
 
-Phase 11 ✅ DONE — Aggressive Minimalism & Inspiration Engine
+Phase 12 ✅ DONE — Command Center & Vercel/Linear Dark Theme Overhaul
 
-- Nuked all multi-tab complexity, deleted `/engage`, and reduced dashboard to a single Command Center.
-- Added "Inspirations Context" (Creator DNA Blueprint) to Profile settings for Grok extraction and override.
-- Rewrote Grok Packagers (Draft Review, Topic Hunt, Engagement) to forcefully override output based on Inspiration DNA.
-- Updated docs (`CONTEXT.md`, `ARCHITECTURE.md`, `README.md`) to reflect the new 2-step Tailoring Node architecture.
+- Overhauled UI from Notion theme to Vercel/Linear premium dark theme with glowing violet accents.
+- Rebuilt Workspace to use CSS Grid Split-Pane layout (left-pane editor, right-pane tools and output).
+- Added `Ctrl+Enter` tailor shortcut and floating Command Palette (`Ctrl+K`).
+- Refactored `AppShell` with dynamic `scrollable` layout toggles, fixing scrolling issues on mobile and the Profile settings page.
+- Performed whole-repo code audit, removing unused `card.tsx` component and fixing outdated CSS variables in `loading.tsx` and `error.tsx` layouts.
+- Updated documentation (`CONTEXT.md`, `CLAUDE.md`) to reflect the new premium visual setup.

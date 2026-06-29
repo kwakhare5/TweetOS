@@ -22,8 +22,9 @@ function getAI(): GoogleGenAI {
     key = process.env.NEXT_PUBLIC_GEMINI_API_KEY || null
   }
 
-  if (key && key.startsWith('AIzaSyAQ.')) {
-    key = key.substring(6)
+  // Ensure the key has the correct Google API Key prefix
+  if (key && !key.startsWith('AIzaSy')) {
+    key = 'AIzaSy' + key
   }
 
   if (!key) {

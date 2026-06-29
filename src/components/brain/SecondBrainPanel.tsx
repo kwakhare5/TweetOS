@@ -1,11 +1,12 @@
 'use client'
 
 import { useState, useRef } from 'react'
-import { Brain, Send, Save, Loader2, ChevronDown, ChevronUp } from 'lucide-react'
+import { Brain, Loader2, ChevronDown, ChevronRight, Sparkles } from 'lucide-react'
 import { useProfileStore } from '@/store/useProfileStore'
 import { geminiText } from '@/lib/gemini'
 import { BRAIN_UPDATER_PROMPT } from '@/lib/prompts'
-import ModalTextarea from '@/components/ui/ModalTextarea'
+import { Button } from '@/components/ui/button'
+import { toast } from 'sonner'
 
 export default function SecondBrainPanel() {
   const { profile, setProfile } = useProfileStore()
@@ -15,7 +16,7 @@ export default function SecondBrainPanel() {
   const [dirty, setDirty] = useState(false)
   const [saving, setSaving] = useState(false)
   const [saved, setSaved] = useState(false)
-  const [collapsed, setCollapsed] = useState(false)
+  const [collapsed, setCollapsed] = useState(true)
   const inputRef = useRef<HTMLTextAreaElement>(null)
 
   const [prevSecondBrain, setPrevSecondBrain] = useState(profile.secondBrain)
@@ -32,8 +33,10 @@ export default function SecondBrainPanel() {
       setBrainText(updated)
       setInput('')
       setDirty(true)
+      toast.success('Brain context updated by AI')
     } catch (e) {
       console.error('Brain update failed:', e)
+      toast.error(e instanceof Error ? e.message : 'Brain update failed')
     } finally {
       setLoading(false)
       inputRef.current?.focus()
@@ -62,75 +65,86 @@ export default function SecondBrainPanel() {
   }
 
   return (
-    <div className="bg-white/[0.02] border border-white/[0.07] rounded-xl overflow-hidden transition-all duration-200">
+    <div className={`border border-border/40 rounded-xl transition-all duration-300 overflow-hidden ${collapsed ? 'bg-secondary/10 hover:bg-secondary/20' : 'bg-background shadow-[0_0_40px_rgba(147,51,234,0.05)] border-primary/20'}`}>
       {/* Header */}
       <div
-        className="flex items-center justify-between px-4 py-3 cursor-pointer select-none hover:bg-white/[0.02] transition-colors"
+        className="flex items-center justify-between px-4 py-3 cursor-pointer select-none transition-colors group"
         onClick={() => setCollapsed(c => !c)}
       >
-        <div className="flex items-center gap-2">
-          <Brain className="w-4 h-4 text-purple-400 shrink-0" />
-          <span className="text-xs font-bold uppercase tracking-widest text-[var(--text-muted)]">Second Brain</span>
+        <div className="flex items-center gap-3">
+          <div className={`p-1.5 rounded-lg transition-colors ${collapsed ? 'bg-secondary/50 text-muted-foreground group-hover:text-foreground' : 'bg-primary/20 text-primary'}`}>
+            <Brain className="w-4 h-4" />
+          </div>
+          <span className={`text-sm font-semibold transition-colors ${collapsed ? 'text-foreground/70 group-hover:text-foreground' : 'text-foreground'}`}>
+            Second Brain
+          </span>
           {dirty && (
-            <span className="w-1.5 h-1.5 rounded-full bg-amber-400 shrink-0" title="Unsaved changes" />
+            <span className="flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-amber-500/10 text-amber-500 text-[10px] font-bold uppercase tracking-wider">
+              <span className="w-1.5 h-1.5 rounded-full bg-amber-500 animate-pulse" />
+              Unsaved
+            </span>
           )}
         </div>
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-3">
           {dirty && !collapsed && (
-            <button
+            <Button
               onClick={e => { e.stopPropagation(); handleSave() }}
               disabled={saving}
-              className="flex items-center gap-1 px-2.5 py-1 bg-purple-500/10 hover:bg-purple-500/20 border border-purple-500/20 rounded-lg text-purple-300 text-[11px] font-bold transition-colors"
+              size="sm"
+              className="h-7 text-xs font-semibold px-3 bg-primary text-primary-foreground hover:bg-primary/90 shadow-[0_0_10px_rgba(147,51,234,0.3)] transition-all"
             >
-              {saving ? <Loader2 className="w-3 h-3 animate-spin" /> : saved ? '✓ Saved' : <><Save className="w-3 h-3" /><span>Save</span></>}
-            </button>
+              {saving ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : saved ? '✓ Saved' : 'Save'}
+            </Button>
           )}
-          {collapsed
-            ? <ChevronDown className="w-3.5 h-3.5 text-[var(--text-muted)]" />
-            : <ChevronUp className="w-3.5 h-3.5 text-[var(--text-muted)]" />
-          }
+          {collapsed ? (
+            <ChevronRight className="w-4 h-4 text-muted-foreground/50 group-hover:text-foreground/70 transition-colors" />
+          ) : (
+            <ChevronDown className="w-4 h-4 text-primary transition-colors" />
+          )}
         </div>
       </div>
 
       {/* Body */}
-      {!collapsed && (
-        <div className="border-t border-white/[0.05]">
-          {/* Brain text — editable */}
-          <ModalTextarea
-            label="Second Brain"
-            value={brainText}
-            onChange={val => { setBrainText(val); setDirty(true) }}
-            rows={6}
-            placeholder={"Tell me what's happening today...\n– new project started\n– swiggy replied\n– shipped X, broke Y\n– feeling productive / burned out"}
-            className="w-full bg-transparent px-4 pt-3 pb-2 text-xs text-[var(--text)] placeholder-[var(--text-muted)] font-mono leading-relaxed resize-none focus:outline-none"
-            fontClass="font-mono text-xs"
-          />
-
-          {/* Chat input */}
-          <div className="flex items-end gap-2 px-3 pb-3 pt-1 border-t border-white/[0.05]">
+      <div className={`grid transition-[grid-template-rows] duration-300 ease-in-out ${collapsed ? 'grid-rows-[0fr]' : 'grid-rows-[1fr]'}`}>
+        <div className="overflow-hidden">
+          <div className="p-4 pt-0 space-y-4">
+            
             <textarea
-              ref={inputRef}
-              value={input}
-              onChange={e => setInput(e.target.value)}
-              onKeyDown={handleKeyDown}
-              rows={1}
-              placeholder="Tell me something… (Enter to update)"
-              className="flex-1 bg-white/[0.03] border border-white/[0.08] rounded-lg px-3 py-2 text-xs text-[var(--text)] placeholder-[var(--text-muted)] focus:outline-none focus:border-purple-500/40 resize-none transition-colors"
-              style={{ minHeight: '34px', maxHeight: '80px' }}
+              value={brainText}
+              onChange={e => { setBrainText(e.target.value); setDirty(true) }}
+              rows={6}
+              placeholder="Dump context facts, rules, or live notes here..."
+              className="w-full bg-secondary/10 border border-border/30 rounded-lg p-3 text-sm leading-relaxed text-foreground placeholder:text-muted-foreground/40 resize-none focus:outline-none focus:ring-1 focus:ring-primary/50 focus:border-primary/50 font-mono transition-all"
             />
-            <button
-              onClick={handleSend}
-              disabled={loading || !input.trim()}
-              className="shrink-0 p-2 bg-purple-500/10 hover:bg-purple-500/20 border border-purple-500/20 rounded-lg text-purple-300 disabled:opacity-40 transition-colors"
-            >
-              {loading
-                ? <Loader2 className="w-3.5 h-3.5 animate-spin" />
-                : <Send className="w-3.5 h-3.5" />
-              }
-            </button>
+
+            <div className="flex items-end gap-2 relative group/input">
+              <textarea
+                ref={inputRef}
+                value={input}
+                onChange={e => setInput(e.target.value)}
+                onKeyDown={handleKeyDown}
+                rows={1}
+                placeholder="Ask AI to update brain (Press Enter)"
+                className="flex-1 bg-secondary/20 border border-border/40 rounded-lg px-4 py-2.5 text-sm text-foreground placeholder:text-muted-foreground/50 focus:outline-none focus:border-primary/50 focus:ring-1 focus:ring-primary/50 resize-none transition-all pr-12"
+                style={{ minHeight: '44px', maxHeight: '100px' }}
+              />
+              <Button
+                onClick={handleSend}
+                disabled={loading || !input.trim()}
+                size="icon"
+                className="absolute right-1.5 bottom-1.5 h-8 w-8 bg-primary text-primary-foreground hover:bg-primary/90 rounded-md transition-all shadow-[0_0_10px_rgba(147,51,234,0.2)] disabled:shadow-none disabled:bg-secondary disabled:text-muted-foreground"
+              >
+                {loading ? (
+                  <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                ) : (
+                  <Sparkles className="w-3.5 h-3.5" />
+                )}
+              </Button>
+            </div>
+
           </div>
         </div>
-      )}
+      </div>
     </div>
   )
 }
