@@ -1,7 +1,5 @@
 'use client'
 
-import { AlertTriangle } from 'lucide-react'
-
 export default function GlobalError({
   error,
   reset,
@@ -10,16 +8,13 @@ export default function GlobalError({
   reset: () => void
 }) {
   return (
-    <div className="flex min-h-screen items-center justify-center bg-background p-4">
-      <div className="max-w-sm w-full p-6 bg-card border border-destructive/30 rounded-xl flex flex-col gap-4 text-center items-center">
-        <AlertTriangle className="w-10 h-10 text-destructive shrink-0 animate-pulse" />
-        <div>
-          <h2 className="text-sm font-bold text-destructive">Something went wrong</h2>
-          <p className="text-xs text-muted-foreground mt-1 font-mono break-all">{error.message}</p>
-        </div>
+    <div style={{ display: 'flex', minHeight: '100vh', alignItems: 'center', justifyContent: 'center', fontFamily: 'monospace', padding: '16px' }}>
+      <div style={{ maxWidth: '380px', width: '100%', padding: '24px', border: '1px solid red', textAlign: 'center' }}>
+        <h2 style={{ color: 'red', margin: '0 0 10px 0' }}>Something went wrong</h2>
+        <p style={{ fontSize: '12px', color: '#666', marginBottom: '20px', wordBreak: 'break-all' }}>{error.message}</p>
         <button
           onClick={reset}
-          className="px-4 py-2 bg-primary hover:bg-primary/90 text-primary-foreground text-sm rounded-lg transition-all shadow-[0_0_15px_rgba(147,51,234,0.3)] font-semibold cursor-pointer"
+          style={{ padding: '8px 16px', background: '#000', color: '#fff', border: 'none', cursor: 'pointer', fontWeight: 'bold' }}
         >
           Try again
         </button>

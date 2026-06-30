@@ -27,7 +27,7 @@ The entire workspace has been aggressively stripped down to a single minimal int
 ## Architectural Notes
 
 - **Aggressive Minimalism**: The Scorecard, Engage Hub (`/engage`), Workshop utility buttons, and Learning Notes have been completely deleted or hidden from the main dashboard to remove friction.
-- **Premium Command Center Visuals**: The UI has been overhauled to a dark-mode Vercel/Linear-inspired visual layout. Features a CSS Grid Split-Pane (editor on left, output/packets on right), glowing violet accents, glassmorphic panels, and smooth micro-animations. It supports lock-to-screen on desktop for speed, and full scroll responsiveness on mobile viewports.
+- **Premium Command Center Visuals**: The UI is styled with a premium light-mode theme inspired by the Zite website: a floating top capsule navbar, soft off-white/beige canvas grids, borderless cards, and custom `DM Sans` (body & headings) paired with `Fira Code` (monospace) typography. It supports lock-to-screen on desktop for speed, and full scroll responsiveness on mobile viewports.
 - **Power Features**: Keyboard shortcuts like `Ctrl+Enter` to tailor drafts instantly, and a floating Command Palette (`Ctrl+K` dialog modal) for quick navigation.
 - **Pure Client Logic & Zustand**: All stores persist their state to browser Local Storage using Zustand's `persist` middleware, guaranteeing 100% offline functionality.
 

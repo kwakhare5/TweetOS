@@ -44,18 +44,22 @@ tweetOS/
 │   ├── components/
 │   │   ├── layout/
 │   │   │   ├── Sidebar.tsx
-│   │   │   ├── TopBar.tsx
 │   │   │   ├── AppShell.tsx
 │   │   │   └── MobileNav.tsx             
-│   │   ├── profile/
-│   │   │   ├── ProfileForm.tsx
-│   │   │   ├── PillarEditor.tsx
-│   │   │   ├── ExampleTweetInput.tsx
-│   │   │   ├── ProfileModal.tsx
-│   │   │   └── ProfileCard.tsx
 │   │   ├── CommandPalette.tsx            # Floating Ctrl+K Command Dialog
+│   │   ├── theme-provider.tsx            # Theme provider context wrapper
+│   │   ├── theme-toggle.tsx              # Simple dark/light theme switch
 │   │   ├── brain/
-│   │       └── SecondBrainPanel.tsx      
+│   │   │   └── SecondBrainPanel.tsx      
+│   │   └── ui/
+│   │       ├── ModalTextarea.tsx         # Expanding textarea modal component
+│   │       ├── button.tsx
+│   │       ├── command.tsx
+│   │       ├── dialog.tsx
+│   │       ├── input-group.tsx
+│   │       ├── input.tsx
+│   │       ├── sonner.tsx
+│   │       └── textarea.tsx
 │   │
 │   ├── lib/
 │   │   ├── gemini.ts                     # Google GenAI integration
@@ -67,8 +71,7 @@ tweetOS/
 │   │   └── index.ts
 │   │
 │   ├── store/
-│   │   ├── useProfileStore.ts            # Profile + Second Brain + Inspiration DNA
-│   │   └── useDraftStore.ts              # Drafts storage
+│   │   └── useProfileStore.ts            # Profile + Second Brain + Inspiration DNA
 │   │
 │   └── data/
 │       └── seedProfile.ts                # Default profile

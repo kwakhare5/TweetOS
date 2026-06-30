@@ -2,7 +2,7 @@
 
 # Note: All AI behaviors, commands (@TDD, @GRILL), and context maintenance rules
 
-# are now globally enforced via ~/.gemini/GEMINI.md. Do not duplicate them here.
+# are now globally enforced via ~/.gemini/config/AGENTS.md. Do not duplicate them here.
 
 ---
 
@@ -21,28 +21,33 @@
 - **State:** Zustand (with persist middleware)
 - **Hosting:** Vercel
 
-## 3. LOCAL ARCHITECTURE RULES
+## 3. EXECUTION & VERIFICATION
+
+- **Run Dev Server:** `npm run dev`
+- **Run Linting:** `npm run lint`
+- **Run Build:** `npm run build`
+
+## 4. LOCAL ARCHITECTURE RULES
 
 1. **All prompts → `src/lib/prompts.ts` ONLY.** Never inline AI prompts in components.
 2. **All types → `src/types/index.ts`.** No local type definitions scattered across files.
 3. **280-char limit is a HARD FAIL in scorer, not a weak signal.** Enforce at UI level too (live counter everywhere).
 4. **Mobile-first.** Bottom tab bar is primary nav. Sidebar = desktop only.
 5. **Seed profile auto-loads on mount** (`src/data/seedProfile.ts`) if no profile is found in local storage.
-6. **UI Aesthetic:** Premium Vercel/Linear dark mode theme layout: full-screen split-pane layout on desktop (scrollable editor on left, responsive tools/outputs on right), glowing violet accents, glassmorphic panels, and Plus Jakarta Sans font. Native page scrolling is enabled on mobile viewports.
-7. **Inline Tutorials:** No separate tutorial pages; onboarding instructions are integrated directly into the UI.
+6. **UI Aesthetic**: Zite-inspired premium light-mode dashboard styling using a soft grayish-white background (`#f9f9fb`), white canvas cards with fine borders, a floating capsule top navigation bar, and custom **DM Sans** (body & headings) paired with **Fira Code** (monospace) typography.
+7. **Inline Tutorials**: No separate tutorial pages; onboarding instructions are integrated directly into the UI.
 
-## 4. AI COMMAND CHEAT SHEET
+## 5. AI COMMAND CHEAT SHEET
 
-| Command     | Skill Path / Action                                                                                                                                                                                              |
-| ----------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `@PLAN`     | Standard agent planning mode. Create `implementation_plan.md` first.                                                                                                                                             |
-| `@TDD`      | [mp-tdd/SKILL.md](file:///C:/Users/kwakh/.gemini/antigravity/skills/mp-tdd/SKILL.md) — Test-driven development with a red-green-refactor loop. Write a failing test first, make it pass, and then refactor.      |
-| `@GRILL`    | [mp-grill-me/SKILL.md](file:///C:/Users/kwakh/.gemini/antigravity/skills/mp-grill-me/SKILL.md) — Relentlessly interview user about design/decisions one question at a time before writing any code.              |
-| `@DIAGNOSE` | [mp-diagnose/SKILL.md](file:///C:/Users/kwakh/.gemini/antigravity/skills/mp-diagnose/SKILL.md) — Systematic bug hunt loop: Build reproducer feedback loop first -> Generate 3–5 hypotheses -> Instrument -> Fix. |
-| `@ZOOM`     | [mp-zoom-out/SKILL.md](file:///C:/Users/kwakh/.gemini/antigravity/skills/mp-zoom-out/SKILL.md) — Zoom out to map codebase architecture, components, and module dependencies before making edits.                 |
-| `@AUDIT`    | [ponytail-audit/SKILL.md](file:///C:/Users/kwakh/.gemini/antigravity/skills/ponytail-audit/SKILL.md) — Scan codebase for over-engineering, useless abstractions, dead flags, and candidate lines to delete.      |
+| Command     | Skill Path / Action                                                                                                                                                                                                                                 |
+| ----------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `@PLAN`     | Standard agent planning mode. Create `implementation_plan.md` first.                                                                                                                                                                                |
+| `@TDD`      | [mp-tdd/SKILL.md](file:///C:/Users/kwakh/.gemini/config/skills/mp-tdd/SKILL.md) — **Red-Green-Refactor.** Write failing tests first. Do not write implementation code until tests fail.                                                             |
+| `@GRILL`    | [mp-grill-me/SKILL.md](file:///C:/Users/kwakh/.gemini/config/skills/mp-grill-me/SKILL.md) — **Relentless Interrogation.** Ask ONE question at a time to clarify architecture. Push back on bad ideas. DO NOT write code until alignment is reached. |
+| `@DIAGNOSE` | [mp-diagnose/SKILL.md](file:///C:/Users/kwakh/.gemini/config/skills/mp-diagnose/SKILL.md) — **Scientific Method Bug Hunt.** 1. Build reproducer. 2. Form 3-5 hypotheses. 3. Instrument logging. 4. Fix only when proven.                            |
+| `@ZOOM`     | [mp-zoom-out/SKILL.md](file:///C:/Users/kwakh/.gemini/config/skills/mp-zoom-out/SKILL.md) — **Architectural Mapping.** Stop coding. Map the codebase dependencies, data flow, and components before making sweeping changes.                        |
 
-## 5. MISTAKES TO AVOID
+## 6. MISTAKES TO AVOID
 
 _Autonomously updated by the AI whenever it encounters a project-specific error, compilation issue, or pattern mistake. Never repeat these._
 
@@ -55,14 +60,17 @@ _Autonomously updated by the AI whenever it encounters a project-specific error,
 - Always load mandatory skills (e.g. `ui-ux-pro-max`, `shadcn`) and format response starting with `[SKILLS ACTIVE: ...]` before performing UI design revisions.
 - Next.js App Router locks page scroll if `h-screen overflow-hidden` is applied on layout wrappers (like `AppShell`). To allow scrolling on settings and details pages, pass `scrollable={true}` to `AppShell` or always default `overflow-y-auto` on mobile viewport viewports.
 - Accessing custom properties on properties of type `Record<string, unknown>` triggers TypeScript compilation errors. Declare precise interfaces/types (e.g. for `algorithmScore` in `TweetDraft` type) instead of generic records or `any` to satisfy the strict type-checker and build pipeline.
+- When writing source code files (non-artifact files) using the `write_to_file` tool, never provide `ArtifactMetadata` as it causes invalid path errors. `ArtifactMetadata` is strictly for files saved in the artifacts directory.
+- Nested git clone directories (e.g. `cloner`) in the workspace trigger root compilation errors during build time. Exclude these directories in both root `tsconfig.json` and root `eslint.config.mjs` config files.
 
 ## 6. CURRENT BUILD PHASE
 
-Phase 12 ✅ DONE — Command Center & Vercel/Linear Dark Theme Overhaul
+Phase 15 ✅ DONE — Trueform Dashboard Aesthetics & Design Realignment
 
-- Overhauled UI from Notion theme to Vercel/Linear premium dark theme with glowing violet accents.
-- Rebuilt Workspace to use CSS Grid Split-Pane layout (left-pane editor, right-pane tools and output).
-- Added `Ctrl+Enter` tailor shortcut and floating Command Palette (`Ctrl+K`).
-- Refactored `AppShell` with dynamic `scrollable` layout toggles, fixing scrolling issues on mobile and the Profile settings page.
-- Performed whole-repo code audit, removing unused `card.tsx` component and fixing outdated CSS variables in `loading.tsx` and `error.tsx` layouts.
-- Updated documentation (`CONTEXT.md`, `CLAUDE.md`) to reflect the new premium visual setup.
+- Overhauled app shell, page structures, and colors to inherit the clean light-mode dashboard visuals from screenshots.
+- Rebuilt Sidebar with the `TO` brand block dropdown, search panel, and original favorites and locations categories (Notes, Discover, System Settings, TweetOS Node, Trash).
+- Redesigned Workspace `/` as the **Notes** page: Voice Editor card, checklist of algorithm score cards, and clean list feed of recent notes.
+- Transformed Discover `/discover` into a clean template card grid grouped by content pillars (**Reality Checks**, **Tech Rants**, **Pune Dev Life**, **Growth Lessons**) with attributes and remix options.
+- Styled System Settings `/profile` into clean card configurations.
+- Verified compilation builds correctly with Next.js Turbopack.
+- Removed dead codebase file (`useDraftStore.ts`) to keep repository clean.

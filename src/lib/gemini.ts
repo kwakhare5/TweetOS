@@ -39,25 +39,6 @@ function getAI(): GoogleGenAI {
 }
 
 /**
- * Call Gemini and parse JSON response.
- * Strips markdown fences if model wraps output in ```json ... ```
- */
-export async function geminiJSON<T>(prompt: string): Promise<T> {
-  const ai = getAI()
-  const response = await ai.models.generateContent({
-    model: 'gemini-2.5-flash',
-    contents: prompt,
-    config: {
-      responseMimeType: 'application/json',
-    },
-  })
-  const text = response.text ?? ''
-  // Strip optional markdown fences
-  const clean = text.replace(/^```(?:json)?\n?/, '').replace(/\n?```$/, '').trim()
-  return JSON.parse(clean) as T
-}
-
-/**
  * Call Gemini and return plain text response.
  */
 export async function geminiText(prompt: string): Promise<string> {

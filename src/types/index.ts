@@ -14,6 +14,7 @@ export interface UserProfile {
   secondBrain?: string
   inspirationsContext?: string
   geminiApiKey?: string
+  avatarUrl?: string
   createdAt: string
   updatedAt: string
 }
