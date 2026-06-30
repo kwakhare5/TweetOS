@@ -1,6 +1,17 @@
 import { FileText, MoreVertical, Plus } from "lucide-react"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
+import { Input } from "@/components/ui/input"
+import { Textarea } from "@/components/ui/textarea"
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog"
 import {
   Card,
   CardContent,
@@ -15,23 +26,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 
-const recentNotes = [
-  {
-    title: "Thread Idea: 10 hooks that work",
-    content: "1. The Negative Hook (Stop doing X)\n2. The Secret Hook (The one thing nobody tells you)\n3. The Time Hook (In 5 minutes, I'll teach you...)",
-    date: "2 hours ago",
-    tags: ["Threads", "Hooks"],
-    color: "bg-blue-500/10 text-blue-700 dark:text-blue-400 border-blue-500/20",
-  },
-  {
-    title: "Next Week's Content Plan",
-    content: "- Monday: Motivational thread about building\n- Wednesday: Teardown of a successful product\n- Friday: Resource drop (PDF)",
-    date: "2 days ago",
-    tags: ["Planning", "High Priority"],
-    color: "bg-purple-500/10 text-purple-700 dark:text-purple-400 border-purple-500/20",
-  }
-]
-
+import { RECENT_NOTES } from "@/data/mock-data"
 export function RecentDrafts() {
   return (
     <section id="notes" className="flex flex-col">
@@ -40,13 +35,40 @@ export function RecentDrafts() {
           <h2 className="text-xl font-bold tracking-tight">Recent Drafts</h2>
           <p className="text-sm text-muted-foreground">Your latest captured ideas.</p>
         </div>
-        <Button variant="outline" size="sm">
-          <Plus className="h-4 w-4 mr-2" />
-          New
-        </Button>
+        <Dialog>
+          <DialogTrigger render={
+            <Button variant="outline" size="sm">
+              <Plus className="h-4 w-4 mr-2" />
+              New
+            </Button>
+          } />
+          <DialogContent className="sm:max-w-[425px]">
+            <DialogHeader>
+              <DialogTitle>New Draft</DialogTitle>
+              <DialogDescription>
+                Capture your next viral idea here. Click save when you&apos;re done.
+              </DialogDescription>
+            </DialogHeader>
+            <div className="grid gap-4 py-4">
+              <div className="grid gap-2">
+                <Input id="title" placeholder="Thread Idea: 10 hooks that work" className="font-semibold text-lg" />
+              </div>
+              <div className="grid gap-2">
+                <Textarea
+                  id="content"
+                  placeholder="Start typing your hook..."
+                  className="min-h-[120px] resize-none"
+                />
+              </div>
+            </div>
+            <DialogFooter>
+              <Button type="submit">Save Draft</Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
       </div>
       <div className="grid gap-4 flex-1 h-full">
-        {recentNotes.map((note, i) => (
+        {RECENT_NOTES.map((note, i) => (
           <Card key={i} className="flex flex-col cursor-pointer border border-border hover:border-primary/50 transition-colors group">
             <CardHeader className="flex flex-row justify-between items-start pb-2">
               <div className={`px-2 py-1 rounded-md text-xs font-medium border ${note.color} mb-2`}>

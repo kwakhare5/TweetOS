@@ -1,7 +1,7 @@
 import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
 import { UserProfile } from '@/types'
-import { SEED_PROFILE } from '@/data/seedProfile'
+import { SEED_PROFILE } from '@/data/seed-profile'
 
 interface ProfileStore {
   profile: UserProfile

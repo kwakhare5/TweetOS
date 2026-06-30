@@ -3,17 +3,18 @@
 import * as React from "react"
 import {
   LayoutDashboard,
-  StickyNote,
-  Kanban,
   Layers,
   Settings,
-  Sparkles,
+  FileText,
+  BarChart2,
+  Plug,
+  Key,
+  Sparkles
 } from "lucide-react"
 
 import {
   Sidebar,
   SidebarContent,
-  SidebarFooter,
   SidebarGroup,
   SidebarGroupContent,
   SidebarGroupLabel,
@@ -22,57 +23,64 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from "@/components/ui/sidebar"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Button } from "@/components/ui/button"
 import Link from "next/link"
-import { usePathname } from "next/navigation"
 
 const data = {
   navMain: [
     {
-      title: "Dashboards",
+      title: "Workspace",
       items: [
         {
-          title: "Overview",
+          title: "Dashboard",
           url: "/",
           icon: LayoutDashboard,
         },
         {
-          title: "Notes",
-          url: "/#notes",
-          icon: StickyNote,
+          title: "Inspiration",
+          url: "/inspiration",
+          icon: Sparkles,
         },
         {
-          title: "Kanban",
-          url: "/#pipeline",
-          icon: Kanban,
+          title: "Drafts",
+          url: "/drafts",
+          icon: FileText,
+        },
+        {
+          title: "Analytics",
+          url: "/analytics",
+          icon: BarChart2,
         },
       ],
     },
     {
-      title: "Settings",
+      title: "Configuration",
       items: [
         {
-          title: "General",
-          url: "#",
+          title: "Profile & DNA",
+          url: "/profile",
           icon: Settings,
         },
         {
           title: "Integrations",
-          url: "#",
-          icon: Layers,
+          url: "/integrations",
+          icon: Plug,
+        },
+        {
+          title: "API Keys",
+          url: "/keys",
+          icon: Key,
         },
       ],
-    },
+    }
   ],
 }
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
-  const pathname = usePathname()
   const [activeHash, setActiveHash] = React.useState("")
   const [mounted, setMounted] = React.useState(false)
 
   React.useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setMounted(true)
     // Initial load
     setActiveHash(window.location.hash)
@@ -101,12 +109,12 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
           </SidebarMenuItem>
         </SidebarMenu>
       </SidebarHeader>
-      <SidebarContent>
+      <SidebarContent className="px-2 pt-4">
         {data.navMain.map((group) => (
-          <SidebarGroup key={group.title}>
-            <SidebarGroupLabel>{group.title}</SidebarGroupLabel>
+          <SidebarGroup key={group.title} className="py-2">
+            <SidebarGroupLabel className="text-sm font-semibold text-foreground px-2 pb-2">{group.title}</SidebarGroupLabel>
             <SidebarGroupContent>
-              <SidebarMenu>
+              <SidebarMenu className="gap-1">
                 {group.items.map((item) => {
                   const isActive = mounted ? (
                     (activeHash === item.url.replace("/", "")) ||
@@ -117,6 +125,11 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                     <SidebarMenuItem key={item.title}>
                       <SidebarMenuButton 
                         isActive={isActive} 
+                        className={`h-9 px-3 rounded-md transition-all font-medium text-[15px]
+                          ${isActive 
+                            ? "bg-muted text-foreground font-semibold" 
+                            : "text-muted-foreground hover:bg-muted/50 hover:text-foreground"
+                          }`}
                         render={<Link href={item.url} onClick={() => setActiveHash(item.url.replace("/", ""))} />}
                       >
                         <item.icon />
@@ -130,24 +143,6 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
           </SidebarGroup>
         ))}
       </SidebarContent>
-      <SidebarFooter>
-        <div className="p-4">
-          <Card className="shadow-none">
-            <CardHeader className="p-4 pb-0">
-              <CardTitle className="text-sm">Upgrade to Pro</CardTitle>
-              <CardDescription className="text-xs">
-                Unlock all features and get unlimited access to our support team.
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="p-4">
-              <Button size="sm" className="w-full">
-                <Sparkles className="mr-2 h-4 w-4" />
-                Upgrade
-              </Button>
-            </CardContent>
-          </Card>
-        </div>
-      </SidebarFooter>
     </Sidebar>
   )
 }
