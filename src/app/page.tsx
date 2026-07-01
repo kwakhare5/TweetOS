@@ -114,15 +114,15 @@ export default function Dashboard() {
   const [factCheck, setFactCheck] = useState("")
   const [copiedDraft, setCopiedDraft] = useState(false)
   const [copiedGrok, setCopiedGrok] = useState(false)
-  const [buttonStyle, setButtonStyle] = useState<"flat" | "washi" | "neobrutalist" | "folder">("flat")
+  const [buttonStyle] = useState<"flat" | "washi" | "neobrutalist" | "folder">("washi")
 
   const getBrainstormTriggerClass = () => {
     const base = "h-9 sm:h-8 px-4 cursor-pointer font-bold transition-all flex items-center justify-center select-none text-xs gap-1.5 outline-hidden border-0 "
     if (buttonStyle === "flat") {
-      return base + "rounded-full border border-slate-200 bg-background text-slate-700 hover:bg-slate-50 hover:text-slate-900 shadow-xs active:scale-[0.98]"
+      return base + "rounded-xl border border-slate-200 bg-background text-slate-700 hover:bg-slate-50 hover:text-slate-900 shadow-xs active:scale-[0.98]"
     }
     if (buttonStyle === "washi") {
-      return base + "bg-slate-100/60 hover:bg-slate-200/60 border border-slate-300/40 text-slate-800 shadow-3xs active:scale-[0.98] rotate-[-0.3deg] rounded-xl"
+      return base + "bg-slate-100/60 hover:bg-slate-200/60 border border-slate-300/40 text-slate-800 shadow-3xs active:scale-[0.98] rotate-[-0.3deg] rounded-t-lg"
     }
     if (buttonStyle === "neobrutalist") {
       return base + "bg-white text-slate-900 border-1.5 border-slate-900 shadow-[2px_2px_0px_0px_rgba(15,23,42,1)] hover:shadow-[3px_3px_0px_0px_rgba(15,23,42,1)] active:translate-x-[1px] active:translate-y-[1px] active:shadow-[1px_1px_0px_0px_rgba(15,23,42,1)] rounded-none"
@@ -134,13 +134,13 @@ export default function Dashboard() {
   const getTailorClass = () => {
     const base = "h-9 sm:h-8 flex-1 sm:flex-initial px-4 cursor-pointer font-bold transition-all flex items-center justify-center select-none text-xs border-0 "
     if (buttonStyle === "flat") {
-      return base + "rounded-full bg-slate-950 text-white hover:bg-slate-900 shadow-sm active:scale-[0.98]"
+      return base + "rounded-xl bg-slate-950 text-white hover:bg-slate-900 shadow-sm active:scale-[0.98]"
     }
     if (buttonStyle === "washi") {
-      return base + "bg-amber-200/60 hover:bg-amber-200/80 border border-amber-300/30 text-amber-950 shadow-3xs active:scale-[0.98] rotate-[0.3deg] rounded-xl"
+      return base + "bg-amber-200/60 hover:bg-amber-200/80 border border-amber-300/30 text-amber-950 shadow-3xs active:scale-[0.98] rotate-[0.3deg] rounded-t-lg"
     }
     if (buttonStyle === "neobrutalist") {
-      return base + "bg-slate-950 text-white border border-slate-950 shadow-[2px_2px_0px_0px_rgba(15,23,42,1)] hover:shadow-[3px_3px_0px_0px_rgba(15,23,42,1)] active:translate-x-[1px] active:translate-y-[1px] active:shadow-[1px_1px_0px_0px_rgba(15,23,42,1)] rounded-none"
+      return base + "bg-slate-950 text-white border border-slate-955 shadow-[2px_2px_0px_0px_rgba(15,23,42,1)] hover:shadow-[3px_3px_0px_0px_rgba(15,23,42,1)] active:translate-x-[1px] active:translate-y-[1px] active:shadow-[1px_1px_0px_0px_rgba(15,23,42,1)] rounded-none"
     }
     // folder
     return base + "bg-[#F5EAD4] hover:bg-[#EBDCBE] border border-[#D9C4A2] border-b-0 rounded-t-lg text-amber-950 active:scale-[0.98] translate-y-[2px]"
@@ -152,7 +152,7 @@ export default function Dashboard() {
       return base + "rounded-lg border border-border bg-background text-slate-700 hover:text-slate-900 hover:bg-slate-50 shadow-xs active:scale-[0.98]"
     }
     if (buttonStyle === "washi") {
-      return base + "bg-slate-100/60 hover:bg-slate-200/60 border border-slate-300/40 text-slate-800 shadow-3xs active:scale-[0.98] rotate-[-0.3deg] rounded-xl"
+      return base + "bg-slate-100/60 hover:bg-slate-200/60 border border-slate-300/40 text-slate-800 shadow-3xs active:scale-[0.98] rotate-[-0.3deg] rounded-t-lg"
     }
     if (buttonStyle === "neobrutalist") {
       return base + "bg-white text-slate-900 border border-slate-900 shadow-[2px_2px_0px_0px_rgba(15,23,42,1)] hover:shadow-[3px_3px_0px_0px_rgba(15,23,42,1)] active:translate-x-[1px] active:translate-y-[1px] active:shadow-[1px_1px_0px_0px_rgba(15,23,42,1)] rounded-none"
@@ -167,7 +167,7 @@ export default function Dashboard() {
       return base + "rounded-lg border border-border bg-background text-slate-700 hover:text-slate-900 hover:bg-slate-50 shadow-xs active:scale-[0.98]"
     }
     if (buttonStyle === "washi") {
-      return base + "bg-amber-200/60 hover:bg-amber-200/80 border border-amber-300/30 text-amber-950 shadow-3xs active:scale-[0.98] rotate-[0.3deg] rounded-xl"
+      return base + "bg-amber-200/60 hover:bg-amber-200/80 border border-amber-300/30 text-amber-950 shadow-3xs active:scale-[0.98] rotate-[0.3deg] rounded-t-lg"
     }
     if (buttonStyle === "neobrutalist") {
       return base + "bg-slate-950 text-white border border-slate-950 shadow-[2px_2px_0px_0px_rgba(15,23,42,1)] hover:shadow-[3px_3px_0px_0px_rgba(15,23,42,1)] active:translate-x-[1px] active:translate-y-[1px] active:shadow-[1px_1px_0px_0px_rgba(15,23,42,1)] rounded-none"
@@ -819,24 +819,6 @@ export default function Dashboard() {
             );
           })}
         </div>
-      </div>
-
-      {/* Floating Style Picker for Prototyping Options */}
-      <div className="fixed bottom-4 right-4 z-50 bg-slate-900/90 backdrop-blur-xs text-slate-100 rounded-lg p-2 shadow-lg border border-slate-800 flex items-center gap-2 select-none font-sans text-xs">
-        <span className="font-bold text-slate-400">Buttons:</span>
-        {(["flat", "washi", "neobrutalist", "folder"] as const).map((s) => (
-          <button
-            key={s}
-            onClick={() => setButtonStyle(s)}
-            className={`px-2 py-1 rounded font-semibold capitalize cursor-pointer transition-colors border-0 ${
-              buttonStyle === s
-                ? "bg-amber-500 text-slate-950 font-bold"
-                : "bg-transparent text-slate-300 hover:text-white hover:bg-slate-800"
-            }`}
-          >
-            {s}
-          </button>
-        ))}
       </div>
     </motion.div>
   )
