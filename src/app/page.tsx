@@ -445,46 +445,35 @@ export default function Dashboard() {
               <span className="text-[11px] font-bold text-yellow-800/80 uppercase tracking-wider font-mono">
                 Sticky Notes
               </span>
+              
+              {/* Top Bar Save Action Button */}
+              <button 
+                onClick={handleUpdateBrain} 
+                disabled={isUpdatingBrain}
+                className="p-1 hover:bg-yellow-200/50 rounded text-yellow-800/80 cursor-pointer transition-colors bg-transparent border-0 flex items-center justify-center"
+                title="Save Brain Memory"
+              >
+                {isUpdatingBrain ? (
+                  <RefreshCw className="h-3.5 w-3.5 animate-spin" />
+                ) : (
+                  <Save className="h-3.5 w-3.5" />
+                )}
+              </button>
             </div>
 
-            {/* Note writing area */}
-            <div className="p-5 flex-1 flex flex-col space-y-3">
-              <div className="flex justify-between items-center">
-                <Label htmlFor="second-brain" className="text-xs font-bold text-yellow-800">
-                  SECOND BRAIN (DAILY CONTEXT)
-                </Label>
-                <span className="text-[9px] font-bold px-1.5 py-0.5 rounded border border-yellow-400 bg-yellow-100 text-yellow-800">
-                  AUTO-SYNCED
-                </span>
-              </div>
+            {/* Note writing area with yellow rule lining texture */}
+            <div className="p-5 flex-1 flex flex-col">
               <textarea
                 id="second-brain"
                 value={secondBrainText}
                 onChange={(e) => setSecondBrainText(e.target.value)}
-                placeholder="Studying code? Building a chrome extension? Refused to go to college? Write it down, Gemini uses this memory."
-                className="w-full bg-transparent border-0 outline-none focus:ring-0 focus-visible:ring-0 focus-visible:ring-offset-0 px-0 py-0 resize-none flex-1 min-h-[300px] text-sm text-yellow-950 placeholder:text-yellow-600/60 leading-relaxed font-sans"
+                placeholder="Studying code? Building a chrome extension? Write it down, Gemini uses this memory..."
+                className="w-full bg-transparent border-0 outline-none focus:ring-0 focus-visible:ring-0 focus-visible:ring-offset-0 px-0 py-0 resize-none flex-1 min-h-[380px] text-[15px] font-medium text-yellow-950 placeholder:text-yellow-600/50 leading-[28px] font-sans pt-[4px]"
+                style={{
+                  backgroundImage: "linear-gradient(to bottom, transparent 27px, rgba(202,138,4,0.15) 27px)",
+                  backgroundSize: "100% 28px"
+                }}
               />
-            </div>
-
-            {/* Sticky Note footer button */}
-            <div className="px-5 pb-5 pt-2 flex justify-end">
-              <Button 
-                onClick={handleUpdateBrain} 
-                disabled={isUpdatingBrain}
-                className="w-full h-10 bg-yellow-400 hover:bg-yellow-500 text-yellow-950 border border-yellow-500/30 hover:border-yellow-500/50 shadow-sm cursor-pointer font-bold transition-all text-xs"
-              >
-                {isUpdatingBrain ? (
-                  <>
-                    <RefreshCw className="h-3.5 w-3.5 mr-2 animate-spin text-yellow-950" />
-                    SYNCING MEMORY...
-                  </>
-                ) : (
-                  <>
-                    <Save className="h-3.5 w-3.5 mr-2 text-yellow-950" />
-                    SAVE TO BRAIN
-                  </>
-                )}
-              </Button>
             </div>
 
           </div>
