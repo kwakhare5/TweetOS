@@ -116,6 +116,7 @@ export default function Dashboard() {
   const [copiedGrok, setCopiedGrok] = useState(false)
   const [buttonStyle] = useState<"flat" | "washi" | "neobrutalist" | "folder">("washi")
   const [activeBrainstormAction, setActiveBrainstormAction] = useState<"idea" | "trending" | "engagement">("idea")
+  const [washiColors, setWashiColors] = useState<"blue-yellow" | "green-yellow" | "yellow-yellow" | "slate-yellow">("blue-yellow")
 
   const getBrainstormTriggerClass = (side: "left" | "right" | "single" = "single") => {
     const base = "h-8 px-3 gap-1 flex-initial cursor-pointer font-bold transition-all flex items-center justify-center select-none text-xs outline-hidden border-0 "
@@ -136,7 +137,15 @@ export default function Dashboard() {
       return base + radius + " border border-slate-200 bg-background text-slate-700 hover:bg-slate-50 hover:text-slate-900 shadow-xs active:scale-[0.98]"
     }
     if (buttonStyle === "washi") {
-      return base + radius + " bg-slate-100/60 hover:bg-slate-200/60 border border-slate-300/40 text-slate-800 shadow-3xs active:scale-[0.98] rotate-[-0.3deg]"
+      let colors = "bg-sky-100/60 hover:bg-sky-200/60 border border-sky-300/30 text-sky-950"
+      if (washiColors === "green-yellow") {
+        colors = "bg-emerald-100/60 hover:bg-emerald-200/60 border border-emerald-300/30 text-emerald-955"
+      } else if (washiColors === "yellow-yellow") {
+        colors = "bg-amber-200/60 hover:bg-amber-200/80 border border-amber-300/30 text-amber-955"
+      } else if (washiColors === "slate-yellow") {
+        colors = "bg-slate-100/60 hover:bg-slate-200/60 border border-slate-300/40 text-slate-800"
+      }
+      return base + radius + " shadow-3xs active:scale-[0.98] rotate-[-0.3deg] " + colors
     }
     if (buttonStyle === "neobrutalist") {
       return base + radius + " bg-white text-slate-900 border-1.5 border-slate-900 shadow-[2px_2px_0px_0px_rgba(15,23,42,1)] hover:shadow-[3px_3px_0px_0px_rgba(15,23,42,1)] active:translate-x-[1px] active:translate-y-[1px] active:shadow-[1px_1px_0px_0px_rgba(15,23,42,1)]"
@@ -850,6 +859,24 @@ export default function Dashboard() {
             );
           })}
         </div>
+      </div>
+
+      {/* Floating Washi Colors Picker for Prototyping */}
+      <div className="fixed bottom-4 right-4 z-50 bg-slate-900/90 backdrop-blur-xs text-slate-100 rounded-lg p-2 shadow-lg border border-slate-800 flex items-center gap-2 select-none font-sans text-xs">
+        <span className="font-bold text-slate-400">Washi Colors:</span>
+        {(["blue-yellow", "green-yellow", "yellow-yellow", "slate-yellow"] as const).map((opt) => (
+          <button
+            key={opt}
+            onClick={() => setWashiColors(opt)}
+            className={`px-2 py-1 rounded font-semibold capitalize cursor-pointer transition-colors border-0 ${
+              washiColors === opt
+                ? "bg-amber-500 text-slate-950 font-bold"
+                : "bg-transparent text-slate-300 hover:text-white hover:bg-slate-800"
+            }`}
+          >
+            {opt.replace("-", " & ")}
+          </button>
+        ))}
       </div>
     </motion.div>
   )
