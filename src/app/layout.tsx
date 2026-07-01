@@ -40,7 +40,14 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <body className={`${geist.variable} ${firaCode.variable} ${kalam.variable} font-sans antialiased bg-background text-foreground min-h-screen relative`}>
+      <body 
+        className={`${geist.variable} ${firaCode.variable} ${kalam.variable} font-sans antialiased bg-background text-foreground min-h-screen relative`}
+        style={{
+          backgroundColor: "#FAF8F5",
+          backgroundImage: "radial-gradient(rgba(120, 90, 40, 0.08) 1px, transparent 1px)",
+          backgroundSize: "20px 20px"
+        }}
+      >
         <ThemeProvider
           attribute="class"
           defaultTheme="light"
@@ -53,14 +60,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
                 <AppSidebar />
                 <SidebarInset>
                   <LayoutHeader />
-                  <main 
-                    className="flex-1 overflow-auto relative"
-                    style={{
-                      backgroundColor: "#FAF8F5",
-                      backgroundImage: "radial-gradient(rgba(120, 90, 40, 0.08) 1px, transparent 1px)",
-                      backgroundSize: "20px 20px"
-                    }}
-                  >
+                  <main className="flex-1 overflow-auto relative">
                     <div className="relative z-10 pb-20 md:pb-6">
                       {children}
                     </div>
