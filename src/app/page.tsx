@@ -115,20 +115,34 @@ export default function Dashboard() {
   const [copiedDraft, setCopiedDraft] = useState(false)
   const [copiedGrok, setCopiedGrok] = useState(false)
   const [buttonStyle] = useState<"flat" | "washi" | "neobrutalist" | "folder">("washi")
+  const [activeBrainstormAction, setActiveBrainstormAction] = useState<"idea" | "trending" | "engagement">("idea")
 
-  const getBrainstormTriggerClass = () => {
+  const getBrainstormTriggerClass = (side: "left" | "right" | "single" = "single") => {
     const base = "h-9 sm:h-8 px-4 cursor-pointer font-bold transition-all flex items-center justify-center select-none text-xs gap-1.5 outline-hidden border-0 "
+    
+    let radius = ""
     if (buttonStyle === "flat") {
-      return base + "rounded-xl border border-slate-200 bg-background text-slate-700 hover:bg-slate-50 hover:text-slate-900 shadow-xs active:scale-[0.98]"
+      radius = side === "left" ? "rounded-l-xl" : side === "right" ? "rounded-r-xl" : "rounded-xl"
+    } else if (buttonStyle === "washi") {
+      radius = side === "left" ? "rounded-tl-lg" : side === "right" ? "rounded-tr-lg" : "rounded-t-lg"
+    } else if (buttonStyle === "neobrutalist") {
+      radius = "rounded-none"
+    } else {
+      // folder
+      radius = side === "left" ? "rounded-tl-lg" : side === "right" ? "rounded-tr-lg" : "rounded-t-lg"
+    }
+
+    if (buttonStyle === "flat") {
+      return base + radius + " border border-slate-200 bg-background text-slate-700 hover:bg-slate-50 hover:text-slate-900 shadow-xs active:scale-[0.98]"
     }
     if (buttonStyle === "washi") {
-      return base + "bg-slate-100/60 hover:bg-slate-200/60 border border-slate-300/40 text-slate-800 shadow-3xs active:scale-[0.98] rotate-[-0.3deg] rounded-t-lg"
+      return base + radius + " bg-slate-100/60 hover:bg-slate-200/60 border border-slate-300/40 text-slate-800 shadow-3xs active:scale-[0.98] rotate-[-0.3deg]"
     }
     if (buttonStyle === "neobrutalist") {
-      return base + "bg-white text-slate-900 border-1.5 border-slate-900 shadow-[2px_2px_0px_0px_rgba(15,23,42,1)] hover:shadow-[3px_3px_0px_0px_rgba(15,23,42,1)] active:translate-x-[1px] active:translate-y-[1px] active:shadow-[1px_1px_0px_0px_rgba(15,23,42,1)] rounded-none"
+      return base + radius + " bg-white text-slate-900 border-1.5 border-slate-900 shadow-[2px_2px_0px_0px_rgba(15,23,42,1)] hover:shadow-[3px_3px_0px_0px_rgba(15,23,42,1)] active:translate-x-[1px] active:translate-y-[1px] active:shadow-[1px_1px_0px_0px_rgba(15,23,42,1)]"
     }
     // folder
-    return base + "bg-[#E8F0FE] hover:bg-[#D2E3FC] border border-[#ADCCF9] border-b-0 rounded-t-lg text-blue-950 active:scale-[0.98] translate-y-[2px]"
+    return base + radius + " bg-[#E8F0FE] hover:bg-[#D2E3FC] border border-[#ADCCF9] border-b-0 text-blue-950 active:scale-[0.98] translate-y-[2px]"
   }
 
   const getTailorClass = () => {
@@ -473,47 +487,81 @@ export default function Dashboard() {
                 </div>
                 <div className="flex items-center justify-between sm:justify-end gap-3 w-full sm:w-auto">
                   <div className="flex items-center gap-2 w-full sm:w-auto justify-end">
-                    <DropdownMenu>
-                      <DropdownMenuTrigger render={
-                        <Button 
-                          disabled={isGeneratingIdea || isTailoring}
-                          size="sm"
-                          className={getBrainstormTriggerClass()}
-                        >
-                          {isGeneratingIdea ? (
-                            <RefreshCw className="h-3.5 w-3.5 mr-1.5 animate-spin text-indigo-500" />
-                          ) : (
-                            <Sparkles className="h-3.5 w-3.5 mr-1 text-indigo-500" />
-                          )}
-                          <span>Brainstorm</span>
-                          <ChevronDown className="h-3 w-3 text-slate-400" />
-                        </Button>
-                      } />
-                      <DropdownMenuContent align="end" className="w-48 bg-white border border-slate-200 rounded-lg shadow-md p-1 font-sans z-50">
-                        <DropdownMenuItem 
-                          onClick={handleGenerateIdea} 
-                          disabled={isGeneratingIdea || isTailoring}
-                          className="text-xs font-semibold px-2.5 py-2 cursor-pointer flex items-center gap-2 hover:bg-slate-50 rounded-md transition-colors text-slate-700 hover:text-slate-900"
-                        >
-                          <RefreshCw className="h-3.5 w-3.5 text-purple-500" />
-                          Generate Idea
-                        </DropdownMenuItem>
-                        <DropdownMenuItem 
-                          onClick={handleCopyTrending}
-                          className="text-xs font-semibold px-2.5 py-2 cursor-pointer flex items-center gap-2 hover:bg-slate-50 rounded-md transition-colors text-slate-700 hover:text-slate-900"
-                        >
-                          <Compass className="h-3.5 w-3.5 text-amber-500" />
-                          Copy Topic Hunt
-                        </DropdownMenuItem>
-                        <DropdownMenuItem 
-                          onClick={handleCopyEngagement}
-                          className="text-xs font-semibold px-2.5 py-2 cursor-pointer flex items-center gap-2 hover:bg-slate-50 rounded-md transition-colors text-slate-700 hover:text-slate-900"
-                        >
-                          <MessageSquare className="h-3.5 w-3.5 text-sky-500" />
-                          Copy Engage Hunt
-                        </DropdownMenuItem>
-                      </DropdownMenuContent>
-                    </DropdownMenu>
+                    <div className="inline-flex items-center select-none">
+                      <Button 
+                        disabled={isGeneratingIdea || isTailoring}
+                        size="sm"
+                        onClick={async () => {
+                          if (activeBrainstormAction === "idea") {
+                            await handleGenerateIdea()
+                          } else if (activeBrainstormAction === "trending") {
+                            await handleCopyTrending()
+                          } else {
+                            await handleCopyEngagement()
+                          }
+                        }}
+                        className={getBrainstormTriggerClass("left")}
+                      >
+                        {isGeneratingIdea && activeBrainstormAction === "idea" ? (
+                          <RefreshCw className="h-3.5 w-3.5 mr-1.5 animate-spin text-indigo-500" />
+                        ) : activeBrainstormAction === "idea" ? (
+                          <Sparkles className="h-3.5 w-3.5 mr-1.5 text-indigo-500" />
+                        ) : activeBrainstormAction === "trending" ? (
+                          <Compass className="h-3.5 w-3.5 mr-1.5 text-amber-500" />
+                        ) : (
+                          <MessageSquare className="h-3.5 w-3.5 mr-1.5 text-sky-500" />
+                        )}
+                        <span>
+                          {activeBrainstormAction === "idea" ? "Generate Idea" :
+                           activeBrainstormAction === "trending" ? "Topic Hunt" :
+                           "Engage Hunt"}
+                        </span>
+                      </Button>
+                      <DropdownMenu>
+                        <DropdownMenuTrigger render={
+                          <Button 
+                            disabled={isGeneratingIdea || isTailoring}
+                            size="sm"
+                            className={`${getBrainstormTriggerClass("right")} px-2.5`}
+                          >
+                            <ChevronDown className="h-3 w-3 text-slate-400" />
+                          </Button>
+                        } />
+                        <DropdownMenuContent align="end" className="w-48 bg-white border border-slate-200 rounded-lg shadow-md p-1 font-sans z-50">
+                          <DropdownMenuItem 
+                            onClick={async () => {
+                              setActiveBrainstormAction("idea")
+                              await handleGenerateIdea()
+                            }}
+                            disabled={isGeneratingIdea || isTailoring}
+                            className="text-xs font-semibold px-2.5 py-2 cursor-pointer flex items-center gap-2 hover:bg-slate-50 rounded-md transition-colors text-slate-700 hover:text-slate-900"
+                          >
+                            <Sparkles className="h-3.5 w-3.5 text-indigo-500" />
+                            Generate Idea
+                          </DropdownMenuItem>
+                          <DropdownMenuItem 
+                            onClick={async () => {
+                              setActiveBrainstormAction("trending")
+                              await handleCopyTrending()
+                            }}
+                            className="text-xs font-semibold px-2.5 py-2 cursor-pointer flex items-center gap-2 hover:bg-slate-50 rounded-md transition-colors text-slate-700 hover:text-slate-900"
+                          >
+                            <Compass className="h-3.5 w-3.5 text-amber-500" />
+                            Topic Hunt
+                          </DropdownMenuItem>
+                          <DropdownMenuItem 
+                            onClick={async () => {
+                              setActiveBrainstormAction("engagement")
+                              await handleCopyEngagement()
+                            }}
+                            className="text-xs font-semibold px-2.5 py-2 cursor-pointer flex items-center gap-2 hover:bg-slate-50 rounded-md transition-colors text-slate-700 hover:text-slate-900"
+                          >
+                            <MessageSquare className="h-3.5 w-3.5 text-sky-500" />
+                            Engage Hunt
+                          </DropdownMenuItem>
+                        </DropdownMenuContent>
+                      </DropdownMenu>
+                    </div>
                     <Button 
                       onClick={() => handleTailor("auto")} 
                       disabled={isTailoring || isGeneratingIdea}
