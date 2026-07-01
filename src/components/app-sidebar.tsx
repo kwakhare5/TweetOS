@@ -5,10 +5,7 @@ import {
   LayoutDashboard,
   Layers,
   Settings,
-  FileText,
   BarChart2,
-  Plug,
-  Key,
   Sparkles
 } from "lucide-react"
 
@@ -42,11 +39,6 @@ const data = {
           icon: Sparkles,
         },
         {
-          title: "Drafts",
-          url: "/drafts",
-          icon: FileText,
-        },
-        {
           title: "Analytics",
           url: "/analytics",
           icon: BarChart2,
@@ -60,16 +52,6 @@ const data = {
           title: "Profile & DNA",
           url: "/profile",
           icon: Settings,
-        },
-        {
-          title: "Integrations",
-          url: "/integrations",
-          icon: Plug,
-        },
-        {
-          title: "API Keys",
-          url: "/keys",
-          icon: Key,
         },
       ],
     }

@@ -1,6 +1,7 @@
 import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
 import { TweetDraft, DraftStatus } from '@/types'
+import { saveDraftToSupabase, deleteDraftFromSupabase } from '@/lib/supabase-sync'
 
 interface DraftStore {
   drafts: TweetDraft[]
@@ -18,24 +19,38 @@ export const useDraftStore = create<DraftStore>()(
       setDrafts: (drafts) => set({ drafts }),
       addDraft: (draft) => set((state) => {
         if (state.drafts.some(d => d.id === draft.id)) return {}
+        saveDraftToSupabase(draft)
         return { drafts: [draft, ...state.drafts] }
       }),
       updateDraft: (id, partial) =>
-        set((state) => ({
-          drafts: state.drafts.map((d) =>
-            d.id === id ? { ...d, ...partial, updatedAt: new Date().toISOString() } : d
-          ),
-        })),
+        set((state) => {
+          const updatedDrafts = state.drafts.map((d) => {
+            if (d.id === id) {
+              const updated = { ...d, ...partial, updatedAt: new Date().toISOString() }
+              saveDraftToSupabase(updated)
+              return updated
+            }
+            return d
+          })
+          return { drafts: updatedDrafts }
+        }),
       deleteDraft: (id) =>
-        set((state) => ({
-          drafts: state.drafts.filter((d) => d.id !== id),
-        })),
+        set((state) => {
+          deleteDraftFromSupabase(id)
+          return { drafts: state.drafts.filter((d) => d.id !== id) }
+        }),
       moveDraft: (id, status) =>
-        set((state) => ({
-          drafts: state.drafts.map((d) =>
-            d.id === id ? { ...d, status, updatedAt: new Date().toISOString() } : d
-          ),
-        })),
+        set((state) => {
+          const updatedDrafts = state.drafts.map((d) => {
+            if (d.id === id) {
+              const updated = { ...d, status, updatedAt: new Date().toISOString() }
+              saveDraftToSupabase(updated)
+              return updated
+            }
+            return d
+          })
+          return { drafts: updatedDrafts }
+        }),
     }),
     {
       name: 'tweetos-draft-storage',

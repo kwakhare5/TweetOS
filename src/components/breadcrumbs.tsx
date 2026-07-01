@@ -5,20 +5,15 @@ import {
   Breadcrumb,
   BreadcrumbList,
   BreadcrumbItem,
-  BreadcrumbLink,
   BreadcrumbPage,
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb"
-import Link from "next/link"
 
 const ROUTE_MAP: Record<string, { group: string; title: string }> = {
   "/": { group: "Workspace", title: "Dashboard" },
   "/inspiration": { group: "Workspace", title: "Inspiration" },
-  "/drafts": { group: "Workspace", title: "Drafts" },
   "/analytics": { group: "Workspace", title: "Analytics" },
   "/profile": { group: "Configuration", title: "Profile & DNA" },
-  "/integrations": { group: "Configuration", title: "Integrations" },
-  "/keys": { group: "Configuration", title: "API Keys" },
 }
 
 export function Breadcrumbs() {

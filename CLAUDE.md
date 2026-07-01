@@ -62,15 +62,15 @@ _Autonomously updated by the AI whenever it encounters a project-specific error,
 - Accessing custom properties on properties of type `Record<string, unknown>` triggers TypeScript compilation errors. Declare precise interfaces/types (e.g. for `algorithmScore` in `TweetDraft` type) instead of generic records or `any` to satisfy the strict type-checker and build pipeline.
 - When writing source code files (non-artifact files) using the `write_to_file` tool, never provide `ArtifactMetadata` as it causes invalid path errors. `ArtifactMetadata` is strictly for files saved in the artifacts directory.
 - Nested git clone directories (e.g. `cloner`) in the workspace trigger root compilation errors during build time. Exclude these directories in both root `tsconfig.json` and root `eslint.config.mjs` config files.
+- Always wrap `cmdk` subcomponents (`CommandInput`, `CommandList`, etc.) in the `<Command>` parent component (acting as the state provider) to prevent runtime `TypeError: Cannot read properties of undefined (reading 'subscribe')` crashes on page load.
+- In Playwright E2E tests, ensure text assertions on headings use exact matching or `getByRole` to avoid duplicate element matches with hidden mobile header titles.
+- When performing initial state updates in `useEffect` (e.g. initializing local form states from a store object), wrap the state setter calls in a `setTimeout` macrotask to prevent React 19 cascading render compilation errors.
+- OS dark mode configurations can make browsers render a native white caret inside inputs/textareas, rendering them invisible on light card backgrounds. Force `:root, html { color-scheme: light !important; }` in CSS to override the browser default scheme, and explicitly override `caret-color` using custom CSS rules matching specific theme backgrounds (e.g. charcoal `#0f172a` for standard inputs, warm brown `#451a03` for yellow sticky notes, and emerald `#34d399` for dark terminal inputs).
 
-## 6. CURRENT BUILD PHASE
+## 7. CURRENT BUILD PHASE
 
-Phase 15 ✅ DONE — Trueform Dashboard Aesthetics & Design Realignment
+Phase 16 ✅ DONE — Profile Redesign & Navigation Cleanup
 
-- Overhauled app shell, page structures, and colors to inherit the clean light-mode dashboard visuals from screenshots.
-- Rebuilt Sidebar with the `TO` brand block dropdown, search panel, and original favorites and locations categories (Notes, Discover, System Settings, TweetOS Node, Trash).
-- Redesigned Workspace `/` as the **Notes** page: Voice Editor card, checklist of algorithm score cards, and clean list feed of recent notes.
-- Transformed Discover `/discover` into a clean template card grid grouped by content pillars (**Reality Checks**, **Tech Rants**, **Pune Dev Life**, **Growth Lessons**) with attributes and remix options.
-- Styled System Settings `/profile` into clean card configurations.
-- Verified compilation builds correctly with Next.js Turbopack.
-- Removed dead codebase file (`useDraftStore.ts`) to keep repository clean.
+- Redesigned the Profile DNA page (`src/app/profile/page.tsx`) to match the tactile scrapbook neo-skeuomorphic aesthetic, featuring ruled sticky notes, a dark monospace developer console, and silver paperclips.
+- Deleted the placeholder directories and page files (`integrations`, `keys`, `drafts`) and cleaned up navigation references (`app-sidebar.tsx`, `mobile-bottom-nav.tsx`, `breadcrumbs.tsx`, `layout-header.tsx`).
+- Fixed browser dialog context runtime crashes and updated E2E tests to achieve 100% test suite success.

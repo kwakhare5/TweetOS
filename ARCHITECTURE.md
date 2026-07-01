@@ -12,8 +12,7 @@
 | Framework | Next.js 15 (App Router)     | File-based routing, Vercel-native                  |
 | Language  | TypeScript                  | Type safety on all data models                     |
 | Styling   | Tailwind CSS v4             | Fast, clean, dark theme, glassmorphic panels       |
-| Icons     | lucide-react                | Professional icons                                 |
-| AI        | Google Gemini 2.5 Flash     | Local text formatting via `@google/genai`          |
+| Icons     | lucide-react                | Professional icons                                 || AI        | Google Gemini 2.5 Pro       | Local text formatting via `@google/genai`          |
 | State     | Zustand                     | Fully local-first, zero latency, runs in browser   |
 
 ---
@@ -39,29 +38,32 @@ tweetOS/
 │   │   ├── layout.tsx
 │   │   ├── page.tsx                      # Command Center (Minimal Dashboard)
 │   │   ├── profile/page.tsx              # Profile, Second Brain, Inspiration Context
+│   │   ├── inspiration/page.tsx          # Inspiration references page
+│   │   ├── analytics/page.tsx            # Analytics statistics page
 │   │   ├── globals.css                   
 │   │   ├── error.tsx
 │   │   └── loading.tsx
 │   │
 │   ├── components/
-│   │   ├── layout/
-│   │   │   ├── Sidebar.tsx
-│   │   │   ├── AppShell.tsx
-│   │   │   └── MobileNav.tsx             
-│   │   ├── CommandPalette.tsx            # Floating Ctrl+K Command Dialog
+│   │   ├── app-sidebar.tsx               # App Sidebar config
+│   │   ├── mobile-bottom-nav.tsx         # Mobile floating bottom bar
+│   │   ├── layout-header.tsx             # Shared header layout component
+│   │   ├── breadcrumbs.tsx               # Header breadcrumbs navigation
+│   │   ├── command-menu.tsx              # Command Search Dialog trigger (Ctrl+K)
 │   │   ├── theme-provider.tsx            # Theme provider context wrapper
-│   │   ├── theme-toggle.tsx              # Simple dark/light theme switch
-│   │   ├── brain/
-│   │   │   └── SecondBrainPanel.tsx      
 │   │   └── ui/
-│   │       ├── ModalTextarea.tsx         # Expanding textarea modal component
 │   │       ├── button.tsx
 │   │       ├── command.tsx
 │   │       ├── dialog.tsx
+│   │       ├── dropdown-menu.tsx
 │   │       ├── input-group.tsx
 │   │       ├── input.tsx
+│   │       ├── label.tsx
+│   │       ├── sidebar.tsx
 │   │       ├── sonner.tsx
-│   │       └── textarea.tsx
+│   │       ├── switch.tsx
+│   │       ├── textarea.tsx
+│   │       └── tooltip.tsx
 │   │
 │   ├── lib/
 │   │   ├── gemini.ts                     # Google GenAI integration
@@ -73,11 +75,14 @@ tweetOS/
 │   │   └── index.ts
 │   │
 │   ├── store/
-│   │   └── useProfileStore.ts            # Profile + Second Brain + Inspiration DNA
+│   │   ├── use-draft-store.ts            # Local draft archive store
+│   │   └── use-profile-store.ts          # Profile + Second Brain + Inspiration DNA
 │   │
 │   └── data/
-│       └── seedProfile.ts                # Default profile
+│       └── seed-profile.ts               # Default profile
 │
+│── e2e/
+│   └── dashboard.spec.ts                 # Playwright E2E tests
 ├── .env.local
 ├── CLAUDE.md                             # Rules & Mistake Tracker
 ├── CONTEXT.md                            # Domain definitions

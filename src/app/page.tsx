@@ -8,33 +8,26 @@ import { Label } from "@/components/ui/label"
 import { toast } from "sonner"
 import { 
   Sparkles, 
-  BrainCircuit, 
   Copy, 
   Check, 
   Send, 
-  Save, 
   RefreshCw,
   MessageCircle,
   Repeat2,
   Heart,
   BarChart3,
   Share,
-  Settings,
-  ChevronDown
+  Compass,
+  MessageSquare
 } from "lucide-react"
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
-import { generateDraftPacket } from "@/lib/grok-packager"
+import { 
+  generateDraftPacket, 
+  generateTrendingPacket, 
+  generateEngagementPacket 
+} from "@/lib/grok-packager"
 import { TweetDraft } from "@/types"
 import { geminiText } from "@/lib/gemini"
 import { UNIFIED_ROUTER_PROMPT, IDEA_GENERATOR_PROMPT } from "@/lib/prompts"
-
-const MODES = ["auto", "dev", "personal", "shitpost"] as const
-type ModeType = typeof MODES[number]
 
 // Official X logo icon
 const XLogoIcon = ({ className }: { className?: string }) => (
@@ -107,13 +100,15 @@ export default function Dashboard() {
 
   // Left card state (Raw editor)
   const [rawTweet, setRawTweet] = useState("")
-  const [mode, setMode] = useState<ModeType>("auto")
+  const [activeTone, setActiveTone] = useState<"dev" | "personal" | "shitpost" | "auto">("auto")
   const [isTailoring, setIsTailoring] = useState(false)
   const [tailoredTweet, setTailoredTweet] = useState("")
   const [hooks, setHooks] = useState<string[]>([])
   const [factCheck, setFactCheck] = useState("")
   const [copiedDraft, setCopiedDraft] = useState(false)
   const [copiedGrok, setCopiedGrok] = useState(false)
+  const [copiedTrending, setCopiedTrending] = useState(false)
+  const [copiedEngagement, setCopiedEngagement] = useState(false)
 
   // Right card state (Second Brain)
   const [secondBrainText, setSecondBrainText] = useState("")
@@ -128,13 +123,19 @@ export default function Dashboard() {
 
   useEffect(() => {
     if (profile) {
+      const initialText = profile.secondBrain?.startsWith("ACTIVE NOW (update daily):")
+        ? ""
+        : (profile.secondBrain || "")
+      
       if (profile.secondBrain?.startsWith("ACTIVE NOW (update daily):")) {
         updateProfile({ secondBrain: "" })
-        setSecondBrainText("")
-      } else {
-        setSecondBrainText(profile.secondBrain || "")
       }
-      setMounted(true)
+      
+      const t = setTimeout(() => {
+        setSecondBrainText(initialText)
+        setMounted(true)
+      }, 0)
+      return () => clearTimeout(t)
     }
   }, [profile, updateProfile])
 
@@ -145,7 +146,6 @@ export default function Dashboard() {
       return
     }
 
-    setSaveStatus("saving")
     const timer = setTimeout(() => {
       updateProfile({ secondBrain: secondBrainText })
       setSaveStatus("saved")
@@ -159,7 +159,7 @@ export default function Dashboard() {
     return () => clearTimeout(timer)
   }, [secondBrainText, mounted, profile.secondBrain, updateProfile])
 
-  const handleTailor = async () => {
+  const handleTailor = async (overrideTone?: "dev" | "personal" | "shitpost" | "auto") => {
     if (!rawTweet.trim()) {
       toast.error("Please enter a raw tweet or idea first.")
       return
@@ -170,8 +170,11 @@ export default function Dashboard() {
     setHooks([])
     setFactCheck("")
 
+    const targetTone: "dev" | "personal" | "shitpost" | "auto" = overrideTone || "auto"
+    setActiveTone(targetTone)
+
     try {
-      const prompt = UNIFIED_ROUTER_PROMPT(rawTweet, profile, "", mode)
+      const prompt = UNIFIED_ROUTER_PROMPT(rawTweet, profile, "", targetTone)
       const res = await geminiText(prompt)
       
       try {
@@ -194,8 +197,8 @@ export default function Dashboard() {
       }
 
       toast.success("Tweet tailored successfully!")
-    } catch (err: any) {
-      toast.error(err.message || "Tailoring failed.")
+    } catch (err: unknown) {
+      toast.error(err instanceof Error ? err.message : "Tailoring failed.")
     } finally {
       setIsTailoring(false)
     }
@@ -204,7 +207,7 @@ export default function Dashboard() {
   const handleGenerateIdea = async () => {
     setIsGeneratingIdea(true)
     try {
-      const prompt = IDEA_GENERATOR_PROMPT(profile, mode)
+      const prompt = IDEA_GENERATOR_PROMPT(profile, "auto")
       const res = await geminiText(prompt)
       const idea = res.trim()
       
@@ -214,8 +217,8 @@ export default function Dashboard() {
         setRawTweet(idea)
       }
       toast.success("Idea generated!")
-    } catch (err: any) {
-      toast.error(err.message || "Failed to generate idea.")
+    } catch (err: unknown) {
+      toast.error(err instanceof Error ? err.message : "Failed to generate idea.")
     } finally {
       setIsGeneratingIdea(false)
     }
@@ -260,7 +263,7 @@ export default function Dashboard() {
       const packet = generateDraftPacket(profile, [mockDraft], {
         mode: "draft",
         selectedDraftIds: ["temp"],
-        dumpMode: mode,
+        dumpMode: activeTone,
         includeScores: false
       })
 
@@ -270,6 +273,35 @@ export default function Dashboard() {
       setTimeout(() => setCopiedGrok(false), 2000)
     } catch {
       toast.error("Failed to copy Grok Packet.")
+    }
+  }
+
+  const handleCopyTrending = async () => {
+    try {
+      const packet = generateTrendingPacket(profile, { mode: 'trending', focusAreas: [] })
+      await navigator.clipboard.writeText(packet)
+      setCopiedTrending(true)
+      toast.success("Topic Hunt Packet copied! Paste into Grok for real-time trend discovery.")
+      setTimeout(() => setCopiedTrending(false), 2000)
+    } catch {
+      toast.error("Failed to copy Topic Hunt Packet.")
+    }
+  }
+
+  const handleCopyEngagement = async () => {
+    try {
+      const packet = generateEngagementPacket(profile, {
+        mode: 'engagement',
+        targetAccounts: profile.admiredAccounts || [],
+        topicKeywords: profile.contentPillars?.map(p => p.name) || [],
+        opportunityTypes: []
+      })
+      await navigator.clipboard.writeText(packet)
+      setCopiedEngagement(true)
+      toast.success("Engagement Hunt Packet copied! Paste into Grok for reply targeting.")
+      setTimeout(() => setCopiedEngagement(false), 2000)
+    } catch {
+      toast.error("Failed to copy Engagement Hunt Packet.")
     }
   }
 
@@ -305,13 +337,33 @@ export default function Dashboard() {
       initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.3 }}
-      className="flex flex-col gap-6 px-6 md:px-8 lg:px-12 py-6 w-full max-w-7xl mx-auto"
+      className="flex flex-col gap-6 px-4 py-4 sm:px-6 md:px-8 lg:px-12 md:py-6 w-full max-w-7xl mx-auto"
     >
       {/* Workbench Header */}
-      <div className="flex items-center justify-between mb-2">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-2">
         <div>
           <h1 className="text-2xl font-bold tracking-tight">Creator Workbench</h1>
           <p className="text-sm text-muted-foreground">Draft ideas directly inside a live Tweet card simulator and edit sticky notes.</p>
+        </div>
+        
+        {/* Minimal Grok Packets Actions */}
+        <div className="flex items-center gap-2 select-none self-start sm:self-center shrink-0">
+          <Button 
+            variant="outline" 
+            onClick={handleCopyTrending}
+            className="h-8 px-3 rounded-full border border-slate-200 bg-white hover:bg-slate-50 text-slate-700 hover:text-slate-900 shadow-3xs active:scale-[0.98] transition-all flex items-center text-[11px] font-bold cursor-pointer"
+          >
+            {copiedTrending ? <Check className="h-3.5 w-3.5 mr-1 text-green-600 animate-in fade-in zoom-in-50 duration-200" /> : <Compass className="h-3.5 w-3.5 mr-1 text-amber-500" />}
+            Topic Hunt
+          </Button>
+          <Button 
+            variant="outline" 
+            onClick={handleCopyEngagement}
+            className="h-8 px-3 rounded-full border border-slate-200 bg-white hover:bg-slate-50 text-slate-700 hover:text-slate-900 shadow-3xs active:scale-[0.98] transition-all flex items-center text-[11px] font-bold cursor-pointer"
+          >
+            {copiedEngagement ? <Check className="h-3.5 w-3.5 mr-1 text-green-600 animate-in fade-in zoom-in-50 duration-200" /> : <MessageSquare className="h-3.5 w-3.5 mr-1 text-sky-500" />}
+            Engage
+          </Button>
         </div>
       </div>
 
@@ -322,7 +374,7 @@ export default function Dashboard() {
         <div className="lg:col-span-7 flex flex-col gap-6">
           
           {/* Mock Tweet Card matching react-tweet/tweet-card.tsx exact UI structure */}
-          <div className="relative flex h-fit w-full flex-col gap-4 rounded-xl border p-5 bg-card text-card-foreground shadow-sm rotate-[-0.3deg]">
+          <div className="relative flex h-fit w-full flex-col gap-4 rounded-xl border p-4 sm:p-5 bg-card text-card-foreground shadow-sm sm:rotate-[-0.3deg] rotate-0">
             
             {/* Translucent Washi Tape with diagonal stripes pattern */}
             <div 
@@ -367,63 +419,45 @@ export default function Dashboard() {
                 value={rawTweet}
                 onChange={(e) => setRawTweet(e.target.value)}
                 placeholder="What's happening? Dump raw thoughts or rough drafts..."
-                className="w-full bg-transparent border-0 outline-none focus:ring-0 focus-visible:ring-0 focus-visible:ring-offset-0 px-0 py-0 resize-none text-[15px] text-slate-900 placeholder:text-slate-400 leading-relaxed flex-1 font-normal"
+                className="w-full bg-transparent border-0 outline-none focus:ring-0 focus-visible:ring-0 focus-visible:ring-offset-0 px-0 py-0 resize-none text-base md:text-[15px] text-slate-900 placeholder:text-slate-400 leading-relaxed flex-1 font-normal"
               />
               
-              {/* Tone Profile Selector & Tailor Action inside Card */}
-              <div className="flex items-center justify-between border-t border-slate-100/80 pt-3">
-                <div className="flex items-center gap-2">
-                  <span className="text-[11px] font-bold text-slate-400 uppercase tracking-wider">Tone:</span>
-                  <DropdownMenu>
-                    <DropdownMenuTrigger className="flex items-center gap-1 px-2 py-0.5 text-[11px] font-semibold rounded border border-slate-200 bg-white hover:bg-slate-50 text-slate-800 shadow-3xs transition-all cursor-pointer outline-hidden select-none">
-                      <span>{mode === "auto" ? "⚡ Auto" : mode.toUpperCase()}</span>
-                      <ChevronDown className="h-3 w-3 text-slate-400" />
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent align="start" className="w-32 bg-white border border-slate-200 rounded-md shadow-sm">
-                      {MODES.map((m) => (
-                        <DropdownMenuItem 
-                          key={m} 
-                          onClick={() => setMode(m)}
-                          className={`text-xs font-semibold px-2 py-1.5 cursor-pointer capitalize hover:bg-slate-50 transition-colors ${
-                            mode === m ? 'bg-slate-50 text-slate-900 font-bold' : 'text-slate-600'
-                          }`}
-                        >
-                          {m === "auto" ? "⚡ Auto" : m}
-                        </DropdownMenuItem>
-                      ))}
-                    </DropdownMenuContent>
-                  </DropdownMenu>
-                </div>
-                <div className="flex items-center gap-3">
-                  <span className={`text-xs font-semibold ${rawTweet.length > 280 ? 'text-red-500' : 'text-slate-400'}`}>
-                    {rawTweet.length} / 280
+              {/* Action row inside Card */}
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-t border-slate-100/80 pt-3">
+                <div className="flex items-center justify-between sm:justify-start gap-2 w-full sm:w-auto">
+                  <span className={`text-[11px] font-bold ${rawTweet.length > 280 ? 'text-red-500' : 'text-slate-400'} uppercase tracking-wider select-none`}>
+                    {rawTweet.length} / 280 chars
                   </span>
-                  <Button 
-                    onClick={handleGenerateIdea} 
-                    disabled={isGeneratingIdea || isTailoring}
-                    size="sm"
-                    className="h-8 px-4 cursor-pointer font-bold rounded-full border border-slate-200 bg-background text-slate-700 hover:bg-slate-50 hover:text-slate-900 shadow-xs active:scale-[0.98] transition-all flex items-center justify-center select-none text-xs"
-                  >
-                    {isGeneratingIdea ? (
-                      <RefreshCw className="h-3 w-3 animate-spin mr-1.5" />
-                    ) : null}
-                    {isGeneratingIdea ? "Generating..." : "Generate Idea"}
-                  </Button>
-                  <Button 
-                    onClick={handleTailor} 
-                    disabled={isTailoring || isGeneratingIdea}
-                    size="sm"
-                    className="h-8 px-4 cursor-pointer font-bold rounded-full bg-slate-950 text-white hover:bg-slate-900 shadow-sm active:scale-[0.98] transition-all flex items-center justify-center select-none text-xs"
-                  >
-                    {isTailoring ? (
-                      <RefreshCw className="h-3 w-3 animate-spin" />
-                    ) : (
-                      <>
-                        <Sparkles className="h-3 w-3 mr-1.5" />
-                        Tailor
-                      </>
-                    )}
-                  </Button>
+                </div>
+                <div className="flex items-center justify-between sm:justify-end gap-3 w-full sm:w-auto">
+                  <div className="flex items-center gap-2 w-full sm:w-auto justify-end">
+                    <Button 
+                      onClick={handleGenerateIdea} 
+                      disabled={isGeneratingIdea || isTailoring}
+                      size="sm"
+                      className="h-9 sm:h-8 flex-1 sm:flex-initial px-4 cursor-pointer font-bold rounded-full border border-slate-200 bg-background text-slate-700 hover:bg-slate-50 hover:text-slate-900 shadow-xs active:scale-[0.98] transition-all flex items-center justify-center select-none text-xs"
+                    >
+                      {isGeneratingIdea ? (
+                        <RefreshCw className="h-3 w-3 animate-spin mr-1.5" />
+                      ) : null}
+                      {isGeneratingIdea ? "Generating..." : "Generate Idea"}
+                    </Button>
+                    <Button 
+                      onClick={() => handleTailor("auto")} 
+                      disabled={isTailoring || isGeneratingIdea}
+                      size="sm"
+                      className="h-9 sm:h-8 flex-1 sm:flex-initial px-4 cursor-pointer font-bold rounded-full bg-slate-950 text-white hover:bg-slate-900 shadow-sm active:scale-[0.98] transition-all flex items-center justify-center select-none text-xs"
+                    >
+                      {isTailoring ? (
+                        <RefreshCw className="h-3 w-3 animate-spin" />
+                      ) : (
+                        <>
+                          <Sparkles className="h-3 w-3 mr-1.5" />
+                          Tailor
+                        </>
+                      )}
+                    </Button>
+                  </div>
                 </div>
               </div>
             </div>
@@ -468,9 +502,28 @@ export default function Dashboard() {
                     <Sparkles className="h-4 w-4 text-amber-500" />
                     Polished Draft
                   </Label>
-                  <span className={`text-xs font-semibold ${tailoredTweet.length > 280 ? 'text-red-500' : 'text-slate-400'}`}>
-                    {tailoredTweet.length} / 280 chars
-                  </span>
+                  <div className="flex items-center gap-3">
+                    {/* Inline Tone override tag pills */}
+                    <div className="flex items-center gap-1 bg-slate-100/80 px-1 py-0.5 rounded border border-slate-200/50 select-none">
+                      {(["auto", "dev", "shitpost", "personal"] as const).map((t) => (
+                        <button
+                          key={t}
+                          onClick={() => handleTailor(t)}
+                          disabled={isTailoring}
+                          className={`text-[9px] font-bold px-1.5 py-0.5 rounded transition-colors cursor-pointer border-0 ${
+                            activeTone === t
+                              ? "bg-slate-950 text-white"
+                              : "text-slate-500 hover:text-slate-900 hover:bg-slate-200/60"
+                          }`}
+                        >
+                          {t === "auto" ? "Auto" : t.toUpperCase()}
+                        </button>
+                      ))}
+                    </div>
+                    <span className={`text-xs font-semibold ${tailoredTweet.length > 280 ? 'text-red-500' : 'text-slate-400'}`}>
+                      {tailoredTweet.length} / 280 chars
+                    </span>
+                  </div>
                 </div>
                 <div className="p-4 rounded-lg border border-border bg-slate-50/50 text-slate-900 font-normal leading-relaxed whitespace-pre-wrap select-all">
                   {tailoredTweet}
@@ -522,7 +575,7 @@ export default function Dashboard() {
         </div>
 
         {/* Right Column: macOS Yellow Sticky Note */}
-        <div className="lg:col-span-5 flex flex-col rotate-[0.5deg]">
+        <div className="lg:col-span-5 flex flex-col sm:rotate-[0.5deg] rotate-0">
           <div className="relative flex-1 flex flex-col bg-[#FEF9C3] rounded-xl border border-yellow-200 shadow-[0_8px_30px_rgba(234,179,8,0.12)]">
             
             {/* Paperclip overlay */}
@@ -568,13 +621,12 @@ export default function Dashboard() {
               <textarea
                 id="second-brain"
                 value={secondBrainText}
-                onChange={(e) => setSecondBrainText(e.target.value)}
+                onChange={(e) => { setSecondBrainText(e.target.value); setSaveStatus("saving"); }}
                 placeholder=""
                 className="w-full bg-transparent border-0 outline-none focus:ring-0 focus-visible:ring-0 focus-visible:ring-offset-0 px-0 py-0 resize-none flex-1 min-h-[240px] text-[17px] font-normal text-yellow-950/95 placeholder:text-yellow-600/50 leading-[28px] font-handwriting pt-[0px]"
                 style={{
                   backgroundImage: "linear-gradient(to bottom, transparent 27px, rgba(202,138,4,0.15) 27px)",
-                  backgroundSize: "100% 28px",
-                  caretColor: "black"
+                  backgroundSize: "100% 28px"
                 }}
               />
             </div>
@@ -585,7 +637,7 @@ export default function Dashboard() {
       </div>
 
       {/* Recent Tweets Section with clear clearance spacing */}
-      <div className="mt-16 space-y-6 max-w-7xl mx-auto w-full border-t border-slate-200/50 pt-10 select-none">
+      <div className="mt-10 md:mt-16 space-y-6 max-w-7xl mx-auto w-full border-t border-slate-200/50 pt-6 md:pt-10 select-none">
         <div>
           <h2 className="text-xl font-bold tracking-tight text-slate-950">Recent X Posts</h2>
           <p className="text-sm text-slate-500">Your recent outputs published to the feed.</p>
@@ -629,31 +681,12 @@ export default function Dashboard() {
               replies: 2,
               views: "980"
             }
-          ].map((tweet, index) => {
-            const isEven = index % 2 === 0;
+          ].map((tweet) => {
             return (
               <div 
                 key={tweet.id} 
-                className={`relative flex flex-col gap-4 rounded-xl border p-5 bg-card text-card-foreground shadow-xs transition-all hover:translate-y-[-1px] ${
-                  isEven ? 'rotate-[-0.2deg]' : 'rotate-[0.3deg]'
-                }`}
+                className="relative flex flex-col gap-4 rounded-xl border p-4 sm:p-5 bg-card text-card-foreground shadow-xs transition-all hover:translate-y-[-1px]"
               >
-                {/* Washi Tape overlay on every second card */}
-                {isEven && (
-                  <div 
-                    className="absolute top-[-8px] left-[15%] w-20 h-4 border border-amber-200/20 shadow-xs rotate-[-3deg] opacity-75 z-10 select-none pointer-events-none"
-                    style={{
-                      backgroundColor: "rgba(254, 240, 138, 0.4)",
-                      backgroundImage: "repeating-linear-gradient(45deg, transparent, transparent 5px, rgba(202, 138, 4, 0.1) 5px, rgba(202, 138, 4, 0.1) 10px)",
-                      backdropFilter: "blur(1.5px)"
-                    }}
-                  />
-                )}
-                
-                {/* Paperclip overlay on every other card */}
-                {!isEven && (
-                  <PaperclipIcon className="absolute top-[-14px] left-[12%] z-20 select-none pointer-events-none rotate-[-5deg]" />
-                )}
 
                 {/* Tweet Header */}
                 <div className="flex flex-row items-start justify-between tracking-normal">

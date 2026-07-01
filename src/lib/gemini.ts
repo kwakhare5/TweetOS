@@ -22,10 +22,7 @@ function getAI(): GoogleGenAI {
     key = process.env.NEXT_PUBLIC_GEMINI_API_KEY || null
   }
 
-  // Ensure the key has the correct Google API Key prefix
-  if (key && !key.startsWith('AIzaSy')) {
-    key = 'AIzaSy' + key
-  }
+
 
   if (!key) {
     throw new Error('Missing Gemini API Key. Please configure one in Profile settings.')
@@ -44,7 +41,7 @@ function getAI(): GoogleGenAI {
 export async function geminiText(prompt: string): Promise<string> {
   const ai = getAI()
   const response = await ai.models.generateContent({
-    model: 'gemini-2.5-flash',
+    model: 'gemini-2.5-pro',
     contents: prompt,
   })
   return (response.text ?? '').trim()

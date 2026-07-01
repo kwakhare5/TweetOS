@@ -3,6 +3,10 @@
 
 @custom-variant dark (&:is(.dark *));
 
+:root, html {
+  color-scheme: light !important;
+}
+
 :root {
   --background: oklch(0.985 0.002 240); /* Soft off-white background #FAFAFA */
   --foreground: oklch(0.145 0.008 240); /* Premium deep charcoal #09090B */
@@ -81,6 +85,23 @@
   body {
     @apply bg-background text-foreground;
   }
+}
+
+/* Force caret visibility globally with high contrast theme-matched colors */
+input, textarea, [contenteditable] {
+  caret-color: #0f172a !important; /* Charcoal */
+}
+
+/* macOS Sticky Notes matching carets */
+#second-brain, #brain, #inspiration, textarea#second-brain, textarea#brain, textarea#inspiration {
+  caret-color: #451a03 !important; /* Warm brown */
+}
+
+/* Dark developer console text boxes carets */
+.bg-slate-950 input, .bg-slate-950 textarea,
+.bg-slate-900 input, .bg-slate-900 textarea,
+#apikey, input#apikey {
+  caret-color: #34d399 !important; /* Emerald */
 }
 
 /* Hide all scrollbars globally */

@@ -7,11 +7,12 @@ import { AppSidebar } from "@/components/app-sidebar"
 import {
   SidebarInset,
   SidebarProvider,
-  SidebarTrigger,
 } from "@/components/ui/sidebar"
 import { TooltipProvider } from "@/components/ui/tooltip"
 import { CommandMenu } from "@/components/command-menu"
-import { Breadcrumbs } from "@/components/breadcrumbs"
+import { LayoutHeader } from "@/components/layout-header"
+import { MobileBottomNav } from "@/components/mobile-bottom-nav"
+import { SupabaseProvider } from "@/components/supabase-provider"
 
 const geist = Geist({
   subsets: ["latin"],
@@ -47,35 +48,29 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           disableTransitionOnChange
         >
           <TooltipProvider>
-            <SidebarProvider>
-              <AppSidebar />
-              <SidebarInset>
-                <header className="flex h-16 shrink-0 items-center gap-2 border-b border-slate-200/50 px-6 md:px-8 lg:px-12 bg-[#FAF8F5]/70 backdrop-blur-md sticky top-0 z-50">
-                  <SidebarTrigger className="-ml-1" />
-                  <Breadcrumbs />
-                  <div className="ml-auto hidden md:flex items-center gap-2 text-sm text-muted-foreground border rounded-md px-2 py-1 bg-muted/30">
-                    <span className="text-xs">Press</span>
-                    <kbd className="pointer-events-none inline-flex h-5 select-none items-center gap-1 rounded border bg-muted px-1.5 font-mono text-[10px] font-medium text-muted-foreground opacity-100">
-                      <span className="text-xs">⌘</span>K
-                    </kbd>
-                  </div>
-                </header>
-                <main 
-                  className="flex-1 overflow-auto relative"
-                  style={{
-                    backgroundColor: "#FAF8F5",
-                    backgroundImage: "radial-gradient(rgba(120, 90, 40, 0.08) 1px, transparent 1px)",
-                    backgroundSize: "20px 20px"
-                  }}
-                >
-                  <div className="relative z-10">
-                    {children}
-                  </div>
-                </main>
-              </SidebarInset>
-              <CommandMenu />
-              <Toaster />
-            </SidebarProvider>
+            <SupabaseProvider>
+              <SidebarProvider>
+                <AppSidebar />
+                <SidebarInset>
+                  <LayoutHeader />
+                  <main 
+                    className="flex-1 overflow-auto relative"
+                    style={{
+                      backgroundColor: "#FAF8F5",
+                      backgroundImage: "radial-gradient(rgba(120, 90, 40, 0.08) 1px, transparent 1px)",
+                      backgroundSize: "20px 20px"
+                    }}
+                  >
+                    <div className="relative z-10 pb-20 md:pb-6">
+                      {children}
+                    </div>
+                  </main>
+                </SidebarInset>
+                <MobileBottomNav />
+                <CommandMenu />
+                <Toaster />
+              </SidebarProvider>
+            </SupabaseProvider>
           </TooltipProvider>
         </ThemeProvider>
       </body>
