@@ -4,14 +4,14 @@ export const RECENT_NOTES = [
     content: "1. The Negative Hook (Stop doing X)\n2. The Secret Hook (The one thing nobody tells you)\n3. The Time Hook (In 5 minutes, I'll teach you...)",
     date: "2 hours ago",
     tags: ["Threads", "Hooks"],
-    color: "bg-blue-500/10 text-blue-700 dark:text-blue-400 border-blue-500/20",
+    color: "bg-blue-500/10 text-blue-700 border-blue-500/20",
   },
   {
     title: "Next Week's Content Plan",
     content: "- Monday: Motivational thread about building\n- Wednesday: Teardown of a successful product\n- Friday: Resource drop (PDF)",
     date: "2 days ago",
     tags: ["Planning", "High Priority"],
-    color: "bg-purple-500/10 text-purple-700 dark:text-purple-400 border-purple-500/20",
+    color: "bg-emerald-500/10 text-emerald-700 border-emerald-500/20",
   }
 ];
 

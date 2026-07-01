@@ -9,11 +9,13 @@ import { Textarea } from "@/components/ui/textarea"
 import { Label } from "@/components/ui/label"
 import { Switch } from "@/components/ui/switch"
 import { toast } from "sonner"
-import { UserCircle, Settings, Save, Sparkles, BrainCircuit } from "lucide-react"
+import { UserCircle, Settings, Save, BrainCircuit, Network, Cpu, Key } from "lucide-react"
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 
 export default function ProfilePage() {
   const { profile, updateProfile } = useProfileStore()
   const [mounted, setMounted] = useState(false)
+  const [isSaving, setIsSaving] = useState(false)
 
   const [name, setName] = useState("")
   const [twitterHandle, setTwitterHandle] = useState("")
@@ -38,195 +40,251 @@ export default function ProfilePage() {
   }, [profile])
 
   const handleSave = () => {
-    const parsedAvoidList = avoidListString
-      .split(",")
-      .map(s => s.trim())
-      .filter(Boolean)
+    setIsSaving(true)
+    setTimeout(() => {
+      const parsedAvoidList = avoidListString
+        .split(",")
+        .map(s => s.trim())
+        .filter(Boolean)
 
-    updateProfile({
-      name,
-      twitterHandle,
-      geminiApiKey,
-      niche,
-      secondBrain,
-      inspirationsContext,
-      voice: {
-        ...profile.voice,
-        avoidList: parsedAvoidList,
-      },
-    })
-    
-    toast.success("DNA successfully synchronized")
+      updateProfile({
+        name,
+        twitterHandle,
+        geminiApiKey,
+        niche,
+        secondBrain,
+        inspirationsContext,
+        voice: {
+          ...profile.voice,
+          avoidList: parsedAvoidList,
+        },
+      })
+      
+      toast.success("DNA successfully synchronized")
+      setIsSaving(false)
+    }, 400)
   }
 
   if (!mounted) return null
 
   return (
     <motion.div 
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      className="flex flex-col w-full min-h-screen bg-background"
+      initial={{ opacity: 0, y: 10 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.3 }}
+      className="flex flex-col gap-6 p-4 md:p-6 w-full max-w-7xl mx-auto"
     >
-      {/* Edge-to-edge Hero Header */}
-      <div className="w-full bg-slate-900 dark:bg-slate-950 text-slate-50 p-8 md:p-12 lg:p-16 border-b border-border/10">
-        <div className="max-w-4xl mx-auto flex flex-col gap-4">
-          <div className="flex items-center gap-3 text-primary">
-            <UserCircle className="w-8 h-8" />
-            <h1 className="text-3xl md:text-5xl font-bold tracking-tighter">Creator DNA</h1>
-          </div>
-          <p className="text-slate-400 text-lg max-w-2xl">
-            Configure your local state, API keys, and context limits. This DNA injected into every generated draft.
-          </p>
+      {/* Header section (matches Dashboard style) */}
+      <div className="flex items-center justify-between mb-2">
+        <div>
+          <h1 className="text-2xl font-bold tracking-tight">Creator DNA</h1>
+          <p className="text-sm text-muted-foreground">Configure your local state, voice definitions, and context settings.</p>
         </div>
       </div>
 
-      {/* Main Form Content */}
-      <div className="flex-1 w-full max-w-4xl mx-auto p-6 md:p-12 lg:px-16 pb-32">
-        <div className="flex flex-col gap-12">
+      {/* Main Grid */}
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-stretch">
+        
+        {/* Main Column */}
+        <div className="lg:col-span-8 flex flex-col gap-6">
           
-          {/* Identity Section */}
-          <section className="flex flex-col gap-6">
-            <div className="flex items-center gap-2 border-b pb-4">
-              <Settings className="w-5 h-5 text-muted-foreground" />
-              <h2 className="text-xl font-semibold">Identity Parameters</h2>
-            </div>
-            
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div className="space-y-2">
-                <Label htmlFor="name">Display Name</Label>
-                <Input 
-                  id="name" 
-                  value={name} 
-                  onChange={(e) => setName(e.target.value)} 
-                  placeholder="John Doe"
-                  className="bg-card"
-                />
+          {/* Core Identity Card */}
+          <Card className="flex flex-col border border-border bg-card text-card-foreground shadow-sm">
+            <CardHeader className="flex flex-row items-start justify-between space-y-0 pb-4">
+              <div className="space-y-1">
+                <CardTitle className="text-lg font-bold tracking-tight flex items-center gap-2">
+                  <UserCircle className="h-5 w-5 text-muted-foreground" />
+                  Core Identity
+                </CardTitle>
+                <CardDescription className="text-sm text-muted-foreground">
+                  The foundational elements of your digital persona.
+                </CardDescription>
+              </div>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label htmlFor="name">Display Name</Label>
+                  <Input 
+                    id="name" 
+                    value={name} 
+                    onChange={(e) => setName(e.target.value)} 
+                    placeholder="e.g. Satoshi Nakamoto"
+                    className="bg-background"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="handle">Twitter Handle</Label>
+                  <div className="relative">
+                    <span className="absolute left-3 top-2.5 text-muted-foreground">@</span>
+                    <Input 
+                      id="handle" 
+                      value={twitterHandle} 
+                      onChange={(e) => setTwitterHandle(e.target.value.replace('@', ''))} 
+                      placeholder="satoshi"
+                      className="pl-8 bg-background"
+                    />
+                  </div>
+                </div>
               </div>
               <div className="space-y-2">
-                <Label htmlFor="handle">Twitter Handle</Label>
-                <Input 
-                  id="handle" 
-                  value={twitterHandle} 
-                  onChange={(e) => setTwitterHandle(e.target.value)} 
-                  placeholder="@johndoe"
-                  className="bg-card"
-                />
-              </div>
-              <div className="space-y-2 md:col-span-2">
-                <Label htmlFor="niche">Content Niche</Label>
+                <Label htmlFor="niche">Content Niche & Focus Areas</Label>
                 <Input 
                   id="niche" 
                   value={niche} 
                   onChange={(e) => setNiche(e.target.value)} 
-                  placeholder="Tech, AI, Startups..."
-                  className="bg-card"
+                  placeholder="e.g. AI, Startups, Design Engineering"
+                  className="bg-background"
                 />
               </div>
-            </div>
-          </section>
+            </CardContent>
+          </Card>
 
-          {/* AI Configuration */}
-          <section className="flex flex-col gap-6">
-            <div className="flex items-center gap-2 border-b pb-4">
-              <Sparkles className="w-5 h-5 text-muted-foreground" />
-              <h2 className="text-xl font-semibold">Local Execution</h2>
-            </div>
-            
-            <div className="grid grid-cols-1 gap-6">
+          {/* Neural Context Card */}
+          <Card className="flex flex-col border border-border bg-card text-card-foreground shadow-sm">
+            <CardHeader className="flex flex-row items-start justify-between space-y-0 pb-4">
+              <div className="space-y-1">
+                <CardTitle className="text-lg font-bold tracking-tight flex items-center gap-2">
+                  <BrainCircuit className="h-5 w-5 text-muted-foreground" />
+                  Neural Context
+                </CardTitle>
+                <CardDescription className="text-sm text-muted-foreground">
+                  Feed your local AI with live thoughts and inspirations.
+                </CardDescription>
+              </div>
+            </CardHeader>
+            <CardContent className="space-y-4">
               <div className="space-y-2">
-                <Label htmlFor="apikey">Gemini API Key</Label>
+                <div className="flex justify-between items-center">
+                  <Label htmlFor="brain">Second Brain (Current State)</Label>
+                  <span className="text-[10px] font-medium px-2 py-0.5 rounded border border-blue-500/20 bg-blue-500/10 text-blue-700">Active</span>
+                </div>
+                <Textarea 
+                  id="brain"
+                  value={secondBrain} 
+                  onChange={(e) => setSecondBrain(e.target.value)} 
+                  placeholder="What are you currently building, reading, or obsessing over? Dump unstructured thoughts here..."
+                  className="bg-background min-h-[120px] resize-y"
+                />
+              </div>
+              
+              <div className="space-y-2">
+                <Label htmlFor="inspiration">Inspiration Vectors</Label>
+                <Textarea 
+                  id="inspiration"
+                  value={inspirationsContext} 
+                  onChange={(e) => setInspirationsContext(e.target.value)} 
+                  placeholder="Paste tweets, articles, or quotes from creators whose style you want to absorb..."
+                  className="bg-background min-h-[120px] resize-y"
+                />
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+
+        {/* Sidebar Column */}
+        <div className="lg:col-span-4 flex flex-col gap-6">
+          
+          {/* System Engine Card */}
+          <Card className="flex flex-col border border-border bg-card text-card-foreground shadow-sm">
+            <CardHeader className="flex flex-row items-start justify-between space-y-0 pb-4">
+              <div className="space-y-1">
+                <CardTitle className="text-lg font-bold tracking-tight flex items-center gap-2">
+                  <Cpu className="h-5 w-5 text-muted-foreground" />
+                  Engine Details
+                </CardTitle>
+              </div>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="space-y-2">
+                <Label htmlFor="apikey" className="flex items-center gap-2">
+                  <Key className="h-3.5 w-3.5 text-muted-foreground" />
+                  API Authorization
+                </Label>
                 <Input 
                   id="apikey" 
                   type="password"
                   value={geminiApiKey} 
                   onChange={(e) => setGeminiApiKey(e.target.value)} 
                   placeholder="AIzaSy..."
-                  className="bg-card font-mono"
+                  className="bg-background font-mono text-sm"
                 />
-                <p className="text-xs text-muted-foreground">Stored securely in your local browser storage.</p>
+                <p className="text-[11px] text-muted-foreground mt-1">
+                  Processed locally. Stored on your device.
+                </p>
               </div>
-              
-              <div className="space-y-2">
-                <Label htmlFor="avoid">Avoid Words (Comma separated)</Label>
-                <Input 
+
+              <div className="space-y-2 pt-2">
+                <Label htmlFor="avoid">Lexicon Filters (Avoid Words)</Label>
+                <Textarea 
                   id="avoid" 
                   value={avoidListString} 
                   onChange={(e) => setAvoidListString(e.target.value)} 
                   placeholder="delve, unlock, supercharge..."
-                  className="bg-card"
+                  className="bg-background min-h-[100px] resize-y"
                 />
               </div>
-            </div>
-          </section>
+            </CardContent>
+          </Card>
 
-          {/* Context Injection */}
-          <section className="flex flex-col gap-6">
-            <div className="flex items-center gap-2 border-b pb-4">
-              <BrainCircuit className="w-5 h-5 text-muted-foreground" />
-              <h2 className="text-xl font-semibold">Context Injection</h2>
-            </div>
-            
-            <div className="grid grid-cols-1 gap-6">
-              <div className="space-y-2">
-                <Label htmlFor="brain">Second Brain (Live Context)</Label>
-                <Textarea 
-                  id="brain"
-                  value={secondBrain} 
-                  onChange={(e) => setSecondBrain(e.target.value)} 
-                  placeholder="What are you building, reading, or thinking about lately?"
-                  className="bg-card min-h-[120px] resize-y"
-                />
+          {/* Subroutines Card */}
+          <Card className="flex flex-col border border-border bg-card text-card-foreground shadow-sm">
+            <CardHeader className="flex flex-row items-start justify-between space-y-0 pb-4">
+              <div className="space-y-1">
+                <CardTitle className="text-lg font-bold tracking-tight flex items-center gap-2">
+                  <Network className="h-5 w-5 text-muted-foreground" />
+                  Subroutines
+                </CardTitle>
               </div>
-              
-              <div className="space-y-2">
-                <Label htmlFor="inspiration">Inspiration Reference</Label>
-                <Textarea 
-                  id="inspiration"
-                  value={inspirationsContext} 
-                  onChange={(e) => setInspirationsContext(e.target.value)} 
-                  placeholder="Paste tweets or styles from creators you want to mimic..."
-                  className="bg-card min-h-[120px] resize-y"
-                />
-              </div>
-            </div>
-          </section>
-
-          {/* Features Configuration */}
-          <section className="flex flex-col gap-6">
-            <div className="flex items-center gap-2 border-b pb-4">
-              <Settings className="w-5 h-5 text-muted-foreground" />
-              <h2 className="text-xl font-semibold">Features Configuration</h2>
-            </div>
-            
-            <div className="grid grid-cols-1 gap-6">
-              <div className="flex items-center justify-between p-4 border rounded-lg bg-card">
-                <div className="space-y-0.5">
-                  <Label className="text-base">Auto-Score Drafts</Label>
-                  <p className="text-sm text-muted-foreground">Automatically evaluate new drafts against your DNA.</p>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="flex items-start justify-between gap-4 p-3 rounded-lg border border-border bg-background">
+                <div className="space-y-1">
+                  <Label className="cursor-pointer text-sm font-medium">Auto-Score Drafts</Label>
+                  <p className="text-xs text-muted-foreground leading-relaxed">Evaluate generated drafts automatically against your DNA profile.</p>
                 </div>
                 <Switch defaultChecked />
               </div>
-              <div className="flex items-center justify-between p-4 border rounded-lg bg-card">
-                <div className="space-y-0.5">
-                  <Label className="text-base">Strict Tone Matching</Label>
-                  <p className="text-sm text-muted-foreground">Reject AI suggestions that use your avoid words.</p>
+              <div className="flex items-start justify-between gap-4 p-3 rounded-lg border border-border bg-background">
+                <div className="space-y-1">
+                  <Label className="cursor-pointer text-sm font-medium">Strict Tone Guard</Label>
+                  <p className="text-xs text-muted-foreground leading-relaxed">Reject any AI generation that breaches your Lexicon Filters.</p>
                 </div>
                 <Switch defaultChecked />
               </div>
-            </div>
-          </section>
+            </CardContent>
+          </Card>
+
+          {/* Action Bar (standard flat button) */}
+          <div className="flex justify-end mt-2">
+            <Button 
+              size="lg" 
+              onClick={handleSave} 
+              disabled={isSaving}
+              className="w-full h-11 shadow-sm cursor-pointer"
+            >
+              {isSaving ? (
+                <>
+                  <motion.div
+                    animate={{ rotate: 360 }}
+                    transition={{ repeat: Infinity, duration: 1, ease: "linear" }}
+                    className="mr-2"
+                  >
+                    <Settings className="w-4 h-4" />
+                  </motion.div>
+                  Syncing DNA...
+                </>
+              ) : (
+                <>
+                  <Save className="w-4 h-4 mr-2" />
+                  Synchronize DNA
+                </>
+              )}
+            </Button>
+          </div>
 
         </div>
       </div>
-
-      {/* Floating Save Bar */}
-      <div className="fixed bottom-0 left-0 right-0 p-4 border-t bg-background/80 backdrop-blur-md z-50 flex justify-center md:justify-end md:px-12">
-        <Button size="lg" onClick={handleSave} className="w-full md:w-auto shadow-lg hover:shadow-xl transition-all">
-          <Save className="w-4 h-4 mr-2" />
-          Synchronize DNA
-        </Button>
-      </div>
-
     </motion.div>
   )
 }
