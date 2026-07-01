@@ -537,7 +537,7 @@ export default function Dashboard() {
                 id="second-brain"
                 value={secondBrainText}
                 onChange={(e) => setSecondBrainText(e.target.value)}
-                placeholder="Studying code? Building a chrome extension? Write it down, Gemini uses this memory..."
+                placeholder=""
                 className="w-full bg-transparent border-0 outline-none focus:ring-0 focus-visible:ring-0 focus-visible:ring-offset-0 px-0 py-0 resize-none flex-1 min-h-[240px] text-[17px] font-normal text-yellow-950/95 placeholder:text-yellow-600/50 leading-[28px] font-handwriting pt-[0px] caret-slate-950"
                 style={{
                   backgroundImage: "linear-gradient(to bottom, transparent 27px, rgba(202,138,4,0.15) 27px)",
