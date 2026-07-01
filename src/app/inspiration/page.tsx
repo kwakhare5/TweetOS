@@ -2,6 +2,7 @@
 
 import { motion } from "motion/react"
 import dynamic from 'next/dynamic'
+import { WashiTape } from "@/components/ui/washi-tape"
 
 const TweetMetaPreview = dynamic(() => import('@/components/dashboard/tweet-meta-preview').then(mod => mod.TweetMetaPreview), { ssr: false })
 
@@ -21,14 +22,7 @@ export default function InspirationPage() {
         
         <div className="relative w-full max-w-xl bg-card border rounded-xl p-5 shadow-sm rotate-[0.3deg]">
           {/* Translucent Washi Tape with diagonal stripes pattern */}
-          <div 
-            className="absolute top-[-10px] left-1/2 -translate-x-1/2 w-28 h-5 border border-amber-200/20 shadow-xs rotate-[-2deg] opacity-75 z-10 select-none pointer-events-none"
-            style={{
-              backgroundColor: "rgba(254, 240, 138, 0.4)",
-              backgroundImage: "repeating-linear-gradient(45deg, transparent, transparent 5px, rgba(202, 138, 4, 0.1) 5px, rgba(202, 138, 4, 0.1) 10px)",
-              backdropFilter: "blur(1.5px)"
-            }}
-          />
+          <WashiTape className="rotate-[-2deg]" />
           <TweetMetaPreview />
         </div>
         

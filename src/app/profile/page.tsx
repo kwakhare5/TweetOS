@@ -21,39 +21,8 @@ import {
 
 
 
-// Realistic 3D SVG Paperclip Icon
-const PaperclipIcon = ({ className }: { className?: string }) => (
-  <svg 
-    viewBox="0 0 40 40" 
-    className={className} 
-    width="40" 
-    height="40"
-    fill="none"
-  >
-    <path 
-      d="M12 30 L28 14 A4.5 4.5 0 0 0 21.5 7.5 L7 22 A7 7 0 0 0 17 34 L31 20 A9.5 9.5 0 0 0 17.5 6.5 L9.5 14.5" 
-      stroke="rgba(0,0,0,0.12)" 
-      strokeWidth="2.5" 
-      strokeLinecap="round" 
-      strokeLinejoin="round"
-      className="translate-x-[1px] translate-y-[2px]"
-    />
-    <path 
-      d="M12 30 L28 14 A4.5 4.5 0 0 0 21.5 7.5 L7 22 A7 7 0 0 0 17 34 L31 20 A9.5 9.5 0 0 0 17.5 6.5 L9.5 14.5" 
-      stroke="#94A3B8" 
-      strokeWidth="2.5" 
-      strokeLinecap="round" 
-      strokeLinejoin="round" 
-    />
-    <path 
-      d="M12 30 L28 14 A4.5 4.5 0 0 0 21.5 7.5 L7 22 A7 7 0 0 0 17 34 L31 20 A9.5 9.5 0 0 0 17.5 6.5 L9.5 14.5" 
-      stroke="#F1F5F9" 
-      strokeWidth="0.8" 
-      strokeLinecap="round" 
-      strokeLinejoin="round" 
-    />
-  </svg>
-)
+import { WashiTape } from "@/components/ui/washi-tape"
+import { Paperclip } from "@/components/ui/paperclip"
 
 export default function ProfilePage() {
   const { profile, updateProfile } = useProfileStore()
@@ -164,14 +133,7 @@ export default function ProfilePage() {
           {/* Core Identity Card */}
           <div className="relative flex flex-col border border-slate-200/60 rounded-xl p-5 bg-card text-card-foreground shadow-sm sm:rotate-[-0.3deg] rotate-0 transition-transform hover:rotate-0">
             {/* Translucent Washi Tape with diagonal stripes pattern */}
-            <div 
-              className="absolute top-[-10px] left-1/2 -translate-x-1/2 w-28 h-5 border border-amber-200/20 shadow-xs rotate-[-2deg] opacity-75 z-10 select-none pointer-events-none"
-              style={{
-                backgroundColor: "rgba(254, 240, 138, 0.4)",
-                backgroundImage: "repeating-linear-gradient(45deg, transparent, transparent 5px, rgba(202, 138, 4, 0.1) 5px, rgba(202, 138, 4, 0.1) 10px)",
-                backdropFilter: "blur(1.5px)"
-              }}
-            />
+            <WashiTape className="rotate-[-2deg]" />
             
             <div className="flex flex-row items-center space-x-3 border-b border-slate-100 pb-4 mb-4">
               <div className="flex size-10 items-center justify-center rounded-lg bg-slate-100 text-slate-600">
@@ -225,7 +187,7 @@ export default function ProfilePage() {
           {/* Subroutines Card */}
           <div className="relative flex flex-col border border-slate-200/60 rounded-xl p-5 bg-card text-card-foreground shadow-sm sm:rotate-[0.2deg] rotate-0 transition-transform hover:rotate-0">
             {/* Paperclip overlay */}
-            <PaperclipIcon className="absolute top-[-16px] left-[10%] z-20 select-none pointer-events-none rotate-[-5deg]" />
+            <Paperclip className="absolute top-[-16px] left-[10%] z-20 select-none pointer-events-none rotate-[-5deg]" />
 
             <div className="flex flex-row items-center space-x-3 border-b border-slate-100 pb-4 mb-4">
               <div className="flex size-10 items-center justify-center rounded-lg bg-slate-100 text-slate-600">
@@ -238,14 +200,14 @@ export default function ProfilePage() {
             </div>
 
             <div className="space-y-3">
-              <div className="flex items-start justify-between gap-4 p-3 rounded-lg border border-slate-100 bg-[#FAF8F5]/30">
+              <div className="flex items-start justify-between gap-4 p-3 rounded-lg border border-slate-100 bg-muted/30">
                 <div className="space-y-0.5">
                   <Label className="cursor-pointer text-sm font-semibold text-slate-800">Auto-Score Drafts</Label>
                   <p className="text-xs text-slate-400 leading-normal">Evaluate generated drafts automatically against your DNA profile.</p>
                 </div>
                 <Switch defaultChecked />
               </div>
-              <div className="flex items-start justify-between gap-4 p-3 rounded-lg border border-slate-100 bg-[#FAF8F5]/30">
+              <div className="flex items-start justify-between gap-4 p-3 rounded-lg border border-slate-100 bg-muted/30">
                 <div className="space-y-0.5">
                   <Label className="cursor-pointer text-sm font-semibold text-slate-800">Strict Tone Guard</Label>
                   <p className="text-xs text-slate-400 leading-normal">Reject any AI generation that breaches your Lexicon Filters.</p>
@@ -280,7 +242,7 @@ export default function ProfilePage() {
                     value={geminiApiKey} 
                     onChange={(e) => setGeminiApiKey(e.target.value)} 
                     placeholder="AIzaSy..."
-                    className="pl-9 bg-slate-900/60 border-slate-800 text-emerald-400 font-mono text-sm placeholder:text-slate-700 focus-visible:border-slate-700 focus-visible:ring-offset-0 focus-visible:ring-0 focus-visible:ring-slate-800/50 hover:border-slate-800 h-9"
+                    className="pl-9 bg-slate-900 border-slate-800 text-emerald-400 font-mono text-sm placeholder:text-slate-700 focus-visible:border-slate-700 focus-visible:ring-offset-0 focus-visible:ring-1 focus-visible:ring-slate-800 hover:border-slate-800 h-9"
                   />
                 </div>
                 <div className="text-[10px] text-emerald-500/80 mt-1 select-none flex items-center gap-1">
@@ -299,7 +261,7 @@ export default function ProfilePage() {
           {/* macOS Yellow Sticky Note */}
           <div className="relative flex flex-col bg-[#FEF9C3] rounded-xl border border-yellow-200 shadow-[0_8px_30px_rgba(234,179,8,0.12)] sm:rotate-[0.3deg] rotate-0">
             {/* Paperclip overlay */}
-            <PaperclipIcon className="absolute top-[-16px] left-[85%] z-20 select-none pointer-events-none rotate-[10deg]" />
+            <Paperclip className="absolute top-[-16px] left-[85%] z-20 select-none pointer-events-none rotate-[10deg]" />
 
             <div className="flex items-center justify-between px-4 py-2.5 bg-[#FEF08A]/60 border-b border-yellow-200/60 select-none rounded-t-xl">
               <div className="flex items-center gap-1.5">
@@ -321,10 +283,11 @@ export default function ProfilePage() {
                 </Label>
                 <Textarea 
                   id="brain"
+                  aria-label="Second Brain"
                   value={secondBrain} 
                   onChange={(e) => setSecondBrain(e.target.value)} 
                   placeholder="Daily context dump... e.g. shipping local compilers, Pune weather sucks, debugging zustand hydration issues"
-                  className="bg-transparent border-0 outline-hidden focus:ring-0 focus-visible:ring-0 focus-visible:ring-offset-0 px-0 py-0 resize-none min-h-[110px] text-yellow-950/95 placeholder:text-yellow-600/50 leading-[28px] font-handwriting text-base"
+                  className="bg-transparent border-0 outline-hidden focus-visible:ring-2 focus-visible:ring-amber-400/50 focus-visible:ring-offset-2 rounded px-2 py-1 resize-none min-h-[110px] text-yellow-950/95 placeholder:text-yellow-600/50 leading-[28px] font-handwriting text-base"
                   style={{
                     backgroundImage: "linear-gradient(to bottom, transparent 27px, rgba(202,138,4,0.15) 27px)",
                     backgroundSize: "100% 28px"
@@ -339,10 +302,11 @@ export default function ProfilePage() {
                 </Label>
                 <Textarea 
                   id="inspiration"
+                  aria-label="Inspiration Context"
                   value={inspirationsContext} 
                   onChange={(e) => setInspirationsContext(e.target.value)} 
                   placeholder="Paste tweet structures, copywriting hooks, formatting styles or blueprints from creators you admire..."
-                  className="bg-transparent border-0 outline-hidden focus:ring-0 focus-visible:ring-0 focus-visible:ring-offset-0 px-0 py-0 resize-none min-h-[110px] text-yellow-950/95 placeholder:text-yellow-600/50 leading-[28px] font-handwriting text-base"
+                  className="bg-transparent border-0 outline-hidden focus-visible:ring-2 focus-visible:ring-amber-400/50 focus-visible:ring-offset-2 rounded px-2 py-1 resize-none min-h-[110px] text-yellow-950/95 placeholder:text-yellow-600/50 leading-[28px] font-handwriting text-base"
                   style={{
                     backgroundImage: "linear-gradient(to bottom, transparent 27px, rgba(202,138,4,0.15) 27px)",
                     backgroundSize: "100% 28px"
@@ -355,14 +319,7 @@ export default function ProfilePage() {
           {/* Lexicon Filters Card */}
           <div className="relative flex flex-col border border-slate-200/60 rounded-xl p-5 bg-card text-card-foreground shadow-sm sm:rotate-[-0.3deg] rotate-0 transition-transform hover:rotate-0">
             {/* Translucent Washi Tape with diagonal stripes pattern */}
-            <div 
-              className="absolute top-[-10px] left-1/2 -translate-x-1/2 w-28 h-5 border border-amber-200/20 shadow-xs rotate-[2deg] opacity-75 z-10 select-none pointer-events-none"
-              style={{
-                backgroundColor: "rgba(254, 240, 138, 0.4)",
-                backgroundImage: "repeating-linear-gradient(45deg, transparent, transparent 5px, rgba(202, 138, 4, 0.1) 5px, rgba(202, 138, 4, 0.1) 10px)",
-                backdropFilter: "blur(1.5px)"
-              }}
-            />
+            <WashiTape className="rotate-[2deg]" />
 
             <div className="flex flex-row items-center space-x-3 border-b border-slate-100 pb-4 mb-4">
               <div className="flex size-10 items-center justify-center rounded-lg bg-slate-100 text-slate-600">
@@ -396,12 +353,13 @@ export default function ProfilePage() {
                       <span>{word}</span>
                       <button 
                         type="button"
+                        aria-label={`Remove word ${word}`}
                         onClick={() => {
                           const words = avoidListString.split(",").map(w => w.trim());
                           const filtered = words.filter((_, i) => i !== idx);
                           setAvoidListString(filtered.join(", "));
                         }}
-                        className="hover:text-slate-900 text-slate-400 font-bold focus:outline-hidden cursor-pointer size-3.5 inline-flex items-center justify-center rounded-full hover:bg-slate-200/50"
+                        className="hover:text-slate-900 text-slate-400 font-bold focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-ring cursor-pointer size-4 inline-flex items-center justify-center rounded-full hover:bg-slate-200/50"
                       >
                         ×
                       </button>

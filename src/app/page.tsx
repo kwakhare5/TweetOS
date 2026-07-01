@@ -12,11 +12,6 @@ import {
   Check, 
   Send, 
   RefreshCw,
-  MessageCircle,
-  Repeat2,
-  Heart,
-  BarChart3,
-  Share,
   Compass,
   MessageSquare,
   ChevronDown
@@ -27,6 +22,9 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
+import { WashiTape } from "@/components/ui/washi-tape"
+import { Paperclip } from "@/components/ui/paperclip"
+import { TweetActionFooter } from "@/components/ui/tweet-action-footer"
 import { 
   generateDraftPacket, 
   generateTrendingPacket, 
@@ -44,6 +42,7 @@ const XLogoIcon = ({ className }: { className?: string }) => (
     width="1em" 
     height="1em" 
     fill="currentColor"
+    aria-hidden="true"
   >
     <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
   </svg>
@@ -62,44 +61,6 @@ const VerifiedBadgeIcon = ({ className }: { className?: string }) => (
     </g>
   </svg>
 )
-
-// Realistic 3D SVG Paperclip Icon
-const PaperclipIcon = ({ className }: { className?: string }) => (
-  <svg 
-    viewBox="0 0 40 40" 
-    className={className} 
-    width="40" 
-    height="40"
-    fill="none"
-  >
-    {/* Shadow path */}
-    <path 
-      d="M12 30 L28 14 A4.5 4.5 0 0 0 21.5 7.5 L7 22 A7 7 0 0 0 17 34 L31 20 A9.5 9.5 0 0 0 17.5 6.5 L9.5 14.5" 
-      stroke="rgba(0,0,0,0.12)" 
-      strokeWidth="2.5" 
-      strokeLinecap="round" 
-      strokeLinejoin="round"
-      className="translate-x-[1px] translate-y-[2px]"
-    />
-    {/* Metal body */}
-    <path 
-      d="M12 30 L28 14 A4.5 4.5 0 0 0 21.5 7.5 L7 22 A7 7 0 0 0 17 34 L31 20 A9.5 9.5 0 0 0 17.5 6.5 L9.5 14.5" 
-      stroke="#94A3B8" 
-      strokeWidth="2.5" 
-      strokeLinecap="round" 
-      strokeLinejoin="round" 
-    />
-    {/* Metal highlight */}
-    <path 
-      d="M12 30 L28 14 A4.5 4.5 0 0 0 21.5 7.5 L7 22 A7 7 0 0 0 17 34 L31 20 A9.5 9.5 0 0 0 17.5 6.5 L9.5 14.5" 
-      stroke="#F1F5F9" 
-      strokeWidth="0.8" 
-      strokeLinecap="round" 
-      strokeLinejoin="round" 
-    />
-  </svg>
-)
-
 
 export default function Dashboard() {
   const { profile, updateProfile } = useProfileStore()
@@ -433,22 +394,15 @@ export default function Dashboard() {
           <div className="relative flex h-fit w-full flex-col gap-4 rounded-xl border p-4 sm:p-5 bg-card text-card-foreground shadow-sm sm:rotate-[-0.3deg] rotate-0">
             
             {/* Translucent Washi Tape with diagonal stripes pattern */}
-            <div 
-              className="absolute top-[-10px] left-1/2 -translate-x-1/2 w-28 h-5 border border-amber-200/20 shadow-xs rotate-[-2deg] opacity-75 z-10 select-none pointer-events-none"
-              style={{
-                backgroundColor: "rgba(254, 240, 138, 0.4)",
-                backgroundImage: "repeating-linear-gradient(45deg, transparent, transparent 5px, rgba(202, 138, 4, 0.1) 5px, rgba(202, 138, 4, 0.1) 10px)",
-                backdropFilter: "blur(1.5px)"
-              }}
-            />
+            <WashiTape className="rotate-[-2deg]" />
             
             {/* TweetHeader structure */}
             <div className="flex flex-row items-start justify-between tracking-normal">
               <div className="flex items-center space-x-3">
-                <div className="shrink-0 h-[48px] w-[48px] rounded-full border border-border/50 overflow-hidden flex items-center justify-center font-bold text-slate-700 bg-slate-100 text-base select-none">
+                <div className="shrink-0 h-12 w-12 rounded-full border border-border/50 overflow-hidden flex items-center justify-center font-bold text-slate-700 bg-slate-100 text-base select-none">
                   {profile.avatarUrl ? (
                     // eslint-disable-next-line @next/next/no-img-element
-                    <img src={profile.avatarUrl} alt="Avatar" className="h-full w-full object-cover" />
+                    <img src={profile.avatarUrl} alt="Avatar" width={48} height={48} className="h-full w-full object-cover" />
                   ) : (
                     avatarLetter
                   )}
@@ -472,10 +426,11 @@ export default function Dashboard() {
             <div className="pt-2 min-h-[240px] flex flex-col gap-3">
               <textarea 
                 id="raw-tweet"
+                aria-label="Raw Tweet Draft"
                 value={rawTweet}
                 onChange={(e) => setRawTweet(e.target.value)}
-                placeholder="What's happening? Dump raw thoughts or rough drafts..."
-                className="w-full bg-transparent border-0 outline-none focus:ring-0 focus-visible:ring-0 focus-visible:ring-offset-0 px-0 py-0 resize-none text-base md:text-[15px] text-slate-900 placeholder:text-slate-400 leading-relaxed flex-1 font-normal"
+                placeholder="What's happening? Dump raw thoughts or rough drafts…"
+                className="w-full bg-transparent border-0 outline-hidden focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 rounded px-1 py-1 resize-none text-base md:text-[15px] text-slate-900 placeholder:text-slate-400 leading-relaxed flex-1 font-normal"
               />
               
               {/* Action row inside Card */}
@@ -566,33 +521,16 @@ export default function Dashboard() {
             </div>
 
             {/* Interactive Stats Footer */}
-            <div className="flex justify-between items-center pt-3 border-t border-slate-100 text-xs text-slate-400 select-none">
-              <button className="flex items-center gap-2 hover:text-blue-500 transition-colors cursor-pointer bg-transparent border-0 p-0">
-                <MessageCircle className="h-4 w-4" />
-                <span>0</span>
-              </button>
-              <button 
-                onClick={toggleRetweet}
-                className={`flex items-center gap-2 transition-colors cursor-pointer bg-transparent border-0 p-0 ${hasRetweeted ? "text-green-600 font-semibold" : "hover:text-green-600"}`}
-              >
-                <Repeat2 className="h-4 w-4" />
-                <span>{retweets}</span>
-              </button>
-              <button 
-                onClick={toggleLike}
-                className={`flex items-center gap-2 transition-colors cursor-pointer bg-transparent border-0 p-0 ${hasLiked ? "text-red-500 font-semibold" : "hover:text-red-500"}`}
-              >
-                <Heart className={`h-4 w-4 ${hasLiked ? "fill-red-500 text-red-500" : ""}`} />
-                <span>{likes}</span>
-              </button>
-              <button className="flex items-center gap-2 hover:text-blue-500 transition-colors cursor-pointer bg-transparent border-0 p-0">
-                <BarChart3 className="h-4 w-4" />
-                <span>1.4K</span>
-              </button>
-              <button className="flex items-center gap-2 hover:text-blue-500 transition-colors cursor-pointer bg-transparent border-0 p-0">
-                <Share className="h-4 w-4" />
-              </button>
-            </div>
+            <TweetActionFooter 
+              replies={0}
+              retweets={retweets}
+              likes={likes}
+              views="1.4K"
+              hasLiked={hasLiked}
+              hasRetweeted={hasRetweeted}
+              onLike={toggleLike}
+              onRetweet={toggleRetweet}
+            />
 
           </div>
 
@@ -620,7 +558,7 @@ export default function Dashboard() {
                           key={t}
                           onClick={() => handleTailor(t)}
                           disabled={isTailoring}
-                          className={`text-[9px] font-bold px-1.5 py-0.5 rounded transition-colors cursor-pointer border-0 ${
+                          className={`text-xs font-bold px-2 py-0.5 rounded transition-colors cursor-pointer border-0 ${
                             activeTone === t
                               ? "bg-slate-950 text-white"
                               : "text-slate-500 hover:text-slate-900 hover:bg-slate-200/60"
@@ -698,26 +636,26 @@ export default function Dashboard() {
           <div className="relative flex-1 flex flex-col bg-[#FEF9C3] rounded-xl border border-yellow-200 shadow-[0_8px_30px_rgba(234,179,8,0.12)]">
             
             {/* Paperclip overlay */}
-            <PaperclipIcon className="absolute top-[-16px] left-[10%] z-20 select-none pointer-events-none rotate-[-10deg]" />
+            <Paperclip className="absolute top-[-16px] left-[10%] z-20 select-none pointer-events-none rotate-[-10deg]" />
             
             {/* macOS Sticky top bar */}
             <div className="flex items-center justify-between px-4 py-2.5 bg-[#FEF08A]/60 border-b border-yellow-200/60 select-none rounded-t-xl">
               {/* macOS window dots */}
               <div className="flex items-center gap-1.5">
-                <div className="h-3 w-3 rounded-full bg-red-400 border border-red-500/20 shadow-sm hover:bg-red-500 transition-colors" />
-                <div className="h-3 w-3 rounded-full bg-yellow-400 border border-yellow-500/20 shadow-sm hover:bg-yellow-500 transition-colors" />
-                <div className="h-3 w-3 rounded-full bg-green-400 border border-green-500/20 shadow-sm hover:bg-green-500 transition-colors" />
+                <div className="size-2.5 rounded-full bg-red-400 border border-red-500/20 shadow-sm hover:bg-red-500 transition-colors" />
+                <div className="size-2.5 rounded-full bg-yellow-400 border border-yellow-500/20 shadow-sm hover:bg-yellow-500 transition-colors" />
+                <div className="size-2.5 rounded-full bg-green-400 border border-green-500/20 shadow-sm hover:bg-green-500 transition-colors" />
               </div>
-              <span className="text-[11px] font-bold text-yellow-800/80 uppercase tracking-wider font-mono">
+              <span className="text-xs font-bold text-yellow-800/80 uppercase tracking-wider font-mono">
                 Sticky Notes
               </span>
               
               {/* Sync Status Badge */}
-              <div className="flex items-center gap-1.5 text-[10px] font-bold text-yellow-800/60 uppercase tracking-wider select-none">
+              <div className="flex items-center gap-1.5 text-xs font-bold text-yellow-800/60 uppercase tracking-wider select-none">
                 {saveStatus === "saving" && (
                   <>
                     <RefreshCw className="h-3 w-3 animate-spin text-yellow-700/70" />
-                    <span>Syncing...</span>
+                    <span>Syncing…</span>
                   </>
                 )}
                 {saveStatus === "saved" && (
@@ -739,10 +677,11 @@ export default function Dashboard() {
             <div className="p-5 flex-1 flex flex-col">
               <textarea
                 id="second-brain"
+                aria-label="Second Brain Sticky Note"
                 value={secondBrainText}
                 onChange={(e) => { setSecondBrainText(e.target.value); setSaveStatus("saving"); }}
                 placeholder=""
-                className="w-full bg-transparent border-0 outline-none focus:ring-0 focus-visible:ring-0 focus-visible:ring-offset-0 px-0 py-0 resize-none flex-1 min-h-[240px] text-[17px] font-normal text-yellow-950/95 placeholder:text-yellow-600/50 leading-[28px] font-handwriting pt-[0px]"
+                className="w-full bg-transparent border-0 outline-hidden focus-visible:ring-2 focus-visible:ring-amber-400/50 focus-visible:ring-offset-2 rounded px-2 py-1 resize-none flex-1 min-h-[240px] text-[17px] font-normal text-yellow-950/95 placeholder:text-yellow-600/50 leading-[28px] font-handwriting"
                 style={{
                   backgroundImage: "linear-gradient(to bottom, transparent 27px, rgba(202,138,4,0.15) 27px)",
                   backgroundSize: "100% 28px"
@@ -804,7 +743,7 @@ export default function Dashboard() {
             return (
               <div 
                 key={tweet.id} 
-                className="relative flex flex-col gap-4 rounded-xl border p-4 sm:p-5 bg-card text-card-foreground shadow-xs transition-all hover:translate-y-[-1px]"
+                className="relative flex flex-col gap-4 rounded-xl border p-4 sm:p-5 bg-card text-card-foreground shadow-sm transition-all hover:translate-y-[-2px] hover:shadow-md border-b-[3px] border-slate-200/80"
               >
 
                 {/* Tweet Header */}
@@ -813,7 +752,7 @@ export default function Dashboard() {
                     <div className="shrink-0 h-10 w-10 rounded-full border border-border/50 overflow-hidden flex items-center justify-center font-bold text-slate-700 bg-slate-100 text-sm select-none">
                       {profile.avatarUrl ? (
                         // eslint-disable-next-line @next/next/no-img-element
-                        <img src={profile.avatarUrl} alt="Avatar" className="h-full w-full object-cover" />
+                        <img src={profile.avatarUrl} alt="Avatar" width={40} height={40} className="h-full w-full object-cover" />
                       ) : (
                         avatarLetter
                       )}
@@ -843,27 +782,13 @@ export default function Dashboard() {
                 </div>
 
                 {/* Tweet Stats */}
-                <div className="flex justify-between items-center pt-3 border-t border-slate-100/80 text-xs text-slate-400 select-none">
-                  <div className="flex items-center gap-1.5 hover:text-sky-500 transition-all duration-150 cursor-pointer active:scale-90">
-                    <MessageCircle className="h-3.5 w-3.5" />
-                    <span>{tweet.replies}</span>
-                  </div>
-                  <div className="flex items-center gap-1.5 hover:text-green-500 transition-all duration-150 cursor-pointer active:scale-90">
-                    <Repeat2 className="h-3.5 w-3.5" />
-                    <span>{tweet.retweets}</span>
-                  </div>
-                  <div className="flex items-center gap-1.5 hover:text-pink-600 transition-all duration-150 cursor-pointer active:scale-90">
-                    <Heart className="h-3.5 w-3.5" />
-                    <span>{tweet.likes}</span>
-                  </div>
-                  <div className="flex items-center gap-1.5 hover:text-sky-500 transition-all duration-150 cursor-pointer active:scale-90">
-                    <BarChart3 className="h-3.5 w-3.5" />
-                    <span>{tweet.views}</span>
-                  </div>
-                  <div className="flex items-center hover:text-sky-500 transition-all duration-150 cursor-pointer active:scale-90">
-                    <Share className="h-3.5 w-3.5" />
-                  </div>
-                </div>
+                <TweetActionFooter 
+                  replies={tweet.replies}
+                  retweets={tweet.retweets}
+                  likes={tweet.likes}
+                  views={tweet.views}
+                  className="mt-0 pt-3 max-w-full"
+                />
               </div>
             );
           })}

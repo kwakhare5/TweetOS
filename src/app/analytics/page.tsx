@@ -2,6 +2,7 @@
 
 import { motion } from "motion/react"
 import { BarChart2 } from "lucide-react"
+import { WashiTape } from "@/components/ui/washi-tape"
 
 export default function AnalyticsPage() {
   return (
@@ -19,14 +20,7 @@ export default function AnalyticsPage() {
         
         <div className="relative w-full max-w-md bg-card border rounded-xl p-8 shadow-sm rotate-[-0.3deg] flex flex-col items-center gap-4">
           {/* Translucent Washi Tape with diagonal stripes pattern */}
-          <div 
-            className="absolute top-[-10px] left-1/2 -translate-x-1/2 w-28 h-5 border border-amber-200/20 shadow-xs rotate-[2deg] opacity-75 z-10 select-none pointer-events-none"
-            style={{
-              backgroundColor: "rgba(254, 240, 138, 0.4)",
-              backgroundImage: "repeating-linear-gradient(45deg, transparent, transparent 5px, rgba(202, 138, 4, 0.1) 5px, rgba(202, 138, 4, 0.1) 10px)",
-              backdropFilter: "blur(1.5px)"
-            }}
-          />
+          <WashiTape className="rotate-[2deg]" />
           <div className="size-12 rounded-full bg-slate-100 flex items-center justify-center text-slate-500">
             <BarChart2 className="h-6 w-6" />
           </div>
