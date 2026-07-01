@@ -317,7 +317,7 @@ export default function Dashboard() {
                   </div>
                 </div>
               </div>
-              <XLogoIcon className="text-muted-foreground hover:text-foreground size-5 items-start transition-all ease-in-out hover:scale-105 cursor-pointer" />
+              <XLogoIcon className="text-muted-foreground size-5 items-start" />
             </div>
 
             {/* Tweet Body / Textarea */}
