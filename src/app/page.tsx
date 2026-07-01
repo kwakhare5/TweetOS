@@ -18,8 +18,15 @@ import {
   BarChart3,
   Share,
   Compass,
-  MessageSquare
+  MessageSquare,
+  ChevronDown
 } from "lucide-react"
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"
 import { 
   generateDraftPacket, 
   generateTrendingPacket, 
@@ -107,50 +114,18 @@ export default function Dashboard() {
   const [factCheck, setFactCheck] = useState("")
   const [copiedDraft, setCopiedDraft] = useState(false)
   const [copiedGrok, setCopiedGrok] = useState(false)
-  const [copiedTrending, setCopiedTrending] = useState(false)
-  const [copiedEngagement, setCopiedEngagement] = useState(false)
   const [buttonStyle, setButtonStyle] = useState<"flat" | "washi" | "neobrutalist" | "folder">("flat")
 
-  const getTopicHuntClass = () => {
-    const base = "select-none transition-all flex items-center text-[11px] font-bold cursor-pointer h-8 px-3 "
-    if (buttonStyle === "flat") {
-      return base + "rounded-full border border-slate-200 bg-white hover:bg-slate-50 text-slate-700 hover:text-slate-900 shadow-3xs active:scale-[0.98]"
-    }
-    if (buttonStyle === "washi") {
-      return base + "bg-amber-100/50 hover:bg-amber-100/70 border border-amber-300/40 text-amber-950 shadow-3xs active:scale-[0.98] rotate-[-0.5deg] backdrop-blur-[1px] rounded-none"
-    }
-    if (buttonStyle === "neobrutalist") {
-      return base + "bg-white text-slate-900 border border-slate-900 shadow-[1.5px_1.5px_0px_0px_rgba(15,23,42,1)] hover:shadow-[2px_2px_0px_0px_rgba(15,23,42,1)] active:translate-x-[0.5px] active:translate-y-[0.5px] active:shadow-[0.8px_0.8px_0px_0px_rgba(15,23,42,1)] rounded-none"
-    }
-    // folder
-    return base + "bg-[#FAF0DD] hover:bg-[#F3E2C4] border border-[#E5CEAA] border-b-0 rounded-t-md text-amber-900 active:scale-[0.98] translate-y-[2px]"
-  }
-
-  const getEngageClass = () => {
-    const base = "select-none transition-all flex items-center text-[11px] font-bold cursor-pointer h-8 px-3 "
-    if (buttonStyle === "flat") {
-      return base + "rounded-full border border-slate-200 bg-white hover:bg-slate-50 text-slate-700 hover:text-slate-900 shadow-3xs active:scale-[0.98]"
-    }
-    if (buttonStyle === "washi") {
-      return base + "bg-sky-100/50 hover:bg-sky-100/70 border border-sky-200/40 text-sky-950 shadow-3xs active:scale-[0.98] rotate-[0.5deg] backdrop-blur-[1px] rounded-none"
-    }
-    if (buttonStyle === "neobrutalist") {
-      return base + "bg-white text-slate-900 border border-slate-900 shadow-[1.5px_1.5px_0px_0px_rgba(15,23,42,1)] hover:shadow-[2px_2px_0px_0px_rgba(15,23,42,1)] active:translate-x-[0.5px] active:translate-y-[0.5px] active:shadow-[0.8px_0.8px_0px_0px_rgba(15,23,42,1)] rounded-none"
-    }
-    // folder
-    return base + "bg-[#E8F0FE] hover:bg-[#D2E3FC] border border-[#ADCCF9] border-b-0 rounded-t-md text-blue-900 active:scale-[0.98] translate-y-[2px]"
-  }
-
-  const getGenerateIdeaClass = () => {
-    const base = "h-9 sm:h-8 flex-1 sm:flex-initial px-4 cursor-pointer font-bold transition-all flex items-center justify-center select-none text-xs "
+  const getBrainstormTriggerClass = () => {
+    const base = "h-9 sm:h-8 px-4 cursor-pointer font-bold transition-all flex items-center justify-center select-none text-xs gap-1.5 outline-hidden border-0 "
     if (buttonStyle === "flat") {
       return base + "rounded-full border border-slate-200 bg-background text-slate-700 hover:bg-slate-50 hover:text-slate-900 shadow-xs active:scale-[0.98]"
     }
     if (buttonStyle === "washi") {
-      return base + "bg-slate-100/60 hover:bg-slate-200/60 border border-slate-300/40 text-slate-800 shadow-3xs active:scale-[0.98] rotate-[-0.3deg] rounded-none"
+      return base + "bg-slate-100/60 hover:bg-slate-200/60 border border-slate-300/40 text-slate-800 shadow-3xs active:scale-[0.98] rotate-[-0.3deg] rounded-xl"
     }
     if (buttonStyle === "neobrutalist") {
-      return base + "bg-white text-slate-900 border border-slate-900 shadow-[2px_2px_0px_0px_rgba(15,23,42,1)] hover:shadow-[3px_3px_0px_0px_rgba(15,23,42,1)] active:translate-x-[1px] active:translate-y-[1px] active:shadow-[1px_1px_0px_0px_rgba(15,23,42,1)] rounded-none"
+      return base + "bg-white text-slate-900 border-1.5 border-slate-900 shadow-[2px_2px_0px_0px_rgba(15,23,42,1)] hover:shadow-[3px_3px_0px_0px_rgba(15,23,42,1)] active:translate-x-[1px] active:translate-y-[1px] active:shadow-[1px_1px_0px_0px_rgba(15,23,42,1)] rounded-none"
     }
     // folder
     return base + "bg-[#E8F0FE] hover:bg-[#D2E3FC] border border-[#ADCCF9] border-b-0 rounded-t-lg text-blue-950 active:scale-[0.98] translate-y-[2px]"
@@ -162,7 +137,7 @@ export default function Dashboard() {
       return base + "rounded-full bg-slate-950 text-white hover:bg-slate-900 shadow-sm active:scale-[0.98]"
     }
     if (buttonStyle === "washi") {
-      return base + "bg-amber-200/60 hover:bg-amber-200/80 border border-amber-300/30 text-amber-950 shadow-3xs active:scale-[0.98] rotate-[0.3deg] rounded-none"
+      return base + "bg-amber-200/60 hover:bg-amber-200/80 border border-amber-300/30 text-amber-950 shadow-3xs active:scale-[0.98] rotate-[0.3deg] rounded-xl"
     }
     if (buttonStyle === "neobrutalist") {
       return base + "bg-slate-950 text-white border border-slate-950 shadow-[2px_2px_0px_0px_rgba(15,23,42,1)] hover:shadow-[3px_3px_0px_0px_rgba(15,23,42,1)] active:translate-x-[1px] active:translate-y-[1px] active:shadow-[1px_1px_0px_0px_rgba(15,23,42,1)] rounded-none"
@@ -177,7 +152,7 @@ export default function Dashboard() {
       return base + "rounded-lg border border-border bg-background text-slate-700 hover:text-slate-900 hover:bg-slate-50 shadow-xs active:scale-[0.98]"
     }
     if (buttonStyle === "washi") {
-      return base + "bg-slate-100/60 hover:bg-slate-200/60 border border-slate-300/40 text-slate-800 shadow-3xs active:scale-[0.98] rotate-[-0.3deg] rounded-none"
+      return base + "bg-slate-100/60 hover:bg-slate-200/60 border border-slate-300/40 text-slate-800 shadow-3xs active:scale-[0.98] rotate-[-0.3deg] rounded-xl"
     }
     if (buttonStyle === "neobrutalist") {
       return base + "bg-white text-slate-900 border border-slate-900 shadow-[2px_2px_0px_0px_rgba(15,23,42,1)] hover:shadow-[3px_3px_0px_0px_rgba(15,23,42,1)] active:translate-x-[1px] active:translate-y-[1px] active:shadow-[1px_1px_0px_0px_rgba(15,23,42,1)] rounded-none"
@@ -192,7 +167,7 @@ export default function Dashboard() {
       return base + "rounded-lg border border-border bg-background text-slate-700 hover:text-slate-900 hover:bg-slate-50 shadow-xs active:scale-[0.98]"
     }
     if (buttonStyle === "washi") {
-      return base + "bg-amber-200/60 hover:bg-amber-200/80 border border-amber-300/30 text-amber-950 shadow-3xs active:scale-[0.98] rotate-[0.3deg] rounded-none"
+      return base + "bg-amber-200/60 hover:bg-amber-200/80 border border-amber-300/30 text-amber-950 shadow-3xs active:scale-[0.98] rotate-[0.3deg] rounded-xl"
     }
     if (buttonStyle === "neobrutalist") {
       return base + "bg-slate-950 text-white border border-slate-950 shadow-[2px_2px_0px_0px_rgba(15,23,42,1)] hover:shadow-[3px_3px_0px_0px_rgba(15,23,42,1)] active:translate-x-[1px] active:translate-y-[1px] active:shadow-[1px_1px_0px_0px_rgba(15,23,42,1)] rounded-none"
@@ -371,9 +346,7 @@ export default function Dashboard() {
     try {
       const packet = generateTrendingPacket(profile, { mode: 'trending', focusAreas: [] })
       await navigator.clipboard.writeText(packet)
-      setCopiedTrending(true)
       toast.success("Topic Hunt Packet copied! Paste into Grok for real-time trend discovery.")
-      setTimeout(() => setCopiedTrending(false), 2000)
     } catch {
       toast.error("Failed to copy Topic Hunt Packet.")
     }
@@ -388,9 +361,7 @@ export default function Dashboard() {
         opportunityTypes: []
       })
       await navigator.clipboard.writeText(packet)
-      setCopiedEngagement(true)
       toast.success("Engagement Hunt Packet copied! Paste into Grok for reply targeting.")
-      setTimeout(() => setCopiedEngagement(false), 2000)
     } catch {
       toast.error("Failed to copy Engagement Hunt Packet.")
     }
@@ -431,30 +402,10 @@ export default function Dashboard() {
       className="flex flex-col gap-6 px-4 py-4 sm:px-6 md:px-8 lg:px-12 md:py-6 w-full max-w-7xl mx-auto"
     >
       {/* Workbench Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-2">
+      <div className="flex items-center justify-between mb-2">
         <div>
           <h1 className="text-2xl font-bold tracking-tight">Creator Workbench</h1>
           <p className="text-sm text-muted-foreground">Draft ideas directly inside a live Tweet card simulator and edit sticky notes.</p>
-        </div>
-        
-        {/* Minimal Grok Packets Actions */}
-        <div className="flex items-center gap-2 select-none self-start sm:self-center shrink-0">
-          <Button 
-            variant="outline" 
-            onClick={handleCopyTrending}
-            className={getTopicHuntClass()}
-          >
-            {copiedTrending ? <Check className="h-3.5 w-3.5 mr-1 text-green-600 animate-in fade-in zoom-in-50 duration-200" /> : <Compass className="h-3.5 w-3.5 mr-1 text-amber-500" />}
-            Topic Hunt
-          </Button>
-          <Button 
-            variant="outline" 
-            onClick={handleCopyEngagement}
-            className={getEngageClass()}
-          >
-            {copiedEngagement ? <Check className="h-3.5 w-3.5 mr-1 text-green-600 animate-in fade-in zoom-in-50 duration-200" /> : <MessageSquare className="h-3.5 w-3.5 mr-1 text-sky-500" />}
-            Engage
-          </Button>
         </div>
       </div>
 
@@ -522,17 +473,47 @@ export default function Dashboard() {
                 </div>
                 <div className="flex items-center justify-between sm:justify-end gap-3 w-full sm:w-auto">
                   <div className="flex items-center gap-2 w-full sm:w-auto justify-end">
-                    <Button 
-                      onClick={handleGenerateIdea} 
-                      disabled={isGeneratingIdea || isTailoring}
-                      size="sm"
-                      className={getGenerateIdeaClass()}
-                    >
-                      {isGeneratingIdea ? (
-                        <RefreshCw className="h-3 w-3 animate-spin mr-1.5" />
-                      ) : null}
-                      {isGeneratingIdea ? "Generating..." : "Generate Idea"}
-                    </Button>
+                    <DropdownMenu>
+                      <DropdownMenuTrigger render={
+                        <Button 
+                          disabled={isGeneratingIdea || isTailoring}
+                          size="sm"
+                          className={getBrainstormTriggerClass()}
+                        >
+                          {isGeneratingIdea ? (
+                            <RefreshCw className="h-3.5 w-3.5 mr-1.5 animate-spin" />
+                          ) : (
+                            <Sparkles className="h-3.5 w-3.5 mr-1 text-slate-500" />
+                          )}
+                          <span>Brainstorm</span>
+                          <ChevronDown className="h-3 w-3 text-slate-400" />
+                        </Button>
+                      } />
+                      <DropdownMenuContent align="end" className="w-48 bg-white border border-slate-200 rounded-lg shadow-md p-1 font-sans z-50">
+                        <DropdownMenuItem 
+                          onClick={handleGenerateIdea} 
+                          disabled={isGeneratingIdea || isTailoring}
+                          className="text-xs font-semibold px-2.5 py-2 cursor-pointer flex items-center gap-2 hover:bg-slate-50 rounded-md transition-colors text-slate-700 hover:text-slate-900"
+                        >
+                          <RefreshCw className="h-3.5 w-3.5 text-slate-400" />
+                          Generate Idea
+                        </DropdownMenuItem>
+                        <DropdownMenuItem 
+                          onClick={handleCopyTrending}
+                          className="text-xs font-semibold px-2.5 py-2 cursor-pointer flex items-center gap-2 hover:bg-slate-50 rounded-md transition-colors text-slate-700 hover:text-slate-900"
+                        >
+                          <Compass className="h-3.5 w-3.5 text-amber-500" />
+                          Copy Topic Hunt
+                        </DropdownMenuItem>
+                        <DropdownMenuItem 
+                          onClick={handleCopyEngagement}
+                          className="text-xs font-semibold px-2.5 py-2 cursor-pointer flex items-center gap-2 hover:bg-slate-50 rounded-md transition-colors text-slate-700 hover:text-slate-900"
+                        >
+                          <MessageSquare className="h-3.5 w-3.5 text-sky-500" />
+                          Copy Engage Hunt
+                        </DropdownMenuItem>
+                      </DropdownMenuContent>
+                    </DropdownMenu>
                     <Button 
                       onClick={() => handleTailor("auto")} 
                       disabled={isTailoring || isGeneratingIdea}
