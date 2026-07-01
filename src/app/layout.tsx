@@ -44,7 +44,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             <SidebarProvider>
               <AppSidebar />
               <SidebarInset>
-                <header className="flex h-16 shrink-0 items-center gap-2 border-b border-slate-200/50 px-4 bg-[#FAF8F5]/70 backdrop-blur-md sticky top-0 z-50">
+                <header className="flex h-16 shrink-0 items-center gap-2 border-b border-slate-200/50 px-6 md:px-8 lg:px-12 bg-[#FAF8F5]/70 backdrop-blur-md sticky top-0 z-50">
                   <SidebarTrigger className="-ml-1" />
                   <Breadcrumbs />
                   <div className="ml-auto hidden md:flex items-center gap-2 text-sm text-muted-foreground border rounded-md px-2 py-1 bg-muted/30">

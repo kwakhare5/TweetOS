@@ -19,8 +19,15 @@ import {
   Heart,
   BarChart3,
   Share,
-  Settings
+  Settings,
+  ChevronDown
 } from "lucide-react"
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"
 import { generateDraftPacket } from "@/lib/grok-packager"
 import { TweetDraft } from "@/types"
 import { geminiText } from "@/lib/gemini"
@@ -29,24 +36,19 @@ import { UNIFIED_ROUTER_PROMPT } from "@/lib/prompts"
 const MODES = ["auto", "dev", "personal", "shitpost"] as const
 type ModeType = typeof MODES[number]
 
-// Classic Twitter bird icon matching react-tweet/tweet-card.tsx
-const TwitterBirdIcon = ({ className }: { className?: string }) => (
-  <svg
-    stroke="currentColor"
+// Official X logo icon
+const XLogoIcon = ({ className }: { className?: string }) => (
+  <svg 
+    viewBox="0 0 24 24" 
+    className={className} 
+    width="1em" 
+    height="1em" 
     fill="currentColor"
-    strokeWidth="0"
-    viewBox="0 0 24 24"
-    height="1em"
-    width="1em"
-    xmlns="http://www.w3.org/2000/svg"
-    className={className}
   >
-    <g>
-      <path fill="none" d="M0 0h24v24H0z"></path>
-      <path d="M22.162 5.656a8.384 8.384 0 0 1-2.402.658A4.196 4.196 0 0 0 21.6 4c-.82.488-1.719.83-2.656 1.015a4.182 4.182 0 0 0-7.126 3.814 11.874 11.874 0 0 1-8.62-4.37 4.168 4.168 0 0 0-.566 2.103c0 1.45.738 2.731 1.86 3.481a4.168 4.168 0 0 1-1.894-.523v.052a4.185 4.185 0 0 0 3.355 4.101 4.21 4.21 0 0 1-1.89.072A4.185 4.185 0 0 0 7.97 16.65a8.394 8.394 0 0 1-6.191 1.732 11.83 11.83 0 0 0 6.41 1.88c7.693 0 11.9-6.373 11.9-11.9 0-.18-.005-.362-.013-.54a8.496 8.496 0 0 0 2.087-2.165z"></path>
-    </g>
+    <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
   </svg>
 )
+
 
 // Verified badge icon matching react-tweet/tweet-card.tsx
 const VerifiedBadgeIcon = ({ className }: { className?: string }) => (
@@ -61,16 +63,43 @@ const VerifiedBadgeIcon = ({ className }: { className?: string }) => (
   </svg>
 )
 
-// Realistic 3D SVG Pushpin Icon
-const PushpinIcon = ({ className }: { className?: string }) => (
-  <svg viewBox="0 0 24 24" className={className} width="24" height="24">
-    <ellipse cx="12" cy="18" rx="4" ry="2" fill="rgba(0,0,0,0.12)" />
-    <line x1="12" y1="12" x2="12" y2="17" stroke="#94A3B8" strokeWidth="2" strokeLinecap="round" />
-    <path d="M12 2C9.79 2 8 3.79 8 6c0 1.25.57 2.37 1.48 3.12L9 11h6l-.48-1.88C15.43 8.37 16 7.25 16 6c0-2.21-1.79-4-4-4z" fill="#EF4444" />
-    <rect x="10" y="11" width="4" height="2" rx="0.5" fill="#DC2626" />
-    <ellipse cx="10.5" cy="5" rx="1.5" ry="1" fill="rgba(255,255,255,0.4)" />
+// Realistic 3D SVG Paperclip Icon
+const PaperclipIcon = ({ className }: { className?: string }) => (
+  <svg 
+    viewBox="0 0 40 40" 
+    className={className} 
+    width="40" 
+    height="40"
+    fill="none"
+  >
+    {/* Shadow path */}
+    <path 
+      d="M12 30 L28 14 A4.5 4.5 0 0 0 21.5 7.5 L7 22 A7 7 0 0 0 17 34 L31 20 A9.5 9.5 0 0 0 17.5 6.5 L9.5 14.5" 
+      stroke="rgba(0,0,0,0.12)" 
+      strokeWidth="2.5" 
+      strokeLinecap="round" 
+      strokeLinejoin="round"
+      className="translate-x-[1px] translate-y-[2px]"
+    />
+    {/* Metal body */}
+    <path 
+      d="M12 30 L28 14 A4.5 4.5 0 0 0 21.5 7.5 L7 22 A7 7 0 0 0 17 34 L31 20 A9.5 9.5 0 0 0 17.5 6.5 L9.5 14.5" 
+      stroke="#94A3B8" 
+      strokeWidth="2.5" 
+      strokeLinecap="round" 
+      strokeLinejoin="round" 
+    />
+    {/* Metal highlight */}
+    <path 
+      d="M12 30 L28 14 A4.5 4.5 0 0 0 21.5 7.5 L7 22 A7 7 0 0 0 17 34 L31 20 A9.5 9.5 0 0 0 17.5 6.5 L9.5 14.5" 
+      stroke="#F1F5F9" 
+      strokeWidth="0.8" 
+      strokeLinecap="round" 
+      strokeLinejoin="round" 
+    />
   </svg>
 )
+
 
 export default function Dashboard() {
   const { profile, updateProfile } = useProfileStore()
@@ -236,7 +265,7 @@ export default function Dashboard() {
       initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.3 }}
-      className="flex flex-col gap-6 p-4 md:p-6 w-full max-w-7xl mx-auto"
+      className="flex flex-col gap-6 px-6 md:px-8 lg:px-12 py-6 w-full max-w-7xl mx-auto"
     >
       {/* Workbench Header */}
       <div className="flex items-center justify-between mb-2">
@@ -246,21 +275,22 @@ export default function Dashboard() {
         </div>
       </div>
 
-      {/* Main Column Split */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-stretch">
+      {/* Creator Workbench Grid Board */}
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-stretch pt-4">
         
-        {/* Left Card: Tweet Editor in a Mock Tweet Card shape */}
+        {/* Left Column: Tweet Editor & Output */}
         <div className="lg:col-span-7 flex flex-col gap-6">
           
           {/* Mock Tweet Card matching react-tweet/tweet-card.tsx exact UI structure */}
-          <div className="relative flex h-fit w-full flex-col gap-4 overflow-hidden rounded-xl border p-5 bg-card text-card-foreground shadow-sm rotate-[-0.3deg]">
+          <div className="relative flex h-fit w-full flex-col gap-4 rounded-xl border p-5 bg-card text-card-foreground shadow-sm rotate-[-0.3deg]">
             
-            {/* Translucent Washi Tape */}
+            {/* Translucent Washi Tape with diagonal stripes pattern */}
             <div 
-              className="absolute top-[-10px] left-[50%] translate-x-[-50%] w-24 h-5 border border-amber-200/20 shadow-xs rotate-[-2deg] opacity-75 z-10 select-none pointer-events-none"
+              className="absolute top-[-10px] left-1/2 -translate-x-1/2 w-28 h-5 border border-amber-200/20 shadow-xs rotate-[-2deg] opacity-75 z-10 select-none pointer-events-none"
               style={{
-                backgroundColor: "rgba(254, 240, 138, 0.35)",
-                backdropFilter: "blur(2px)"
+                backgroundColor: "rgba(254, 240, 138, 0.4)",
+                backgroundImage: "repeating-linear-gradient(45deg, transparent, transparent 5px, rgba(202, 138, 4, 0.1) 5px, rgba(202, 138, 4, 0.1) 10px)",
+                backdropFilter: "blur(1.5px)"
               }}
             />
             
@@ -287,11 +317,11 @@ export default function Dashboard() {
                   </div>
                 </div>
               </div>
-              <TwitterBirdIcon className="text-muted-foreground hover:text-foreground size-5 items-start transition-all ease-in-out hover:scale-105 cursor-pointer" />
+              <XLogoIcon className="text-muted-foreground hover:text-foreground size-5 items-start transition-all ease-in-out hover:scale-105 cursor-pointer" />
             </div>
 
             {/* Tweet Body / Textarea */}
-            <div className="pt-2 min-h-[140px] flex flex-col gap-3">
+            <div className="pt-2 min-h-[240px] flex flex-col gap-3">
               <textarea 
                 id="raw-tweet"
                 value={rawTweet}
@@ -299,32 +329,50 @@ export default function Dashboard() {
                 placeholder="What's happening? Dump raw thoughts or rough drafts..."
                 className="w-full bg-transparent border-0 outline-none focus:ring-0 focus-visible:ring-0 focus-visible:ring-offset-0 px-0 py-0 resize-none text-[15px] text-slate-900 placeholder:text-slate-400 leading-relaxed flex-1 font-normal"
               />
-
-              {/* Tone Profile Selector inside Card (styled like compose settings) */}
-              <div className="flex items-center justify-between border-t border-slate-100 pt-3">
-                <div className="flex items-center gap-1.5 flex-1">
-                  <span className="text-xs font-semibold text-slate-400 uppercase tracking-wider mr-2">Tone:</span>
-                  <div className="flex gap-1 p-0.5 bg-slate-100/60 rounded-md border border-slate-200/50">
-                    {MODES.map((m) => (
-                      <button
-                        key={m}
-                        type="button"
-                        onClick={() => setMode(m)}
-                        className={`px-2 py-0.5 text-[11px] font-semibold rounded transition-all cursor-pointer ${
-                          mode === m 
-                            ? 'bg-white shadow-sm text-slate-900 border border-slate-200/30' 
-                            : 'text-slate-500 hover:text-slate-800'
-                        }`}
-                      >
-                        {m === "auto" ? "⚡ Auto" : m.toUpperCase()}
-                      </button>
-                    ))}
-                  </div>
+              
+              {/* Tone Profile Selector & Tailor Action inside Card */}
+              <div className="flex items-center justify-between border-t border-slate-100/80 pt-3">
+                <div className="flex items-center gap-2">
+                  <span className="text-[11px] font-bold text-slate-400 uppercase tracking-wider">Tone:</span>
+                  <DropdownMenu>
+                    <DropdownMenuTrigger className="flex items-center gap-1 px-2 py-0.5 text-[11px] font-semibold rounded border border-slate-200 bg-white hover:bg-slate-50 text-slate-800 shadow-3xs transition-all cursor-pointer outline-hidden select-none">
+                      <span>{mode === "auto" ? "⚡ Auto" : mode.toUpperCase()}</span>
+                      <ChevronDown className="h-3 w-3 text-slate-400" />
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent align="start" className="w-32 bg-white border border-slate-200 rounded-md shadow-sm">
+                      {MODES.map((m) => (
+                        <DropdownMenuItem 
+                          key={m} 
+                          onClick={() => setMode(m)}
+                          className={`text-xs font-semibold px-2 py-1.5 cursor-pointer capitalize hover:bg-slate-50 transition-colors ${
+                            mode === m ? 'bg-slate-50 text-slate-900 font-bold' : 'text-slate-600'
+                          }`}
+                        >
+                          {m === "auto" ? "⚡ Auto" : m}
+                        </DropdownMenuItem>
+                      ))}
+                    </DropdownMenuContent>
+                  </DropdownMenu>
                 </div>
-                <div className="text-right">
+                <div className="flex items-center gap-3">
                   <span className={`text-xs font-semibold ${rawTweet.length > 280 ? 'text-red-500' : 'text-slate-400'}`}>
                     {rawTweet.length} / 280
                   </span>
+                  <Button 
+                    onClick={handleTailor} 
+                    disabled={isTailoring}
+                    size="sm"
+                    className="h-8 px-4 cursor-pointer font-bold rounded-full bg-slate-950 text-white hover:bg-slate-900 shadow-sm active:scale-[0.98] transition-all flex items-center justify-center select-none text-xs"
+                  >
+                    {isTailoring ? (
+                      <RefreshCw className="h-3 w-3 animate-spin" />
+                    ) : (
+                      <>
+                        <Sparkles className="h-3 w-3 mr-1.5" />
+                        Tailor
+                      </>
+                    )}
+                  </Button>
                 </div>
               </div>
             </div>
@@ -360,105 +408,77 @@ export default function Dashboard() {
 
           </div>
 
-          {/* Workbench Controls (Under the main Tweet Card) */}
-          <div className="border border-border bg-card text-card-foreground shadow-sm rounded-xl p-5 space-y-4">
-            
-            {/* Action Buttons */}
-            <Button 
-              onClick={handleTailor} 
-              disabled={isTailoring}
-              className="w-full h-11 cursor-pointer font-semibold"
-            >
-              {isTailoring ? (
-                <>
-                  <RefreshCw className="h-4 w-4 mr-2 animate-spin" />
-                  Synchronizing with Creator DNA...
-                </>
-              ) : (
-                <>
-                  <Sparkles className="h-4 w-4 mr-2" />
-                  Tailor Draft
-                </>
+          {/* Tailored Output Display (rendered when output exists) */}
+          {tailoredTweet && (
+            <div className="border border-border bg-card text-card-foreground shadow-sm rounded-xl p-5 space-y-4">
+              <div className="space-y-2">
+                <div className="flex justify-between items-center">
+                  <Label className="text-xs font-bold text-slate-500 uppercase tracking-wider flex items-center gap-1.5">
+                    <Sparkles className="h-4 w-4 text-amber-500" />
+                    Polished Draft
+                  </Label>
+                  <span className={`text-xs font-semibold ${tailoredTweet.length > 280 ? 'text-red-500' : 'text-slate-400'}`}>
+                    {tailoredTweet.length} / 280 chars
+                  </span>
+                </div>
+                <div className="p-4 rounded-lg border border-border bg-slate-50/50 text-slate-900 font-normal leading-relaxed whitespace-pre-wrap select-all">
+                  {tailoredTweet}
+                </div>
+              </div>
+
+              {/* Fact-check Warning if present */}
+              {factCheck && (
+                <div className="p-3 rounded-md border border-orange-200 bg-orange-50/40 text-orange-800 text-xs font-normal">
+                  {factCheck}
+                </div>
               )}
-            </Button>
 
-            {/* Tailored Output Display */}
-            {tailoredTweet && (
-              <motion.div 
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                className="pt-4 border-t border-border/80 space-y-4"
-              >
+              {/* Hook variations if present */}
+              {hooks.length > 0 && (
                 <div className="space-y-2">
-                  <div className="flex justify-between items-center">
-                    <Label className="text-xs font-bold text-slate-500 uppercase tracking-wider flex items-center gap-1.5">
-                      <Sparkles className="h-4 w-4 text-amber-500" />
-                      Polished Draft
-                    </Label>
-                    <span className={`text-xs font-semibold ${tailoredTweet.length > 280 ? 'text-red-500' : 'text-slate-400'}`}>
-                      {tailoredTweet.length} / 280 chars
-                    </span>
-                  </div>
-                  <div className="p-4 rounded-lg border border-border bg-slate-50/50 text-slate-900 font-normal leading-relaxed whitespace-pre-wrap select-all">
-                    {tailoredTweet}
-                  </div>
+                  <Label className="text-xs font-bold text-slate-600">Alternative Hooks:</Label>
+                  <ul className="space-y-1.5 text-xs text-slate-600 list-disc list-inside">
+                    {hooks.map((h, idx) => (
+                      <li key={idx} className="leading-relaxed">
+                        <span className="font-semibold text-slate-800">{String.fromCharCode(65 + idx)})</span> {h}
+                      </li>
+                    ))}
+                  </ul>
                 </div>
+              )}
 
-                {/* Fact-check Warning if present */}
-                {factCheck && (
-                  <div className="p-3 rounded-md border border-orange-200 bg-orange-50/40 text-orange-800 text-xs font-normal">
-                    {factCheck}
-                  </div>
-                )}
-
-                {/* Hook variations if present */}
-                {hooks.length > 0 && (
-                  <div className="space-y-2">
-                    <Label className="text-xs font-bold text-slate-600">Alternative Hooks:</Label>
-                    <ul className="space-y-1.5 text-xs text-slate-600 list-disc list-inside">
-                      {hooks.map((h, idx) => (
-                        <li key={idx} className="leading-relaxed">
-                          <span className="font-semibold text-slate-800">{String.fromCharCode(65 + idx)})</span> {h}
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-                )}
-
-                {/* Copy Actions */}
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2">
-                  <Button 
-                    variant="outline" 
-                    onClick={handleCopyDraft}
-                    className="h-10 cursor-pointer text-slate-700 hover:text-slate-900"
-                  >
-                    {copiedDraft ? <Check className="h-4 w-4 mr-2 text-green-600" /> : <Copy className="h-4 w-4 mr-2" />}
-                    Copy Draft Only
-                  </Button>
-                  <Button 
-                    variant="outline" 
-                    onClick={handleCopyGrok}
-                    className="h-10 cursor-pointer text-slate-700 hover:text-slate-900"
-                  >
-                    {copiedGrok ? <Check className="h-4 w-4 mr-2 text-green-600" /> : <Send className="h-4 w-4 mr-2 text-blue-500" />}
-                    Copy Grok Packet
-                  </Button>
-                </div>
-              </motion.div>
-            )}
-
-          </div>
+              {/* Copy Actions styled in a subtle premium theme */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2">
+                <Button 
+                  variant="outline" 
+                  onClick={handleCopyDraft}
+                  className="h-10 cursor-pointer font-semibold rounded-lg border border-border bg-background text-slate-700 hover:text-slate-900 hover:bg-slate-50 shadow-xs active:scale-[0.98] transition-all flex items-center justify-center select-none"
+                >
+                  {copiedDraft ? <Check className="h-4 w-4 mr-2 text-green-600" /> : <Copy className="h-4 w-4 mr-2" />}
+                  Copy Draft Only
+                </Button>
+                <Button 
+                  variant="outline" 
+                  onClick={handleCopyGrok}
+                  className="h-10 cursor-pointer font-semibold rounded-lg border border-border bg-background text-slate-700 hover:text-slate-900 hover:bg-slate-50 shadow-xs active:scale-[0.98] transition-all flex items-center justify-center select-none"
+                >
+                  {copiedGrok ? <Check className="h-4 w-4 mr-2 text-green-600" /> : <Send className="h-4 w-4 mr-2 text-blue-500" />}
+                  Copy Grok Packet
+                </Button>
+              </div>
+            </div>
+          )}
         </div>
 
-        {/* Right Card: macOS Yellow Sticky Note */}
+        {/* Right Column: macOS Yellow Sticky Note */}
         <div className="lg:col-span-5 flex flex-col rotate-[0.5deg]">
-          <div className="relative flex-1 flex flex-col bg-[#FEF9C3] rounded-xl border border-yellow-200 shadow-[0_8px_30px_rgba(234,179,8,0.12)] overflow-hidden">
+          <div className="relative flex-1 flex flex-col bg-[#FEF9C3] rounded-xl border border-yellow-200 shadow-[0_8px_30px_rgba(234,179,8,0.12)]">
             
-            {/* Red Pushpin overlay */}
-            <PushpinIcon className="absolute top-[-12px] left-[50%] translate-x-[-50%] z-20 select-none pointer-events-none" />
+            {/* Paperclip overlay */}
+            <PaperclipIcon className="absolute top-[-16px] left-[10%] z-20 select-none pointer-events-none rotate-[-10deg]" />
             
             {/* macOS Sticky top bar */}
-            <div className="flex items-center justify-between px-4 py-2.5 bg-[#FEF08A]/60 border-b border-yellow-200/60 select-none">
+            <div className="flex items-center justify-between px-4 py-2.5 bg-[#FEF08A]/60 border-b border-yellow-200/60 select-none rounded-t-xl">
               {/* macOS window dots */}
               <div className="flex items-center gap-1.5">
                 <div className="h-3 w-3 rounded-full bg-red-400 border border-red-500/20 shadow-sm hover:bg-red-500 transition-colors" />
@@ -491,7 +511,7 @@ export default function Dashboard() {
                 value={secondBrainText}
                 onChange={(e) => setSecondBrainText(e.target.value)}
                 placeholder="Studying code? Building a chrome extension? Write it down, Gemini uses this memory..."
-                className="w-full bg-transparent border-0 outline-none focus:ring-0 focus-visible:ring-0 focus-visible:ring-offset-0 px-0 py-0 resize-none flex-1 min-h-[380px] text-[15px] font-medium text-yellow-950 placeholder:text-yellow-600/50 leading-[28px] font-sans pt-[4px]"
+                className="w-full bg-transparent border-0 outline-none focus:ring-0 focus-visible:ring-0 focus-visible:ring-offset-0 px-0 py-0 resize-none flex-1 min-h-[240px] text-[15px] font-medium text-yellow-950 placeholder:text-yellow-600/50 leading-[28px] font-sans pt-[4px]"
                 style={{
                   backgroundImage: "linear-gradient(to bottom, transparent 27px, rgba(202,138,4,0.15) 27px)",
                   backgroundSize: "100% 28px"
@@ -502,6 +522,138 @@ export default function Dashboard() {
           </div>
         </div>
 
+      </div>
+
+      {/* Recent Tweets Section with clear clearance spacing */}
+      <div className="mt-16 space-y-6 max-w-7xl mx-auto w-full border-t border-slate-200/50 pt-10 select-none">
+        <div>
+          <h2 className="text-xl font-bold tracking-tight text-slate-950">Recent X Posts</h2>
+          <p className="text-sm text-slate-500">Your recent outputs published to the feed.</p>
+        </div>
+        
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 w-full pb-8">
+          {[
+            {
+              id: "1",
+              content: "spent 4 hours debugging a typescript configuration only to realize i misspelled a package in tsconfig.json.\n\nreal software engineering is just suffering in typescript.",
+              timestamp: "2 hours ago",
+              likes: 42,
+              retweets: 8,
+              replies: 3,
+              views: "1.2K"
+            },
+            {
+              id: "2",
+              content: "everyone's talking about multi-agent systems and custom cognitive architectures while i'm just trying to make my docker container build in under 10 minutes.\n\nkeep it simple.",
+              timestamp: "8 hours ago",
+              likes: 89,
+              retweets: 14,
+              replies: 5,
+              views: "3.4K"
+            },
+            {
+              id: "3",
+              content: "vibe coding is fun until you have to push to production and you realize your local state isn't synced to anything.\n\nback to writing git commits manually.",
+              timestamp: "1 day ago",
+              likes: 124,
+              retweets: 22,
+              replies: 11,
+              views: "5.1K"
+            },
+            {
+              id: "4",
+              content: "my second brain is just a folder of unorganized notes and half-baked hooks.\n\nif it works, it works.",
+              timestamp: "3 days ago",
+              likes: 56,
+              retweets: 4,
+              replies: 2,
+              views: "980"
+            }
+          ].map((tweet, index) => {
+            const isEven = index % 2 === 0;
+            return (
+              <div 
+                key={tweet.id} 
+                className={`relative flex flex-col gap-4 rounded-xl border p-5 bg-card text-card-foreground shadow-xs transition-all hover:translate-y-[-1px] ${
+                  isEven ? 'rotate-[-0.2deg]' : 'rotate-[0.3deg]'
+                }`}
+              >
+                {/* Washi Tape overlay on every second card */}
+                {isEven && (
+                  <div 
+                    className="absolute top-[-8px] left-[15%] w-20 h-4 border border-amber-200/20 shadow-xs rotate-[-3deg] opacity-75 z-10 select-none pointer-events-none"
+                    style={{
+                      backgroundColor: "rgba(254, 240, 138, 0.4)",
+                      backgroundImage: "repeating-linear-gradient(45deg, transparent, transparent 5px, rgba(202, 138, 4, 0.1) 5px, rgba(202, 138, 4, 0.1) 10px)",
+                      backdropFilter: "blur(1.5px)"
+                    }}
+                  />
+                )}
+                
+                {/* Paperclip overlay on every other card */}
+                {!isEven && (
+                  <PaperclipIcon className="absolute top-[-14px] left-[12%] z-20 select-none pointer-events-none rotate-[-5deg]" />
+                )}
+
+                {/* Tweet Header */}
+                <div className="flex flex-row items-start justify-between tracking-normal">
+                  <div className="flex items-center space-x-3">
+                    <div className="shrink-0 h-10 w-10 rounded-full border border-border/50 overflow-hidden flex items-center justify-center font-bold text-slate-700 bg-slate-100 text-sm select-none">
+                      {profile.avatarUrl ? (
+                        // eslint-disable-next-line @next/next/no-img-element
+                        <img src={profile.avatarUrl} alt="Avatar" className="h-full w-full object-cover" />
+                      ) : (
+                        avatarLetter
+                      )}
+                    </div>
+                    <div className="flex flex-col gap-0.5">
+                      <span className="text-foreground flex items-center font-semibold text-sm whitespace-nowrap transition-opacity hover:opacity-80 cursor-pointer">
+                        {profile.name || "Karan"}
+                        <VerifiedBadgeIcon className="ml-1 inline size-3.5 text-blue-500" />
+                      </span>
+                      <div className="flex items-center space-x-1">
+                        <span className="text-muted-foreground hover:text-foreground text-xs transition-colors cursor-pointer">
+                          @{profile.twitterHandle || "kwakhare5"}
+                        </span>
+                        <span className="text-muted-foreground text-xs select-none">·</span>
+                        <span className="text-muted-foreground text-xs">{tweet.timestamp}</span>
+                      </div>
+                    </div>
+                  </div>
+                  <XLogoIcon className="text-muted-foreground size-4.5" />
+                </div>
+
+                {/* Tweet Content */}
+                <div className="text-[14px] text-slate-900 leading-relaxed font-normal whitespace-pre-wrap">
+                  {tweet.content}
+                </div>
+
+                {/* Tweet Stats */}
+                <div className="flex justify-between items-center pt-3 border-t border-slate-100 text-xs text-slate-400 select-none">
+                  <div className="flex items-center gap-1.5 hover:text-blue-500 transition-colors">
+                    <MessageCircle className="h-3.5 w-3.5" />
+                    <span>{tweet.replies}</span>
+                  </div>
+                  <div className="flex items-center gap-1.5 hover:text-green-600 transition-colors">
+                    <Repeat2 className="h-3.5 w-3.5" />
+                    <span>{tweet.retweets}</span>
+                  </div>
+                  <div className="flex items-center gap-1.5 hover:text-red-500 transition-colors">
+                    <Heart className="h-3.5 w-3.5" />
+                    <span>{tweet.likes}</span>
+                  </div>
+                  <div className="flex items-center gap-1.5 hover:text-blue-500 transition-colors">
+                    <BarChart3 className="h-3.5 w-3.5" />
+                    <span>{tweet.views}</span>
+                  </div>
+                  <div className="flex items-center hover:text-blue-500 transition-colors">
+                    <Share className="h-3.5 w-3.5" />
+                  </div>
+                </div>
+              </div>
+            );
+          })}
+        </div>
       </div>
     </motion.div>
   )

@@ -12,16 +12,43 @@ import { toast } from "sonner"
 import { UserCircle, Settings, Save, BrainCircuit, Network, Cpu, Key } from "lucide-react"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 
-// Realistic 3D SVG Pushpin Icon
-const PushpinIcon = ({ className }: { className?: string }) => (
-  <svg viewBox="0 0 24 24" className={className} width="24" height="24">
-    <ellipse cx="12" cy="18" rx="4" ry="2" fill="rgba(0,0,0,0.12)" />
-    <line x1="12" y1="12" x2="12" y2="17" stroke="#94A3B8" strokeWidth="2" strokeLinecap="round" />
-    <path d="M12 2C9.79 2 8 3.79 8 6c0 1.25.57 2.37 1.48 3.12L9 11h6l-.48-1.88C15.43 8.37 16 7.25 16 6c0-2.21-1.79-4-4-4z" fill="#EF4444" />
-    <rect x="10" y="11" width="4" height="2" rx="0.5" fill="#DC2626" />
-    <ellipse cx="10.5" cy="5" rx="1.5" ry="1" fill="rgba(255,255,255,0.4)" />
+// Realistic 3D SVG Paperclip Icon
+const PaperclipIcon = ({ className }: { className?: string }) => (
+  <svg 
+    viewBox="0 0 40 40" 
+    className={className} 
+    width="40" 
+    height="40"
+    fill="none"
+  >
+    {/* Shadow path */}
+    <path 
+      d="M12 30 L28 14 A4.5 4.5 0 0 0 21.5 7.5 L7 22 A7 7 0 0 0 17 34 L31 20 A9.5 9.5 0 0 0 17.5 6.5 L9.5 14.5" 
+      stroke="rgba(0,0,0,0.12)" 
+      strokeWidth="2.5" 
+      strokeLinecap="round" 
+      strokeLinejoin="round"
+      className="translate-x-[1px] translate-y-[2px]"
+    />
+    {/* Metal body */}
+    <path 
+      d="M12 30 L28 14 A4.5 4.5 0 0 0 21.5 7.5 L7 22 A7 7 0 0 0 17 34 L31 20 A9.5 9.5 0 0 0 17.5 6.5 L9.5 14.5" 
+      stroke="#94A3B8" 
+      strokeWidth="2.5" 
+      strokeLinecap="round" 
+      strokeLinejoin="round" 
+    />
+    {/* Metal highlight */}
+    <path 
+      d="M12 30 L28 14 A4.5 4.5 0 0 0 21.5 7.5 L7 22 A7 7 0 0 0 17 34 L31 20 A9.5 9.5 0 0 0 17.5 6.5 L9.5 14.5" 
+      stroke="#F1F5F9" 
+      strokeWidth="0.8" 
+      strokeLinecap="round" 
+      strokeLinejoin="round" 
+    />
   </svg>
 )
+
 
 export default function ProfilePage() {
   const { profile, updateProfile } = useProfileStore()
@@ -83,7 +110,7 @@ export default function ProfilePage() {
       initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.3 }}
-      className="flex flex-col gap-6 p-4 md:p-6 w-full max-w-7xl mx-auto"
+      className="flex flex-col gap-6 px-6 md:px-8 lg:px-12 py-6 w-full max-w-7xl mx-auto"
     >
       {/* Header section (matches Dashboard style) */}
       <div className="flex items-center justify-between mb-2">
@@ -93,20 +120,21 @@ export default function ProfilePage() {
         </div>
       </div>
 
-      {/* Main Grid */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-stretch">
+      {/* Main Grid with top padding for skeuomorphic element clearance */}
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-stretch pt-4">
         
-        {/* Main Column */}
+        {/* Left Column: Core Identity & Subroutines */}
         <div className="lg:col-span-8 flex flex-col gap-6">
           
           {/* Core Identity Card */}
           <Card className="relative flex flex-col border border-border bg-card text-card-foreground shadow-sm rotate-[-0.2deg]">
-            {/* Translucent Washi Tape */}
+            {/* Translucent Washi Tape with diagonal stripes pattern */}
             <div 
-              className="absolute top-[-10px] left-[50%] translate-x-[-50%] w-24 h-5 border border-amber-200/20 shadow-xs rotate-[-2deg] opacity-75 z-10 select-none pointer-events-none"
+              className="absolute top-[-10px] left-1/2 -translate-x-1/2 w-28 h-5 border border-amber-200/20 shadow-xs rotate-[-2deg] opacity-75 z-10 select-none pointer-events-none"
               style={{
-                backgroundColor: "rgba(254, 240, 138, 0.35)",
-                backdropFilter: "blur(2px)"
+                backgroundColor: "rgba(254, 240, 138, 0.4)",
+                backgroundImage: "repeating-linear-gradient(45deg, transparent, transparent 5px, rgba(202, 138, 4, 0.1) 5px, rgba(202, 138, 4, 0.1) 10px)",
+                backdropFilter: "blur(1.5px)"
               }}
             />
             <CardHeader className="flex flex-row items-start justify-between space-y-0 pb-4">
@@ -133,7 +161,7 @@ export default function ProfilePage() {
                   />
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="handle">Twitter Handle</Label>
+                  <Label htmlFor="handle">X Handle</Label>
                   <div className="relative">
                     <span className="absolute left-3 top-2.5 text-muted-foreground">@</span>
                     <Input 
@@ -161,8 +189,8 @@ export default function ProfilePage() {
 
           {/* Neural Context Card */}
           <Card className="relative flex flex-col border border-border bg-card text-card-foreground shadow-sm rotate-[0.3deg]">
-            {/* Red Pushpin overlay */}
-            <PushpinIcon className="absolute top-[-12px] left-[50%] translate-x-[-50%] z-20 select-none pointer-events-none" />
+            {/* Paperclip overlay */}
+            <PaperclipIcon className="absolute top-[-16px] left-[10%] z-20 select-none pointer-events-none rotate-[-10deg]" />
             <CardHeader className="flex flex-row items-start justify-between space-y-0 pb-4">
               <div className="space-y-1">
                 <CardTitle className="text-lg font-bold tracking-tight flex items-center gap-2">
@@ -203,13 +231,13 @@ export default function ProfilePage() {
           </Card>
         </div>
 
-        {/* Sidebar Column */}
+        {/* Right Column: Neural Context & Engine Details */}
         <div className="lg:col-span-4 flex flex-col gap-6">
           
           {/* System Engine Card */}
           <Card className="relative flex flex-col border border-border bg-card text-card-foreground shadow-sm rotate-[0.4deg]">
-            {/* Red Pushpin overlay */}
-            <PushpinIcon className="absolute top-[-12px] left-[50%] translate-x-[-50%] z-20 select-none pointer-events-none" />
+            {/* Paperclip overlay */}
+            <PaperclipIcon className="absolute top-[-16px] left-[10%] z-20 select-none pointer-events-none rotate-[-10deg]" />
             <CardHeader className="flex flex-row items-start justify-between space-y-0 pb-4">
               <div className="space-y-1">
                 <CardTitle className="text-lg font-bold tracking-tight flex items-center gap-2">
@@ -246,18 +274,41 @@ export default function ProfilePage() {
                   placeholder="delve, unlock, supercharge..."
                   className="bg-background min-h-[100px] resize-y"
                 />
+                <div className="flex flex-wrap gap-1.5 mt-2">
+                  {avoidListString.split(",")
+                    .map(word => word.trim())
+                    .filter(word => word.length > 0)
+                    .map((word, idx) => (
+                      <span key={idx} className="inline-flex items-center gap-1.5 px-2.5 py-1 text-xs font-semibold rounded-full bg-slate-100 border border-slate-200 text-slate-700 select-none shadow-3xs hover:bg-slate-50 transition-colors">
+                        <span>{word}</span>
+                        <button 
+                          type="button"
+                          onClick={() => {
+                            const words = avoidListString.split(",").map(w => w.trim());
+                            const filtered = words.filter((_, i) => i !== idx);
+                            setAvoidListString(filtered.join(", "));
+                          }}
+                          className="hover:text-slate-900 text-slate-400 font-bold focus:outline-hidden cursor-pointer size-3.5 inline-flex items-center justify-center rounded-full hover:bg-slate-200/50"
+                        >
+                          ×
+                        </button>
+                      </span>
+                    ))
+                  }
+                </div>
               </div>
             </CardContent>
           </Card>
 
           {/* Subroutines Card */}
           <Card className="relative flex flex-col border border-border bg-card text-card-foreground shadow-sm rotate-[-0.3deg]">
-            {/* Translucent Washi Tape */}
+            {/* Translucent Washi Tape with diagonal stripes pattern */}
             <div 
-              className="absolute top-[-10px] left-[50%] translate-x-[-50%] w-24 h-5 border border-amber-200/20 shadow-xs rotate-[2deg] opacity-75 z-10 select-none pointer-events-none"
+              className="absolute top-[-10px] left-1/2 -translate-x-1/2 w-28 h-5 border border-amber-200/20 shadow-xs rotate-[2deg] opacity-75 z-10 select-none pointer-events-none"
               style={{
-                backgroundColor: "rgba(254, 240, 138, 0.35)",
-                backdropFilter: "blur(2px)"
+                backgroundColor: "rgba(254, 240, 138, 0.4)",
+                backgroundImage: "repeating-linear-gradient(45deg, transparent, transparent 5px, rgba(202, 138, 4, 0.1) 5px, rgba(202, 138, 4, 0.1) 10px)",
+                backdropFilter: "blur(1.5px)"
               }}
             />
             <CardHeader className="flex flex-row items-start justify-between space-y-0 pb-4">
@@ -292,7 +343,7 @@ export default function ProfilePage() {
               size="lg" 
               onClick={handleSave} 
               disabled={isSaving}
-              className="w-full h-11 cursor-pointer font-bold rounded-full bg-slate-950 text-white hover:bg-slate-900 shadow-md transition-all active:scale-[0.98]"
+              className="w-full h-11 cursor-pointer font-bold rounded-lg bg-slate-950 text-white hover:bg-slate-900 shadow-sm hover:translate-y-[-0.5px] active:scale-[0.98] transition-all flex items-center justify-center select-none"
             >
               {isSaving ? (
                 <>

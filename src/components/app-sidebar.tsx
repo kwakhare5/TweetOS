@@ -24,6 +24,7 @@ import {
   SidebarMenuItem,
 } from "@/components/ui/sidebar"
 import Link from "next/link"
+import { usePathname } from "next/navigation"
 
 const data = {
   navMain: [
@@ -76,21 +77,7 @@ const data = {
 }
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
-  const [activeHash, setActiveHash] = React.useState("")
-  const [mounted, setMounted] = React.useState(false)
-
-  React.useEffect(() => {
-    // eslint-disable-next-line react-hooks/set-state-in-effect
-    setMounted(true)
-    // Initial load
-    setActiveHash(window.location.hash)
-
-    // Listen for hash changes
-    const onHashChange = () => setActiveHash(window.location.hash)
-    window.addEventListener("hashchange", onHashChange)
-    
-    return () => window.removeEventListener("hashchange", onHashChange)
-  }, [])
+  const pathname = usePathname()
 
   return (
     <Sidebar variant="inset" {...props}>
@@ -116,10 +103,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
             <SidebarGroupContent>
               <SidebarMenu className="gap-1">
                 {group.items.map((item) => {
-                  const isActive = mounted ? (
-                    (activeHash === item.url.replace("/", "")) ||
-                    (item.url === "/" && !activeHash)
-                  ) : item.url === "/"
+                  const isActive = pathname === item.url
 
                   return (
                     <SidebarMenuItem key={item.title}>
@@ -130,7 +114,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                             ? "bg-muted text-foreground font-semibold" 
                             : "text-muted-foreground hover:bg-muted/50 hover:text-foreground"
                           }`}
-                        render={<Link href={item.url} onClick={() => setActiveHash(item.url.replace("/", ""))} />}
+                        render={<Link href={item.url} />}
                       >
                         <item.icon />
                         <span>{item.title}</span>

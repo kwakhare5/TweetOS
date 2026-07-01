@@ -31,19 +31,30 @@ The entire workspace has been aggressively stripped down to a single minimal int
 - **Power Features**: Keyboard shortcuts like `Ctrl+Enter` to tailor drafts instantly, and a floating Command Palette (`Ctrl+K` dialog modal) for quick navigation.
 - **Pure Client Logic & Zustand**: All stores persist their state to browser Local Storage using Zustand's `persist` middleware, guaranteeing 100% offline functionality.
 
-## Design System & Theme Guidelines (Strict Light Mode)
-TweetOS is designed with a premium, clean, minimalist **Light Mode Only** tech dashboard aesthetic. Dark mode is completely disabled and removed. The Dashboard is the gold standard for all layouts.
+## Design System & Theme Guidelines (SaaS & Scrapbook Fusion)
+TweetOS uses a highly custom, tactile **SaaS & Scrapbook Fusion (Neo-Skeuomorphic)** theme. The visual model balances high-performance SaaS components with a physical collage/desk environment.
 
-* **No Purple Color & No AI Slop**: Absolutely no purple colors, gradient outlines, background glowing ambient blur blobs, or hyper-animated gradient text. The design is kept flat, modern, and clean.
-* **Canvas & Page Background**: Soft slate off-white canvas (`bg-background` / `oklch(0.985 0.002 240)` / `#FAFAFA`) to provide a light, clean, and spacious context.
-* **Component Cards**: Pure white cards (`bg-white` or `bg-card`) with thin, light borders (`border-border` / `oklch(0.93 0.004 240)`) and soft, diffuse shadows (`shadow-sm`) to stand out from the canvas. No neon border stripes.
+* **No Purple Color & No AI Slop**: Absolutely no purple gradients, ambient glowing background blur blobs, or hyper-animated gradient text. The design uses clean, flat, physical colors.
+* **Canvas & Page Background (Warm Sepia Dot Grid)**: A global sepia background (#FAF8F5) with a sepia dot-matrix grid (`rgba(120, 90, 40, 0.08)`) spaced at 20px intervals.
+* **Overlapping Card Tilts (Physical Realism)**: Cards and notes are tilted slightly (e.g. `rotate-[-0.2deg]`, `rotate-[0.4deg]`, `rotate-[-0.3deg]`) to simulate physical sheets of paper scattered naturally on a desk.
+* **Translucent Washi Tape Anchors**:
+  * Simulated frosted washi tape (`rgba(254, 240, 138, 0.4)`) with a subtle diagonal sepia-amber stripes pattern holds up the Core Identity, Subroutines, and Tweet Editor cards.
+  * Sits absolutely at the top center of cards and is rotated slightly (`rotate-[-2deg]` or `rotate-[2deg]`).
+* **Tactile Metal Paperclips**:
+  * Custom 3D SVG silver paperclips (featuring realistic metal drop shadows and shiny highlights) are used on notes and details cards (e.g. Second Brain note, Neural Context card).
+  * Placed absolutely at the top-left edge of the card, rotated slightly (`rotate-[-10deg]`).
+* **macOS Yellow Sticky Note (Second Brain)**:
+  * Styled with a warm sticky yellow (#FEF9C3) background and an top window bar (#FEF08A) with simulated close, minimize, and zoom dots (red, yellow, green).
+  * Feature horizontal rules/lines (linear gradient lines spaced at 28px) aligned with the textarea font line height (`leading-[28px]`) so text characters sit precisely on the lines.
+  * No inner labels or sync badges; action controls are integrated directly in the top window bar.
+* **Subtle Premium Controls (Buttons)**:
+  * Primary actions (e.g., Tailor Draft, Synchronize DNA) use bold, clean charcoal fills (`bg-slate-950 text-white hover:bg-slate-900`) and rounded-lg outlines, with subtle lift effects on hover.
+  * Secondary actions use white backgrounds, thin borders (`border-border`), and clean hover transitions.
+  * All buttons feature micro-compression scales on click (`active:scale-[0.98]`) for soft, premium tactile feedback.
 * **Typography**:
   * **Sans-Serif (Default)**: `Geist` (clean geometric sans-serif) for general copy, headings, and labels.
   * **Monospace (Secondary)**: `Fira Code` for developer items, system logs, labels, and API input blocks.
-  * **Text Colors**: Dark charcoal/slate (`text-slate-900` / `oklch(0.145 0.008 240)`) for high-contrast primary content; slate-gray (`text-slate-500` / `oklch(0.55 0.01 240)`) for secondary descriptions and labels.
-* **Accent Colors & State**:
-  * Hover: Subtle border and background color transitions (`duration-200` or `duration-300`).
-  * Selected/Active states: Uses soft background colored fills (e.g. `bg-blue-50`, `bg-orange-50/50`) paired with clean text (`text-blue-600`, `text-orange-600`) and simple icons. No purple accents.
+  * **Text Colors**: Dark charcoal/slate (`text-slate-950` / `oklch(0.145 0.008 240)`) for high-contrast primary content; slate-gray (`text-slate-500` / `oklch(0.55 0.01 240)`) for secondary descriptions and labels.
 
 ## Target Sub-Niche & Profile
 - **Niche**: Lowercase, sarcastic Pune comp-eng student vibe-coding real AI projects and dropping blunt, dry, frustrated takes on tools, shipping, and dev life.
