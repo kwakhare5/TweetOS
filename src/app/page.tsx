@@ -61,6 +61,17 @@ const VerifiedBadgeIcon = ({ className }: { className?: string }) => (
   </svg>
 )
 
+// Realistic 3D SVG Pushpin Icon
+const PushpinIcon = ({ className }: { className?: string }) => (
+  <svg viewBox="0 0 24 24" className={className} width="24" height="24">
+    <ellipse cx="12" cy="18" rx="4" ry="2" fill="rgba(0,0,0,0.12)" />
+    <line x1="12" y1="12" x2="12" y2="17" stroke="#94A3B8" strokeWidth="2" strokeLinecap="round" />
+    <path d="M12 2C9.79 2 8 3.79 8 6c0 1.25.57 2.37 1.48 3.12L9 11h6l-.48-1.88C15.43 8.37 16 7.25 16 6c0-2.21-1.79-4-4-4z" fill="#EF4444" />
+    <rect x="10" y="11" width="4" height="2" rx="0.5" fill="#DC2626" />
+    <ellipse cx="10.5" cy="5" rx="1.5" ry="1" fill="rgba(255,255,255,0.4)" />
+  </svg>
+)
+
 export default function Dashboard() {
   const { profile, updateProfile } = useProfileStore()
   const [mounted, setMounted] = useState(false)
@@ -221,12 +232,20 @@ export default function Dashboard() {
   const avatarLetter = profile.name ? profile.name.charAt(0).toUpperCase() : "K"
 
   return (
-    <motion.div 
-      initial={{ opacity: 0, y: 10 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.3 }}
-      className="flex flex-col gap-6 p-4 md:p-6 w-full max-w-7xl mx-auto"
+    <div 
+      className="w-full min-h-[calc(100vh-4rem)] p-4 md:p-6"
+      style={{
+        backgroundColor: "#FAF8F5",
+        backgroundImage: "radial-gradient(rgba(120, 90, 40, 0.08) 1px, transparent 1px)",
+        backgroundSize: "20px 20px"
+      }}
     >
+      <motion.div 
+        initial={{ opacity: 0, y: 10 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.3 }}
+        className="flex flex-col gap-6 w-full max-w-7xl mx-auto"
+      >
       {/* Workbench Header */}
       <div className="flex items-center justify-between mb-2">
         <div>
@@ -242,7 +261,16 @@ export default function Dashboard() {
         <div className="lg:col-span-7 flex flex-col gap-6">
           
           {/* Mock Tweet Card matching react-tweet/tweet-card.tsx exact UI structure */}
-          <div className="relative flex h-fit w-full flex-col gap-4 overflow-hidden rounded-xl border p-5 bg-card text-card-foreground shadow-sm">
+          <div className="relative flex h-fit w-full flex-col gap-4 overflow-hidden rounded-xl border p-5 bg-card text-card-foreground shadow-sm rotate-[-0.3deg]">
+            
+            {/* Translucent Washi Tape */}
+            <div 
+              className="absolute top-[-10px] left-[50%] translate-x-[-50%] w-24 h-5 border border-amber-200/20 shadow-xs rotate-[-2deg] opacity-75 z-10 select-none pointer-events-none"
+              style={{
+                backgroundColor: "rgba(254, 240, 138, 0.35)",
+                backdropFilter: "blur(2px)"
+              }}
+            />
             
             {/* TweetHeader structure */}
             <div className="flex flex-row items-start justify-between tracking-normal">
@@ -431,8 +459,11 @@ export default function Dashboard() {
         </div>
 
         {/* Right Card: macOS Yellow Sticky Note */}
-        <div className="lg:col-span-5 flex flex-col">
-          <div className="flex-1 flex flex-col bg-[#FEF9C3] rounded-xl border border-yellow-200 shadow-[0_8px_30px_rgba(234,179,8,0.12)] overflow-hidden">
+        <div className="lg:col-span-5 flex flex-col rotate-[0.5deg]">
+          <div className="relative flex-1 flex flex-col bg-[#FEF9C3] rounded-xl border border-yellow-200 shadow-[0_8px_30px_rgba(234,179,8,0.12)] overflow-hidden">
+            
+            {/* Red Pushpin overlay */}
+            <PushpinIcon className="absolute top-[-12px] left-[50%] translate-x-[-50%] z-20 select-none pointer-events-none" />
             
             {/* macOS Sticky top bar */}
             <div className="flex items-center justify-between px-4 py-2.5 bg-[#FEF08A]/60 border-b border-yellow-200/60 select-none">
@@ -481,5 +512,6 @@ export default function Dashboard() {
 
       </div>
     </motion.div>
+    </div>
   )
 }
