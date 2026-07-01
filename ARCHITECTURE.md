@@ -23,7 +23,9 @@
 The old architecture was bloated with local scoring algorithms, libraries, and engagement dashboards. All of that has been aggressively deleted. 
 
 **TweetOS is now a pure passthrough node:**
-1. **Local Tailoring**: Paste a raw thought into the Command Center. Gemini formats it into a 280-char draft using your saved Voice and Inspiration DNA.
+1. **Local Generation & Tailoring**: 
+   - **Generate Idea**: Clicking "Generate Idea" calls Gemini (locally) using the target Inspiration DNA blueprint and your Second Brain daily context to generate a complete dev-focused draft.
+   - **Tailor Draft**: Paste a raw thought/dump into the card, and Gemini formats it into a highly polished 280-char draft using your Voice rules and Inspiration blueprint.
 2. **Cloud Validation (Grok Packets)**: 1-click generators create massive, context-rich prompts. Paste these into Grok to execute the heavy lifting (scoring, trend discovery, reply generation).
 
 ---

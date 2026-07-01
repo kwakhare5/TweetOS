@@ -9,7 +9,7 @@
 ## 1. PROJECT IDENTITY
 
 **Name:** TweetOS
-**Goal:** Personal Twitter growth system — drafts tweets in Karan's voice, scores them against X algorithm signals, helps him find engagement opportunities, and packages everything for Grok validation.
+**Goal:** Personal Twitter growth system — replicates inspiration creator DNA combined with user's live second brain context, drafts/tailors tweets locally with Gemini, and packages stateless packets for Grok scoring and trend hunting.
 
 **AI POINTER:** If you need database schemas, business logic, prompt templates, or third-party API details, you MUST autonomously read `ARCHITECTURE.md`. Do not guess.
 

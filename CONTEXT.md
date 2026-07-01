@@ -62,3 +62,12 @@ TweetOS uses a highly custom, tactile **SaaS & Scrapbook Fusion (Neo-Skeuomorphi
 - **Content Pillars**: Tool Reality Checks, Project Fragments, Journey Notes, Sharp Takes, Quick Connects.
 - **Voice**: Lowercase-heavy, direct, sarcastic/frustrated when deserved, dry wit, short dense sentences.
 
+
+## The Inspiration Replication Loop (Grok & Gemini)
+To clone the structural habits and formatting styles of other creators, TweetOS uses a hybrid extraction workflow:
+1. **Extraction (Grok)**: The user runs a profiling command in Grok while viewing the inspiration target's profile. Grok outputs a structured "Creator DNA Blueprint" mapping their mechanics, hook archetypes, and topic focus.
+2. **Context Seeding (TweetOS)**: The user copies this blueprint and pastes it into the **Inspirations Context** box in `/profile`.
+3. **Local Generation & Tailoring (Gemini)**:
+   - When clicking **Generate Idea**, local Gemini combines the Inspirations Context with the user's active Second Brain and niche to write a complete, dev-focused tweet draft.
+   - When clicking **Tailor Draft**, local Gemini uses this blueprint to format, tilt, and polish the user's custom raw brain dumps.
+
