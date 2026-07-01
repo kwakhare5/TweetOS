@@ -116,7 +116,6 @@ export default function Dashboard() {
   const [copiedGrok, setCopiedGrok] = useState(false)
   const [buttonStyle] = useState<"flat" | "washi" | "neobrutalist" | "folder">("washi")
   const [activeBrainstormAction, setActiveBrainstormAction] = useState<"idea" | "trending" | "engagement">("idea")
-  const [washiColors, setWashiColors] = useState<"blue-yellow" | "green-yellow" | "yellow-yellow" | "slate-yellow">("blue-yellow")
 
   const getBrainstormTriggerClass = (side: "left" | "right" | "single" = "single") => {
     const base = "h-8 px-3 gap-1 flex-initial cursor-pointer font-bold transition-all flex items-center justify-center select-none text-xs outline-hidden border-0 "
@@ -137,15 +136,7 @@ export default function Dashboard() {
       return base + radius + " border border-slate-200 bg-background text-slate-700 hover:bg-slate-50 hover:text-slate-900 shadow-xs active:scale-[0.98]"
     }
     if (buttonStyle === "washi") {
-      let colors = "bg-sky-100/60 hover:bg-sky-200/60 border border-sky-300/30 text-sky-950"
-      if (washiColors === "green-yellow") {
-        colors = "bg-emerald-100/60 hover:bg-emerald-200/60 border border-emerald-300/30 text-emerald-955"
-      } else if (washiColors === "yellow-yellow") {
-        colors = "bg-amber-200/60 hover:bg-amber-200/80 border border-amber-300/30 text-amber-955"
-      } else if (washiColors === "slate-yellow") {
-        colors = "bg-slate-100/60 hover:bg-slate-200/60 border border-slate-300/40 text-slate-800"
-      }
-      return base + radius + " shadow-3xs active:scale-[0.98] rotate-[-0.3deg] " + colors
+      return base + radius + " bg-slate-100/60 hover:bg-slate-200/60 border border-slate-300/40 text-slate-800 shadow-3xs active:scale-[0.98] rotate-[-0.3deg]"
     }
     if (buttonStyle === "neobrutalist") {
       return base + radius + " bg-white text-slate-900 border-1.5 border-slate-900 shadow-[2px_2px_0px_0px_rgba(15,23,42,1)] hover:shadow-[3px_3px_0px_0px_rgba(15,23,42,1)] active:translate-x-[1px] active:translate-y-[1px] active:shadow-[1px_1px_0px_0px_rgba(15,23,42,1)]"
@@ -561,10 +552,10 @@ export default function Dashboard() {
                       className={getTailorClass()}
                     >
                       {isTailoring ? (
-                        <RefreshCw className="h-3 w-3 animate-spin text-slate-500" />
+                        <RefreshCw className="h-3 w-3 animate-spin text-amber-500" />
                       ) : (
                         <>
-                          <Sparkles className="h-3 w-3 mr-1.5 text-slate-500" />
+                          <Sparkles className="h-3 w-3 mr-1.5 text-amber-500" />
                           Tailor
                         </>
                       )}
@@ -678,7 +669,7 @@ export default function Dashboard() {
                   onClick={handleCopyGrok}
                   className={getCopyGrokClass()}
                 >
-                  {copiedGrok ? <Check className="h-4 w-4 mr-2 text-green-600" /> : <Send className="h-4 w-4 mr-2 text-blue-500" />}
+                  {copiedGrok ? <Check className="h-4 w-4 mr-2 text-green-600" /> : <Send className="h-4 w-4 mr-2 text-amber-500" />}
                   Copy Grok Packet
                 </Button>
               </div>
@@ -811,17 +802,19 @@ export default function Dashboard() {
                         avatarLetter
                       )}
                     </div>
-                    <div className="flex flex-col gap-0.5">
-                      <span className="text-foreground flex items-center font-semibold text-sm whitespace-nowrap transition-opacity hover:opacity-80 cursor-pointer">
-                        {profile.name || "Karan"}
-                        <VerifiedBadgeIcon className="ml-1 inline size-3.5 text-blue-500" />
-                      </span>
-                      <div className="flex items-center space-x-1">
-                        <span className="text-muted-foreground hover:text-foreground text-xs transition-colors cursor-pointer">
+                    <div className="flex flex-col min-w-0">
+                      <div className="flex flex-wrap items-center gap-x-1.5 leading-tight">
+                        <span className="text-slate-900 font-bold text-sm hover:underline cursor-pointer truncate max-w-[140px] sm:max-w-[220px]">
+                          {profile.name || "Karan"}
+                        </span>
+                        <VerifiedBadgeIcon className="inline size-3.5 text-blue-500 shrink-0" />
+                        <span className="text-slate-500 text-xs hover:underline cursor-pointer truncate max-w-[100px] sm:max-w-[160px] ml-0.5">
                           @{profile.twitterHandle || "kwakhare5"}
                         </span>
-                        <span className="text-muted-foreground text-xs select-none">·</span>
-                        <span className="text-muted-foreground text-xs">{tweet.timestamp}</span>
+                        <span className="text-slate-500 text-xs select-none">·</span>
+                        <span className="text-slate-500 text-xs hover:underline cursor-pointer whitespace-nowrap">
+                          {tweet.timestamp}
+                        </span>
                       </div>
                     </div>
                   </div>
@@ -861,23 +854,6 @@ export default function Dashboard() {
         </div>
       </div>
 
-      {/* Floating Washi Colors Picker for Prototyping */}
-      <div className="fixed bottom-4 right-4 z-50 bg-slate-900/90 backdrop-blur-xs text-slate-100 rounded-lg p-2 shadow-lg border border-slate-800 flex items-center gap-2 select-none font-sans text-xs">
-        <span className="font-bold text-slate-400">Washi Colors:</span>
-        {(["blue-yellow", "green-yellow", "yellow-yellow", "slate-yellow"] as const).map((opt) => (
-          <button
-            key={opt}
-            onClick={() => setWashiColors(opt)}
-            className={`px-2 py-1 rounded font-semibold capitalize cursor-pointer transition-colors border-0 ${
-              washiColors === opt
-                ? "bg-amber-500 text-slate-950 font-bold"
-                : "bg-transparent text-slate-300 hover:text-white hover:bg-slate-800"
-            }`}
-          >
-            {opt.replace("-", " & ")}
-          </button>
-        ))}
-      </div>
     </motion.div>
   )
 }
