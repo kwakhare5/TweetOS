@@ -481,9 +481,9 @@ export default function Dashboard() {
                           className={getBrainstormTriggerClass()}
                         >
                           {isGeneratingIdea ? (
-                            <RefreshCw className="h-3.5 w-3.5 mr-1.5 animate-spin" />
+                            <RefreshCw className="h-3.5 w-3.5 mr-1.5 animate-spin text-indigo-500" />
                           ) : (
-                            <Sparkles className="h-3.5 w-3.5 mr-1 text-slate-500" />
+                            <Sparkles className="h-3.5 w-3.5 mr-1 text-indigo-500" />
                           )}
                           <span>Brainstorm</span>
                           <ChevronDown className="h-3 w-3 text-slate-400" />
@@ -495,7 +495,7 @@ export default function Dashboard() {
                           disabled={isGeneratingIdea || isTailoring}
                           className="text-xs font-semibold px-2.5 py-2 cursor-pointer flex items-center gap-2 hover:bg-slate-50 rounded-md transition-colors text-slate-700 hover:text-slate-900"
                         >
-                          <RefreshCw className="h-3.5 w-3.5 text-slate-400" />
+                          <RefreshCw className="h-3.5 w-3.5 text-purple-500" />
                           Generate Idea
                         </DropdownMenuItem>
                         <DropdownMenuItem 
@@ -521,10 +521,10 @@ export default function Dashboard() {
                       className={getTailorClass()}
                     >
                       {isTailoring ? (
-                        <RefreshCw className="h-3 w-3 animate-spin" />
+                        <RefreshCw className="h-3 w-3 animate-spin text-amber-500" />
                       ) : (
                         <>
-                          <Sparkles className="h-3 w-3 mr-1.5" />
+                          <Sparkles className="h-3 w-3 mr-1.5 text-amber-500" />
                           Tailor
                         </>
                       )}
@@ -630,7 +630,7 @@ export default function Dashboard() {
                   onClick={handleCopyDraft}
                   className={getCopyDraftClass()}
                 >
-                  {copiedDraft ? <Check className="h-4 w-4 mr-2 text-green-600" /> : <Copy className="h-4 w-4 mr-2" />}
+                  {copiedDraft ? <Check className="h-4 w-4 mr-2 text-green-600" /> : <Copy className="h-4 w-4 mr-2 text-slate-500" />}
                   Copy Draft Only
                 </Button>
                 <Button 
