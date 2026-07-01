@@ -3,8 +3,10 @@
 ## The Paradigm: The Local Tailoring Node
 TweetOS is not an automated AI social media agent that runs in the cloud. It is a **hyper-minimal local workspace** that acts as a bridge between the user's unstructured thoughts and the stateless execution power of Grok. 
 
+The core philosophy is a **Persona Fusion Mechanism**: The local Gemini model adopts the exact psychological framing, structural habits, and thinking process of a highly successful creator (via the Inspiration Blueprint), but outputs content strictly in the user's authentic Voice, Tone, and Vocabulary. It thinks like them, but speaks like you.
+
 The application operates on a strictly controlled 2-step system:
-1. **Local Tailoring (Gemini)**: The user dumps raw thoughts into the workspace. TweetOS uses Gemini (running locally via API keys) combined with the user's permanent "Creator DNA" (Voice, Guardrails, Avoid Words) to format, polish, and ideate 280-character drafts.
+1. **Local Tailoring (Gemini)**: The user dumps raw thoughts into the workspace. TweetOS uses Gemini (acting as the structural brain of the inspiration creator) combined with the user's permanent "Creator DNA" (Voice, Guardrails, Avoid Words) to format, polish, and ideate 280-character drafts.
 2. **Stateless Execution (Grok Packets)**: The user clicks a button to generate a "Grok Packet" (a massive, context-rich prompt copied to the clipboard). They paste this packet into Grok on X to have Grok find trending topics, score/rewrite drafts, or find high-value engagement opportunities on live X.
 
 ---
@@ -22,17 +24,12 @@ The main dashboard is aggressively stripped down to focus purely on creation.
 - **Second Brain Note**: A macOS sticky-note widget for dumping random, unstructured context, background info, and daily life updates. It automatically syncs in the background and is injected into Gemini prompts to anchor outputs to real life.
 - **Recent X Posts**: A dedicated 3-column layout grid that cleanly displays the final, published outputs as a historical feed.
 
-### 2. Creator DNA Configuration (`/profile`)
-This is the central nervous system of TweetOS. The data configured here strictly controls how Gemini behaves.
+### 2. Profile Configuration (`/profile`)
+This is the central nervous system of TweetOS. The data configured here strictly controls how Gemini behaves. The UI features a Read-Only/Edit toggle system for beautiful readability.
 - **Core Identity Card**: Defines the user's name, X handle, and primary sub-niche (e.g., "sarcastic Pune comp-eng student vibe-coding real AI projects").
-- **Voice Profile Card**: A permanent memory bank capturing the user's tone. Ensures outputs are dry, blunt, lowercase-heavy, or frustrated when deserved, rather than reading like generic AI.
-- **System Guardrails Card**: Explicit negative constraints. Prevents the AI from using emojis, hashtags, enthusiastic corporate-speak, or asking engagement-bait questions.
-- **Avoid Words Card**: A strict blocklist (Lexicon Filter) of words the AI is forbidden from using (e.g., "delve", "testament", "crucial", "tapestry").
-- **API Key Configuration**: Secure local storage of the Gemini API key required for all local generation tasks.
-
-### 3. The Inspiration Feed (`/inspiration`)
-- A visual feed of curated tweets that serve as architectural blueprints.
-- Used to clone the structural habits, formatting styles, and pacing of other top creators.
+- **Extended Context Card**: Houses the user's Bio, Content Pillars, Target Audience, Goals, and Admired Accounts. Includes a one-click prompt to auto-generate these via a Grok self-audit.
+- **Voice Profile Card**: A permanent memory bank capturing the user's tone via an Inspiration Style Blueprint extracted from admired creators.
+- **Avoid Words Card**: A strict blocklist (Lexicon Filter) of words the AI is forbidden from using, entered one per line (e.g., "delve", "testament", "crucial").
 
 ---
 

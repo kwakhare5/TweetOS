@@ -48,20 +48,22 @@ export type DumpMode = 'dev' | 'personal' | 'shitpost' | 'auto'
 
 // ─── TWEET DRAFT ──────────────────────────────────────────────────────────────
 
+export type TweetMomentType = 'draft' | 'idea' | 'trending' | 'engagement' | 'thread'
+
 export interface TweetDraft {
   id: string
   content: string
   isThread: boolean
   threadTweets?: string[]
   pillarId: string
-  momentType: string
+  momentType: TweetMomentType
   hookVariations: string[]
   algorithmScore: {
     overall: number
     suggestions: string[]
     calculatedAt: string
     [key: string]: unknown
-  } // Maintained for store compatibility but unused locally
+  }
   sessionId?: string
   factCheckNote?: string
   status: DraftStatus

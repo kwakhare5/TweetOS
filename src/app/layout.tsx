@@ -1,18 +1,14 @@
-import type { Metadata } from 'next'
-import { Geist, Fira_Code, Kalam } from 'next/font/google'
-import './globals.css'
+import type { Metadata } from "next"
+import { Geist, Fira_Code, Kalam } from "next/font/google"
+import "./globals.css"
 import { Toaster } from "@/components/ui/sonner"
 import { ThemeProvider } from "@/components/theme-provider"
 import { AppSidebar } from "@/components/app-sidebar"
-import {
-  SidebarInset,
-  SidebarProvider,
-} from "@/components/ui/sidebar"
+import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar"
 import { TooltipProvider } from "@/components/ui/tooltip"
-
 import { LayoutHeader } from "@/components/layout-header"
-import { MobileBottomNav } from "@/components/mobile-bottom-nav"
 import { SupabaseProvider } from "@/components/supabase-provider"
+import { CustomCursor } from "@/components/ui/custom-cursor"
 
 const geist = Geist({
   subsets: ["latin"],
@@ -33,41 +29,31 @@ const kalam = Kalam({
 })
 
 export const metadata: Metadata = {
-  title: 'TweetOS — Twitter Growth System',
-  description: 'Personal AI system for drafting, scoring, and optimizing tweets in your voice.',
+  title: "TweetOS — Twitter Growth System",
+  description: "Personal AI system for drafting, scoring, and optimizing tweets in your voice.",
 }
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <body 
-        className={`${geist.variable} ${firaCode.variable} ${kalam.variable} font-sans antialiased bg-background text-foreground min-h-screen relative`}
-        style={{
-          backgroundColor: "#FAF8F5",
-          backgroundImage: "radial-gradient(rgba(120, 90, 40, 0.08) 1px, transparent 1px)",
-          backgroundSize: "20px 20px"
-        }}
+      <body
+        className={`${geist.variable} ${firaCode.variable} ${kalam.variable} font-sans antialiased bg-background text-foreground min-h-screen relative paper-texture`}
       >
-        <ThemeProvider
-          attribute="class"
-          defaultTheme="light"
-          forcedTheme="light"
-          disableTransitionOnChange
-        >
+        <ThemeProvider attribute="class" defaultTheme="light" forcedTheme="light" disableTransitionOnChange>
           <TooltipProvider>
             <SupabaseProvider>
               <SidebarProvider>
                 <AppSidebar />
                 <SidebarInset>
                   <LayoutHeader />
-                  <main className="flex-1 overflow-auto relative">
-                    <div className="relative z-10 pb-20 md:pb-6">
+                  <main className="flex-1 overflow-auto relative flex justify-center w-full">
+                    <div className="relative z-10 w-full max-w-7xl mx-auto px-4 md:px-8 py-4 md:py-6">
                       {children}
                     </div>
                   </main>
                 </SidebarInset>
-                <MobileBottomNav />
                 <Toaster />
+                <CustomCursor />
               </SidebarProvider>
             </SupabaseProvider>
           </TooltipProvider>

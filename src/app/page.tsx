@@ -1,53 +1,59 @@
 "use client"
 
-import { useState, useEffect } from "react"
-
+import { useState, useEffect, useRef } from "react"
 import { useProfileStore } from "@/store/use-profile-store"
 import { useTweetComposer } from "@/hooks/use-tweet-composer"
 import { TweetComposer } from "@/components/dashboard/tweet-composer"
 import { PolishedDraftPreview } from "@/components/dashboard/polished-draft-preview"
 import { SecondBrainNote } from "@/components/dashboard/second-brain-note"
 import { RecentTweets } from "@/components/dashboard/recent-tweets"
+import { PageHeader } from "@/components/ui/page-header"
+import { motion, useReducedMotion } from "motion/react"
+import { containerVariants, itemVariants, reducedContainerVariants, reducedItemVariants } from "@/lib/motion-variants"
 
 export default function Dashboard() {
   const { profile, updateProfile } = useProfileStore()
   const [mounted, setMounted] = useState(false)
-  
   const tweetGen = useTweetComposer(profile)
+  const hasInit = useRef(false)
+  const prefersReduced = useReducedMotion()
 
   useEffect(() => {
-    if (profile) {
-      if (profile.secondBrain?.startsWith("ACTIVE NOW (update daily):")) {
-        updateProfile({ secondBrain: "" })
-      }
-      
-      const t = setTimeout(() => {
-        setMounted(true)
-      }, 0)
-      return () => clearTimeout(t)
+    if (hasInit.current) return
+    hasInit.current = true
+
+    // Clear legacy placeholder text shipped in an earlier seed
+    if (profile?.secondBrain?.startsWith("ACTIVE NOW (update daily):")) {
+      updateProfile({ secondBrain: "" })
     }
-  }, [profile, updateProfile])
+    setMounted(true)
+  // Run once on mount — profile/updateProfile are stable Zustand refs
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
 
   if (!mounted) return null
 
   return (
-    <div 
-      className="flex flex-col gap-6 px-4 py-4 sm:px-6 md:px-8 lg:px-12 md:py-6 w-full max-w-7xl mx-auto"
-    >
-      {/* Workbench Header */}
-      <div className="flex items-center justify-between mb-2">
-        <div>
-          <h1 className="text-2xl font-bold tracking-tight">Creator Workbench</h1>
-          <p className="text-sm text-muted-foreground">Draft ideas directly inside a live Tweet card simulator and edit sticky notes.</p>
-        </div>
-      </div>
+    <div className="flex flex-col gap-6 w-full">
+      <motion.div
+        initial={{ opacity: 0, y: -10 }}
+        animate={{ opacity: 1, y: 0 }}
+      >
+        <PageHeader
+          title="Creator Workbench"
+          subtitle="Draft ideas directly inside a live Tweet card simulator and edit sticky notes."
+        />
+      </motion.div>
 
-      {/* Creator Workbench Grid Board */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-stretch pt-4">
-        
-        {/* Left Column: Tweet Editor & Output */}
-        <div className="lg:col-span-7 flex flex-col gap-6">
-          <TweetComposer 
+      <motion.div
+        variants={prefersReduced ? reducedContainerVariants : containerVariants}
+        initial="hidden"
+        animate="visible"
+        className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-stretch pt-4"
+      >
+        {/* Left: Tweet Editor & Output */}
+        <motion.div variants={prefersReduced ? reducedItemVariants : itemVariants} className="lg:col-span-7 flex flex-col gap-6">
+          <TweetComposer
             profile={profile}
             brainDump={tweetGen.brainDump}
             setBrainDump={tweetGen.setBrainDump}
@@ -58,33 +64,42 @@ export default function Dashboard() {
             handleGenerateIdea={tweetGen.handleGenerateIdea}
             handleCopyTrending={tweetGen.handleCopyTrending}
             handleCopyEngagement={tweetGen.handleCopyEngagement}
+            copiedTrending={tweetGen.copiedTrending}
+            copiedEngagement={tweetGen.copiedEngagement}
             handlePolish={tweetGen.handlePolish}
           />
-          
-          <PolishedDraftPreview 
-            polishedDraft={tweetGen.polishedDraft}
-            hooks={tweetGen.hooks}
-            factCheck={tweetGen.factCheck}
-            activeStyle={tweetGen.activeStyle}
-            isPolishing={tweetGen.isPolishing}
-            copiedPolishedDraft={tweetGen.copiedPolishedDraft}
-            copiedGrok={tweetGen.copiedGrok}
-            handlePolish={tweetGen.handlePolish}
-            handleCopyPolishedDraft={tweetGen.handleCopyPolishedDraft}
-            handleCopyGrok={tweetGen.handleCopyGrok}
-          />
-        </div>
 
-        {/* Right Column: macOS Yellow Sticky Note */}
-        <div className="lg:col-span-5 flex flex-col">
-          <SecondBrainNote 
-            initialText={profile.secondBrain || ""} 
-            onSave={(text) => updateProfile({ secondBrain: text })} 
-          />
-        </div>
-      </div>
+          {tweetGen.polishedDraft ? (
+            <PolishedDraftPreview
+              polishedDraft={tweetGen.polishedDraft}
+              hooks={tweetGen.hooks}
+              factCheck={tweetGen.factCheck}
+              activeStyle={tweetGen.activeStyle}
+              isPolishing={tweetGen.isPolishing}
+              copiedPolishedDraft={tweetGen.copiedPolishedDraft}
+              copiedGrok={tweetGen.copiedGrok}
+              handlePolish={tweetGen.handlePolish}
+              handleCopyPolishedDraft={tweetGen.handleCopyPolishedDraft}
+              handleCopyGrok={tweetGen.handleCopyGrok}
+            />
+          ) : (
+            <div className="flex items-center justify-center min-h-[120px] rounded-xl border border-dashed border-border/50 bg-card/50">
+              <p className="text-sm text-muted-foreground/50 select-none font-handwriting">
+                Polished draft will appear here…
+              </p>
+            </div>
+          )}
+        </motion.div>
 
-      {/* Recent Tweets Section */}
+        {/* Right: Sticky Note */}
+        <motion.div variants={prefersReduced ? reducedItemVariants : itemVariants} className="lg:col-span-5 flex flex-col">
+          <SecondBrainNote
+            initialText={profile.secondBrain || ""}
+            onSave={(text) => updateProfile({ secondBrain: text })}
+          />
+        </motion.div>
+      </motion.div>
+
       <RecentTweets profile={profile} />
     </div>
   )

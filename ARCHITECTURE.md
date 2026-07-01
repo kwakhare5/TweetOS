@@ -3,6 +3,28 @@
 ## Overview
 TweetOS is built as a fast, offline-first Next.js web application. It combines rapid local state management with a background synchronization layer to ensure data persistence without compromising UI speed.
 
+## Detailed Feature Breakdown
+
+### 1. The Persona Fusion Engine
+- **Inspiration Blueprinting**: Users use Grok to extract the exact structural habits (Hook, Body, Vibe, Rules) of a successful creator, and store this in the Voice Profile.
+- **Voice & Tone Enforcer**: Local Gemini models assume the *structure* of the Inspiration Blueprint, but enforce the *vocabulary and tone* of the user's Core Identity.
+- **Lexicon Filter (Avoid Words)**: A strict blocklist that intercepts standard AI-isms ("delve", "supercharge") before they are generated.
+- **Self-Audit**: A built-in Grok prompt allowing users to reverse-engineer their own active Twitter accounts into actionable JSON-like configuration for TweetOS.
+
+### 2. The Command Center (`/`)
+- **Brain Dump Composer**: A raw, unformatted textarea for daily thoughts, rants, and observations.
+- **Idea Generator**: Feeds the brain dump + the user's Content Pillars to Gemini to ideate novel angles.
+- **Draft Polisher**: Feeds a raw idea + the Inspiration Blueprint + Voice Rules into Gemini to format a strict 280-character post.
+- **Stateless Grok Packets**: "Topic Hunt" and "Engage Hunt" buttons compile the user's target audience, niche, and goals into massive clipboard prompts for execution on x.com/grok.
+- **Second Brain Sticky Note**: A persistent, draggable dashboard widget for live context (e.g., "debugging zustand"). This context is silently injected into all Gemini requests to anchor generated tweets to reality.
+- **Recent Posts Grid**: A 3-column feed of finalized, published outputs acting as a historical reference.
+
+### 3. Profile Page (`/profile`)
+- **Read-Only / Edit Modes**: All arrays (Goals, Pillars, Avoid Words, Audience) are parsed from raw newline-separated text into distinct, beautiful UI elements (lists, badges, and bolded sections) for readability, with a 1-click toggle to edit them raw.
+- **Core Identity**: Name, handle, and hyper-specific niche definitions.
+- **Extended Context**: Tracks Bio, Goals, Target Audience, and Admired Accounts.
+- **Voice Profile**: The command center for the Inspiration Blueprint and Voice configurations.
+
 ## Core Technology Stack
 - **Framework**: Next.js 15 (App Router).
 - **Styling**: Tailwind CSS v4, utilizing a highly customized Neo-Skeuomorphic design system (see `CONTEXT.md` for visual details).
@@ -49,7 +71,7 @@ TweetOS splits AI execution into two distinct phases:
 
 ### `/src/components/`
 - **`dashboard/`**: Contains the core mechanics for the main page (`tweet-composer.tsx`, `polished-draft-preview.tsx`, `recent-tweets.tsx`, `second-brain-note.tsx`).
-- **`profile/`**: Contains the configuration cards for the Creator DNA (`voice-profile-card.tsx`, `guardrails-card.tsx`, `avoid-words-card.tsx`, `api-key-config.tsx`).
+- **`profile/`**: Contains the configuration cards for the Creator DNA (`voice-profile-card.tsx`, `extended-context-card.tsx`, `avoid-words-card.tsx`).
 - **`ui/`**: Low-level, reusable design system components (buttons, dropdowns, specialized skeuomorphic SVGs like `<Paperclip>`).
 
 ### `/src/lib/` & `/src/hooks/`

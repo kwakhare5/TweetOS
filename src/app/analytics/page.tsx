@@ -1,28 +1,23 @@
-"use client"
-
-
 import { BarChart2 } from "lucide-react"
 import { WashiTape } from "@/components/ui/washi-tape"
+import { PageHeader } from "@/components/ui/page-header"
 
 export default function AnalyticsPage() {
   return (
-    <div 
-      className="flex flex-col items-center justify-center min-h-[calc(100vh-4rem)] px-6 md:px-8 lg:px-12 py-6 w-full max-w-4xl mx-auto"
-    >
-      <div className="flex flex-col items-center justify-center space-y-8 text-center">
-        <div>
-          <h1 className="text-3xl font-bold tracking-tight mb-2">Performance Analytics</h1>
-          <p className="text-muted-foreground">Monitor engagement, reach, and performance stats of your posts.</p>
-        </div>
-        
-        <div className="relative w-full max-w-md bg-card border rounded-xl p-8 shadow-sm rotate-[-0.3deg] flex flex-col items-center gap-4">
-          {/* Translucent Washi Tape with diagonal stripes pattern */}
+    <div className="flex flex-col gap-6 w-full">
+      <PageHeader
+        title="Performance Analytics"
+        subtitle="Monitor engagement, reach, and performance stats of your posts."
+      />
+
+      <div className="flex items-center justify-center min-h-[calc(100vh-12rem)]">
+        <div className="relative w-full max-w-md bg-card border border-border rounded-xl p-8 shadow-sm rotate-[-0.3deg] flex flex-col items-center gap-4">
           <WashiTape className="rotate-[2deg]" />
-          <div className="size-12 rounded-full bg-slate-100 flex items-center justify-center text-slate-500">
+          <div className="size-12 rounded-full bg-stone-100 flex items-center justify-center text-stone-500">
             <BarChart2 className="h-6 w-6" />
           </div>
-          <h3 className="text-lg font-bold text-slate-900">Module Under Construction</h3>
-          <p className="text-sm text-slate-500 max-w-xs leading-relaxed">
+          <h2 className="text-lg font-bold text-foreground">Module Under Construction</h2>
+          <p className="text-sm text-muted-foreground max-w-xs leading-relaxed text-center">
             The Analytics engine is currently in development. Real-time post stats sync will be available here soon.
           </p>
         </div>
@@ -30,4 +25,3 @@ export default function AnalyticsPage() {
     </div>
   )
 }
-

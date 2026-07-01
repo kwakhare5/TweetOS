@@ -1,125 +1,251 @@
 @import "tailwindcss";
 @plugin "tailwindcss-animate";
 
-@custom-variant dark (&:is(.dark *));
-
-:root, html {
+/* ─────────────────────────────────────────────────────────────────────────────
+   FORCE LIGHT MODE
+   Color-scheme locked to light. Dark mode variants exist in tokens but the
+   app intentionally ships light-only.
+───────────────────────────────────────────────────────────────────────────── */
+:root,
+html {
   color-scheme: light !important;
 }
 
+/* ─────────────────────────────────────────────────────────────────────────────
+   DESIGN TOKENS — CSS Custom Properties
+   All semantic color, radius, shadow, and sidebar values live here.
+   Components consume these via Tailwind's @theme inline mapping below.
+───────────────────────────────────────────────────────────────────────────── */
 :root {
-  --background: oklch(0.985 0.002 240); /* Soft off-white background #FAFAFA */
-  --foreground: oklch(0.145 0.008 240); /* Premium deep charcoal #09090B */
-  --card: oklch(1 0 0); /* Pure white cards */
-  --card-foreground: oklch(0.145 0.008 240);
-  --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.145 0.008 240);
-  --primary: oklch(0.145 0.008 240); /* Sleek charcoal buttons/highlights */
-  --primary-foreground: oklch(0.985 0.002 240);
-  --secondary: oklch(0.96 0.003 240); /* Slate-100 equivalent for tabs/toggle */
+  /* Backgrounds */
+  --background:          oklch(0.985 0.002 240); /* Soft off-white #FAFAFA */
+  --card:                oklch(1 0 0);            /* Pure white */
+  --popover:             oklch(1 0 0);
+  --sidebar-background:  oklch(0.98 0.003 240);   /* Slate-50 equivalent */
+
+  /* Foregrounds */
+  --foreground:          oklch(0.145 0.008 240);  /* Deep charcoal #09090B */
+  --card-foreground:     oklch(0.145 0.008 240);
+  --popover-foreground:  oklch(0.145 0.008 240);
+  --sidebar-foreground:  oklch(0.145 0.008 240);
+  --muted-foreground:    oklch(0.55 0.01 240);    /* Accessible gray #64748B */
+
+  /* Primary — charcoal buttons */
+  --primary:             oklch(0.145 0.008 240);
+  --primary-foreground:  oklch(0.985 0.002 240);
+
+  /* Secondary — muted tabs/toggles */
+  --secondary:           oklch(0.96 0.003 240);   /* Slate-100 equivalent */
   --secondary-foreground: oklch(0.145 0.008 240);
-  --muted: oklch(0.96 0.003 240); /* Muted slate background for hover */
-  --muted-foreground: oklch(0.55 0.01 240); /* Accessible gray text #64748B */
-  --accent: oklch(0.96 0.003 240);
-  --accent-foreground: oklch(0.145 0.008 240);
-  --destructive: oklch(0.55 0.18 20); /* Crimson warning red */
+
+  /* Muted — hover backgrounds */
+  --muted:               oklch(0.96 0.003 240);
+  --accent:              oklch(0.96 0.003 240);
+  --accent-foreground:   oklch(0.145 0.008 240);
+
+  /* Sidebar variants */
+  --sidebar-primary:              oklch(0.145 0.008 240);
+  --sidebar-primary-foreground:   oklch(0.985 0.002 240);
+  --sidebar-accent:               oklch(0.96 0.003 240);
+  --sidebar-accent-foreground:    oklch(0.145 0.008 240);
+
+  /* Borders & Inputs */
+  --border:        oklch(0.93 0.004 240); /* Subtle slate-200 equivalent */
+  --input:         oklch(0.93 0.004 240);
+  --ring:          oklch(0.7 0.01 240);
+  --sidebar-border: oklch(0.93 0.004 240);
+  --sidebar-ring:   oklch(0.7 0.01 240);
+
+  /* Destructive */
+  --destructive:            oklch(0.55 0.18 20); /* Crimson */
   --destructive-foreground: oklch(0.99 0.003 240);
-  --border: oklch(0.93 0.004 240); /* Clean subtle border slate-200 equivalent */
-  --input: oklch(0.93 0.004 240);
-  --ring: oklch(0.7 0.01 240);
+
+  /* Chart palette */
   --chart-1: oklch(0.646 0.222 41.116);
   --chart-2: oklch(0.6 0.118 184.704);
   --chart-3: oklch(0.398 0.07 227.392);
   --chart-4: oklch(0.828 0.189 84.429);
   --chart-5: oklch(0.769 0.188 70.08);
-  --radius: 0.5rem;
-  --sidebar-background: oklch(0.98 0.003 240); /* Slate-50 equivalent for sidebar panel #F8FAFC */
-  --sidebar-foreground: oklch(0.145 0.008 240);
-  --sidebar-primary: oklch(0.145 0.008 240);
-  --sidebar-primary-foreground: oklch(0.985 0.002 240);
-  --sidebar-accent: oklch(0.96 0.003 240);
-  --sidebar-accent-foreground: oklch(0.145 0.008 240);
-  --sidebar-border: oklch(0.93 0.004 240);
-  --sidebar-ring: oklch(0.7 0.01 240);
-}
 
-
-@theme inline {
-  --font-sans: var(--font-sans), ui-sans-serif, system-ui, sans-serif;
-  --font-mono: var(--font-mono), ui-monospace, SFMono-Regular, monospace;
-  --font-handwriting: var(--font-handwriting), "Kalam", cursive;
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --color-card: var(--card);
-  --color-card-foreground: var(--card-foreground);
-  --color-popover: var(--popover);
-  --color-popover-foreground: var(--popover-foreground);
-  --color-primary: var(--primary);
-  --color-primary-foreground: var(--primary-foreground);
-  --color-secondary: var(--secondary);
-  --color-secondary-foreground: var(--secondary-foreground);
-  --color-muted: var(--muted);
-  --color-muted-foreground: var(--muted-foreground);
-  --color-accent: var(--accent);
-  --color-accent-foreground: var(--accent-foreground);
-  --color-destructive: var(--destructive);
-  --color-destructive-foreground: var(--destructive-foreground);
-  --color-border: var(--border);
-  --color-input: var(--input);
-  --color-ring: var(--ring);
-  --color-chart-1: var(--chart-1);
-  --color-chart-2: var(--chart-2);
-  --color-chart-3: var(--chart-3);
-  --color-chart-4: var(--chart-4);
-  --color-chart-5: var(--chart-5);
+  /* Border radius scale */
+  --radius:    0.5rem;
   --radius-sm: calc(var(--radius) - 4px);
   --radius-md: calc(var(--radius) - 2px);
   --radius-lg: var(--radius);
   --radius-xl: calc(var(--radius) + 4px);
 }
 
+/* ─────────────────────────────────────────────────────────────────────────────
+   TAILWIND THEME BRIDGE — @theme inline
+   Maps CSS custom properties to Tailwind utility classes.
+   Also defines app-specific brand tokens and shadow utilities.
+───────────────────────────────────────────────────────────────────────────── */
+@theme inline {
+  /* Fonts */
+  --font-sans:        var(--font-sans), ui-sans-serif, system-ui, sans-serif;
+  --font-mono:        var(--font-mono), ui-monospace, SFMono-Regular, monospace;
+  --font-handwriting: var(--font-handwriting), "Kalam", cursive;
+
+  /* Semantic colors */
+  --color-background:         var(--background);
+  --color-foreground:         var(--foreground);
+  --color-card:               var(--card);
+  --color-card-foreground:    var(--card-foreground);
+  --color-popover:            var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary:            var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary:          var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted:              var(--muted);
+  --color-muted-foreground:   var(--muted-foreground);
+  --color-accent:             var(--accent);
+  --color-accent-foreground:  var(--accent-foreground);
+  --color-destructive:        var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-border:             var(--border);
+  --color-input:              var(--input);
+  --color-ring:               var(--ring);
+
+  /* Chart colors */
+  --color-chart-1: var(--chart-1);
+  --color-chart-2: var(--chart-2);
+  --color-chart-3: var(--chart-3);
+  --color-chart-4: var(--chart-4);
+  --color-chart-5: var(--chart-5);
+
+  /* Radius scale */
+  --radius-sm: var(--radius-sm);
+  --radius-md: var(--radius-md);
+  --radius-lg: var(--radius-lg);
+  --radius-xl: var(--radius-xl);
+
+  /* ── Brand / Twitter platform colors ── */
+  --color-brand-black:   #0f1419;
+  --color-twitter-red:   #f4212e;
+  --color-twitter-green: #00ba7c;
+  --color-twitter-pink:  #f91880;
+
+  /* ── Sticky note palette ── */
+  --color-sticky-100:   #FEF9C3;
+  --color-sticky-200:   #FEF08A;
+  --color-sticky-draft: #FCFAF2;
+
+  /* ── Shadow utilities (use these in components, not raw inline values) ── */
+  --shadow-card-soft:   0 8px 30px rgba(0, 0, 0, 0.02);
+  --shadow-sticky-warm: 0 8px 30px rgba(234, 179, 8, 0.15);
+  --shadow-sticky-soft: 0 8px 30px rgba(234, 179, 8, 0.08);
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   BASE LAYER — Global element resets
+───────────────────────────────────────────────────────────────────────────── */
 @layer base {
   * {
     @apply border-border outline-ring/50;
   }
+
   body {
     @apply bg-background text-foreground;
   }
 }
 
-/* Force caret visibility globally with high contrast theme-matched colors */
-input, textarea, [contenteditable] {
-  caret-color: #0f172a !important; /* Charcoal */
+/* ─────────────────────────────────────────────────────────────────────────────
+   CARET COLORS
+   Scoped by context to maintain visual cohesion with each UI surface.
+───────────────────────────────────────────────────────────────────────────── */
+
+/* Default: dark charcoal for standard inputs */
+input,
+textarea,
+[contenteditable] {
+  caret-color: #0f172a !important;
 }
 
-/* macOS Sticky Notes matching carets */
-#second-brain, #brain, #inspiration, textarea#second-brain, textarea#brain, textarea#inspiration {
-  caret-color: #451a03 !important; /* Warm brown */
+/* Sticky note surfaces: warm brown to match yellow paper aesthetic */
+#second-brain,
+#inspiration {
+  caret-color: #451a03 !important;
 }
 
-/* Dark developer console text boxes carets */
-.bg-slate-950 input, .bg-slate-950 textarea,
-.bg-slate-900 input, .bg-slate-900 textarea,
-#apikey, input#apikey {
-  caret-color: #34d399 !important; /* Emerald */
+/* Dark console surfaces: emerald for developer API key input */
+#apikey {
+  caret-color: #34d399 !important;
 }
 
-/* Hide all scrollbars globally */
+/* ─────────────────────────────────────────────────────────────────────────────
+   SCROLLBARS — Hidden globally
+   App uses implicit scroll with no visible scrollbar track.
+───────────────────────────────────────────────────────────────────────────── */
 *::-webkit-scrollbar {
   display: none;
 }
 
 * {
-  -ms-overflow-style: none;  /* IE and Edge */
-  scrollbar-width: none;  /* Firefox */
+  -ms-overflow-style: none; /* IE / Edge */
+  scrollbar-width: none;    /* Firefox */
 }
 
-/* Sidebar Theme Customizations */
+/* ─────────────────────────────────────────────────────────────────────────────
+   SIDEBAR OVERRIDES
+   Makes the shadcn sidebar container fully transparent so the app-level
+   background shows through cleanly.
+───────────────────────────────────────────────────────────────────────────── */
 [data-sidebar="sidebar"],
 [data-slot="sidebar-container"] {
   background-color: transparent !important;
   border-right-color: transparent !important;
 }
+
 [data-slot="sidebar-inner"] {
   background-color: transparent !important;
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   PAPER TEXTURE
+   Applied to the root body via className="paper-texture".
+   Creates a subtle cork-board / ruled-paper dot grid over the off-white bg.
+───────────────────────────────────────────────────────────────────────────── */
+.paper-texture {
+  background-color: #FAF8F5;
+  background-image: radial-gradient(rgba(120, 90, 40, 0.08) 1px, transparent 1px);
+  background-size: 20px 20px;
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   SIDEBAR ACTIVE NAV ITEM
+   Paper-stamp texture for the active navigation item.
+   Extracted from inline style to keep DevTools inspectable and fix focus ring.
+───────────────────────────────────────────────────────────────────────────── */
+.nav-item-active {
+  background-color: rgba(187, 247, 208, 0.55);
+  background-image: repeating-linear-gradient(
+    45deg,
+    transparent,
+    transparent 6px,
+    rgba(21, 128, 61, 0.08) 6px,
+    rgba(21, 128, 61, 0.08) 12px
+  );
+  backdrop-filter: blur(1px);
+  clip-path: polygon(
+    3px 8%, 8px 0%, calc(100% - 8px) 0%, calc(100% - 3px) 15%,
+    calc(100% - 6px) 45%, 100% 60%, calc(100% - 4px) 80%, calc(100% - 8px) 100%,
+    8px 100%, 3px 80%, 6px 45%, 0% 20%
+  );
+  /* Focus ring uses outline-offset to escape the clip-path boundary */
+  outline-offset: 3px;
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   CARD EDIT BUTTON — Active state (amber)
+   Used by ExtendedContextCard and AvoidWordsCard.
+   Defined once here to stay consistent across both usages.
+───────────────────────────────────────────────────────────────────────────── */
+.btn-edit-active {
+  background-color: rgb(254 243 199 / 0.9); /* amber-100/90 */
+  color: rgb(120 53 15);                     /* amber-900 */
+  border: 1px solid rgb(217 119 6 / 0.3);   /* amber-600/30 */
+}
+.btn-edit-active:hover {
+  background-color: rgb(253 230 138 / 0.8); /* amber-200/80 */
 }

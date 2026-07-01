@@ -8,9 +8,9 @@ export async function fetchProfileFromSupabase(): Promise<UserProfile | null> {
       .select('*')
       .eq('id', 'default')
       .single()
-    
+
     if (error || !data) return null
-    
+
     return {
       name: data.name || '',
       twitterHandle: data.twitter_handle || '',

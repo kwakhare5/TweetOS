@@ -1,48 +1,35 @@
-import { GoogleGenAI } from '@google/genai'
-
-let _currentKey: string | null = null
-let _ai: GoogleGenAI | null = null
-
-function getAI(): GoogleGenAI {
-  let key: string | null = null
-
-  // Resolve dynamically from local settings store
-  if (typeof window !== 'undefined') {
-    try {
-      const stored = localStorage.getItem('tweetos-profile-storage')
-      if (stored) {
-        const parsed = JSON.parse(stored)
-        key = parsed.state?.profile?.geminiApiKey || null
-      }
-    } catch {}
+/**
+ * Client-side Gemini helper.
+ * Calls /api/gemini (server route) — the actual API key never touches the client bundle.
+ */
+function getUserApiKey(): string | null {
+  if (typeof window === 'undefined') return null
+  try {
+    const stored = localStorage.getItem('tweetos-profile-storage')
+    if (!stored) return null
+    const parsed = JSON.parse(stored)
+    return parsed.state?.profile?.geminiApiKey || null
+  } catch (e) {
+    console.warn('Could not read API key from localStorage:', e)
+    return null
   }
-
-  // Fallback to env key
-  if (!key) {
-    key = process.env.NEXT_PUBLIC_GEMINI_API_KEY || null
-  }
-
-
-
-  if (!key) {
-    throw new Error('Missing Gemini API Key. Please configure one in Profile settings.')
-  }
-
-  if (!_ai || _currentKey !== key) {
-    _currentKey = key
-    _ai = new GoogleGenAI({ apiKey: key })
-  }
-  return _ai
 }
 
-/**
- * Call Gemini and return plain text response.
- */
 export async function geminiText(prompt: string): Promise<string> {
-  const ai = getAI()
-  const response = await ai.models.generateContent({
-    model: 'gemini-2.5-pro',
-    contents: prompt,
+  const res = await fetch('/api/gemini', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      prompt,
+      apiKey: getUserApiKey(), // sent over HTTPS; server prefers its own env key
+    }),
   })
-  return (response.text ?? '').trim()
+
+  if (!res.ok) {
+    const { error } = await res.json().catch(() => ({ error: 'Unknown error' }))
+    throw new Error(error || `Gemini API error: ${res.status}`)
+  }
+
+  const { text } = await res.json()
+  return text ?? ''
 }
