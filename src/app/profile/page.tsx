@@ -174,7 +174,7 @@ export default function ProfilePage() {
             />
             
             <div className="flex flex-row items-center space-x-3 border-b border-slate-100 pb-4 mb-4">
-              <div className="flex size-10 items-center justify-center rounded-lg bg-indigo-50 text-indigo-600">
+              <div className="flex size-10 items-center justify-center rounded-lg bg-slate-100 text-slate-600">
                 <UserCircle className="h-5 w-5" />
               </div>
               <div className="flex flex-col">
@@ -228,7 +228,7 @@ export default function ProfilePage() {
             <PaperclipIcon className="absolute top-[-16px] left-[10%] z-20 select-none pointer-events-none rotate-[-5deg]" />
 
             <div className="flex flex-row items-center space-x-3 border-b border-slate-100 pb-4 mb-4">
-              <div className="flex size-10 items-center justify-center rounded-lg bg-purple-50 text-purple-600">
+              <div className="flex size-10 items-center justify-center rounded-lg bg-slate-100 text-slate-600">
                 <Network className="h-5 w-5" />
               </div>
               <div className="flex flex-col">
@@ -365,7 +365,7 @@ export default function ProfilePage() {
             />
 
             <div className="flex flex-row items-center space-x-3 border-b border-slate-100 pb-4 mb-4">
-              <div className="flex size-10 items-center justify-center rounded-lg bg-emerald-50 text-emerald-600">
+              <div className="flex size-10 items-center justify-center rounded-lg bg-slate-100 text-slate-600">
                 <Tag className="h-5 w-5" />
               </div>
               <div className="flex flex-col">

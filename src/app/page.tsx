@@ -118,7 +118,7 @@ export default function Dashboard() {
   const [activeBrainstormAction, setActiveBrainstormAction] = useState<"idea" | "trending" | "engagement">("idea")
 
   const getBrainstormTriggerClass = (side: "left" | "right" | "single" = "single") => {
-    const base = "h-9 sm:h-8 px-4 cursor-pointer font-bold transition-all flex items-center justify-center select-none text-xs gap-1.5 outline-hidden border-0 "
+    const base = "h-8 px-3 gap-1 flex-initial cursor-pointer font-bold transition-all flex items-center justify-center select-none text-xs outline-hidden border-0 "
     
     let radius = ""
     if (buttonStyle === "flat") {
@@ -146,7 +146,7 @@ export default function Dashboard() {
   }
 
   const getTailorClass = () => {
-    const base = "h-9 sm:h-8 flex-1 sm:flex-initial px-4 cursor-pointer font-bold transition-all flex items-center justify-center select-none text-xs border-0 "
+    const base = "h-8 flex-initial px-3 gap-1 cursor-pointer font-bold transition-all flex items-center justify-center select-none text-xs border-0 "
     if (buttonStyle === "flat") {
       return base + "rounded-xl bg-slate-950 text-white hover:bg-slate-900 shadow-sm active:scale-[0.98]"
     }
@@ -161,7 +161,7 @@ export default function Dashboard() {
   }
 
   const getCopyDraftClass = () => {
-    const base = "h-10 cursor-pointer font-semibold transition-all flex items-center justify-center select-none "
+    const base = "h-8 px-3 gap-1 flex-initial cursor-pointer font-semibold transition-all flex items-center justify-center select-none text-xs "
     if (buttonStyle === "flat") {
       return base + "rounded-lg border border-border bg-background text-slate-700 hover:text-slate-900 hover:bg-slate-50 shadow-xs active:scale-[0.98]"
     }
@@ -176,7 +176,7 @@ export default function Dashboard() {
   }
 
   const getCopyGrokClass = () => {
-    const base = "h-10 cursor-pointer font-semibold transition-all flex items-center justify-center select-none "
+    const base = "h-8 px-3 gap-1 flex-initial cursor-pointer font-semibold transition-all flex items-center justify-center select-none text-xs "
     if (buttonStyle === "flat") {
       return base + "rounded-lg border border-border bg-background text-slate-700 hover:text-slate-900 hover:bg-slate-50 shadow-xs active:scale-[0.98]"
     }
@@ -184,7 +184,7 @@ export default function Dashboard() {
       return base + "bg-amber-200/60 hover:bg-amber-200/80 border border-amber-300/30 text-amber-950 shadow-3xs active:scale-[0.98] rotate-[0.3deg] rounded-t-lg"
     }
     if (buttonStyle === "neobrutalist") {
-      return base + "bg-slate-950 text-white border border-slate-950 shadow-[2px_2px_0px_0px_rgba(15,23,42,1)] hover:shadow-[3px_3px_0px_0px_rgba(15,23,42,1)] active:translate-x-[1px] active:translate-y-[1px] active:shadow-[1px_1px_0px_0px_rgba(15,23,42,1)] rounded-none"
+      return base + "bg-slate-950 text-white border border-slate-955 shadow-[2px_2px_0px_0px_rgba(15,23,42,1)] hover:shadow-[3px_3px_0px_0px_rgba(15,23,42,1)] active:translate-x-[1px] active:translate-y-[1px] active:shadow-[1px_1px_0px_0px_rgba(15,23,42,1)] rounded-none"
     }
     // folder
     return base + "bg-[#F5EAD4] hover:bg-[#EBDCBE] border border-[#D9C4A2] border-b-0 rounded-t-lg text-amber-950 active:scale-[0.98] translate-y-[2px]"
@@ -495,13 +495,13 @@ export default function Dashboard() {
                           className={getBrainstormTriggerClass()}
                         >
                           {isGeneratingIdea && activeBrainstormAction === "idea" ? (
-                            <RefreshCw className="h-3.5 w-3.5 mr-1.5 animate-spin text-indigo-500" />
+                            <RefreshCw className="h-3.5 w-3.5 mr-1.5 animate-spin text-slate-500" />
                           ) : activeBrainstormAction === "idea" ? (
-                            <Sparkles className="h-3.5 w-3.5 mr-1.5 text-indigo-500" />
+                            <Sparkles className="h-3.5 w-3.5 mr-1.5 text-slate-500" />
                           ) : activeBrainstormAction === "trending" ? (
-                            <Compass className="h-3.5 w-3.5 mr-1.5 text-amber-500" />
+                            <Compass className="h-3.5 w-3.5 mr-1.5 text-slate-500" />
                           ) : (
-                            <MessageSquare className="h-3.5 w-3.5 mr-1.5 text-sky-500" />
+                            <MessageSquare className="h-3.5 w-3.5 mr-1.5 text-slate-500" />
                           )}
                           <span>
                             {activeBrainstormAction === "idea" ? "Generate Idea" :
@@ -520,7 +520,7 @@ export default function Dashboard() {
                           disabled={isGeneratingIdea || isTailoring}
                           className="text-xs font-semibold px-2.5 py-2 cursor-pointer flex items-center gap-2 hover:bg-slate-50 rounded-md transition-colors text-slate-700 hover:text-slate-900"
                         >
-                          <Sparkles className="h-3.5 w-3.5 text-indigo-500" />
+                          <Sparkles className="h-3.5 w-3.5 text-slate-500" />
                           Generate Idea
                         </DropdownMenuItem>
                         <DropdownMenuItem 
@@ -530,7 +530,7 @@ export default function Dashboard() {
                           }}
                           className="text-xs font-semibold px-2.5 py-2 cursor-pointer flex items-center gap-2 hover:bg-slate-50 rounded-md transition-colors text-slate-700 hover:text-slate-900"
                         >
-                          <Compass className="h-3.5 w-3.5 text-amber-500" />
+                          <Compass className="h-3.5 w-3.5 text-slate-500" />
                           Topic Hunt
                         </DropdownMenuItem>
                         <DropdownMenuItem 
@@ -540,7 +540,7 @@ export default function Dashboard() {
                           }}
                           className="text-xs font-semibold px-2.5 py-2 cursor-pointer flex items-center gap-2 hover:bg-slate-50 rounded-md transition-colors text-slate-700 hover:text-slate-900"
                         >
-                          <MessageSquare className="h-3.5 w-3.5 text-sky-500" />
+                          <MessageSquare className="h-3.5 w-3.5 text-slate-500" />
                           Engage Hunt
                         </DropdownMenuItem>
                       </DropdownMenuContent>
@@ -552,10 +552,10 @@ export default function Dashboard() {
                       className={getTailorClass()}
                     >
                       {isTailoring ? (
-                        <RefreshCw className="h-3 w-3 animate-spin text-amber-500" />
+                        <RefreshCw className="h-3 w-3 animate-spin text-slate-500" />
                       ) : (
                         <>
-                          <Sparkles className="h-3 w-3 mr-1.5 text-amber-500" />
+                          <Sparkles className="h-3 w-3 mr-1.5 text-slate-500" />
                           Tailor
                         </>
                       )}
