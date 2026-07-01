@@ -109,6 +109,97 @@ export default function Dashboard() {
   const [copiedGrok, setCopiedGrok] = useState(false)
   const [copiedTrending, setCopiedTrending] = useState(false)
   const [copiedEngagement, setCopiedEngagement] = useState(false)
+  const [buttonStyle, setButtonStyle] = useState<"flat" | "washi" | "neobrutalist" | "folder">("flat")
+
+  const getTopicHuntClass = () => {
+    const base = "select-none transition-all flex items-center text-[11px] font-bold cursor-pointer h-8 px-3 "
+    if (buttonStyle === "flat") {
+      return base + "rounded-full border border-slate-200 bg-white hover:bg-slate-50 text-slate-700 hover:text-slate-900 shadow-3xs active:scale-[0.98]"
+    }
+    if (buttonStyle === "washi") {
+      return base + "bg-amber-100/50 hover:bg-amber-100/70 border border-amber-300/40 text-amber-950 shadow-3xs active:scale-[0.98] rotate-[-0.5deg] backdrop-blur-[1px] rounded-none"
+    }
+    if (buttonStyle === "neobrutalist") {
+      return base + "bg-white text-slate-900 border border-slate-900 shadow-[1.5px_1.5px_0px_0px_rgba(15,23,42,1)] hover:shadow-[2px_2px_0px_0px_rgba(15,23,42,1)] active:translate-x-[0.5px] active:translate-y-[0.5px] active:shadow-[0.8px_0.8px_0px_0px_rgba(15,23,42,1)] rounded-none"
+    }
+    // folder
+    return base + "bg-[#FAF0DD] hover:bg-[#F3E2C4] border border-[#E5CEAA] border-b-0 rounded-t-md text-amber-900 active:scale-[0.98] translate-y-[2px]"
+  }
+
+  const getEngageClass = () => {
+    const base = "select-none transition-all flex items-center text-[11px] font-bold cursor-pointer h-8 px-3 "
+    if (buttonStyle === "flat") {
+      return base + "rounded-full border border-slate-200 bg-white hover:bg-slate-50 text-slate-700 hover:text-slate-900 shadow-3xs active:scale-[0.98]"
+    }
+    if (buttonStyle === "washi") {
+      return base + "bg-sky-100/50 hover:bg-sky-100/70 border border-sky-200/40 text-sky-950 shadow-3xs active:scale-[0.98] rotate-[0.5deg] backdrop-blur-[1px] rounded-none"
+    }
+    if (buttonStyle === "neobrutalist") {
+      return base + "bg-white text-slate-900 border border-slate-900 shadow-[1.5px_1.5px_0px_0px_rgba(15,23,42,1)] hover:shadow-[2px_2px_0px_0px_rgba(15,23,42,1)] active:translate-x-[0.5px] active:translate-y-[0.5px] active:shadow-[0.8px_0.8px_0px_0px_rgba(15,23,42,1)] rounded-none"
+    }
+    // folder
+    return base + "bg-[#E8F0FE] hover:bg-[#D2E3FC] border border-[#ADCCF9] border-b-0 rounded-t-md text-blue-900 active:scale-[0.98] translate-y-[2px]"
+  }
+
+  const getGenerateIdeaClass = () => {
+    const base = "h-9 sm:h-8 flex-1 sm:flex-initial px-4 cursor-pointer font-bold transition-all flex items-center justify-center select-none text-xs "
+    if (buttonStyle === "flat") {
+      return base + "rounded-full border border-slate-200 bg-background text-slate-700 hover:bg-slate-50 hover:text-slate-900 shadow-xs active:scale-[0.98]"
+    }
+    if (buttonStyle === "washi") {
+      return base + "bg-slate-100/60 hover:bg-slate-200/60 border border-slate-300/40 text-slate-800 shadow-3xs active:scale-[0.98] rotate-[-0.3deg] rounded-none"
+    }
+    if (buttonStyle === "neobrutalist") {
+      return base + "bg-white text-slate-900 border border-slate-900 shadow-[2px_2px_0px_0px_rgba(15,23,42,1)] hover:shadow-[3px_3px_0px_0px_rgba(15,23,42,1)] active:translate-x-[1px] active:translate-y-[1px] active:shadow-[1px_1px_0px_0px_rgba(15,23,42,1)] rounded-none"
+    }
+    // folder
+    return base + "bg-[#E8F0FE] hover:bg-[#D2E3FC] border border-[#ADCCF9] border-b-0 rounded-t-lg text-blue-950 active:scale-[0.98] translate-y-[2px]"
+  }
+
+  const getTailorClass = () => {
+    const base = "h-9 sm:h-8 flex-1 sm:flex-initial px-4 cursor-pointer font-bold transition-all flex items-center justify-center select-none text-xs border-0 "
+    if (buttonStyle === "flat") {
+      return base + "rounded-full bg-slate-950 text-white hover:bg-slate-900 shadow-sm active:scale-[0.98]"
+    }
+    if (buttonStyle === "washi") {
+      return base + "bg-amber-200/60 hover:bg-amber-200/80 border border-amber-300/30 text-amber-950 shadow-3xs active:scale-[0.98] rotate-[0.3deg] rounded-none"
+    }
+    if (buttonStyle === "neobrutalist") {
+      return base + "bg-slate-950 text-white border border-slate-950 shadow-[2px_2px_0px_0px_rgba(15,23,42,1)] hover:shadow-[3px_3px_0px_0px_rgba(15,23,42,1)] active:translate-x-[1px] active:translate-y-[1px] active:shadow-[1px_1px_0px_0px_rgba(15,23,42,1)] rounded-none"
+    }
+    // folder
+    return base + "bg-[#F5EAD4] hover:bg-[#EBDCBE] border border-[#D9C4A2] border-b-0 rounded-t-lg text-amber-950 active:scale-[0.98] translate-y-[2px]"
+  }
+
+  const getCopyDraftClass = () => {
+    const base = "h-10 cursor-pointer font-semibold transition-all flex items-center justify-center select-none "
+    if (buttonStyle === "flat") {
+      return base + "rounded-lg border border-border bg-background text-slate-700 hover:text-slate-900 hover:bg-slate-50 shadow-xs active:scale-[0.98]"
+    }
+    if (buttonStyle === "washi") {
+      return base + "bg-slate-100/60 hover:bg-slate-200/60 border border-slate-300/40 text-slate-800 shadow-3xs active:scale-[0.98] rotate-[-0.3deg] rounded-none"
+    }
+    if (buttonStyle === "neobrutalist") {
+      return base + "bg-white text-slate-900 border border-slate-900 shadow-[2px_2px_0px_0px_rgba(15,23,42,1)] hover:shadow-[3px_3px_0px_0px_rgba(15,23,42,1)] active:translate-x-[1px] active:translate-y-[1px] active:shadow-[1px_1px_0px_0px_rgba(15,23,42,1)] rounded-none"
+    }
+    // folder
+    return base + "bg-[#E8F0FE] hover:bg-[#D2E3FC] border border-[#ADCCF9] border-b-0 rounded-t-lg text-blue-950 active:scale-[0.98] translate-y-[2px]"
+  }
+
+  const getCopyGrokClass = () => {
+    const base = "h-10 cursor-pointer font-semibold transition-all flex items-center justify-center select-none "
+    if (buttonStyle === "flat") {
+      return base + "rounded-lg border border-border bg-background text-slate-700 hover:text-slate-900 hover:bg-slate-50 shadow-xs active:scale-[0.98]"
+    }
+    if (buttonStyle === "washi") {
+      return base + "bg-amber-200/60 hover:bg-amber-200/80 border border-amber-300/30 text-amber-950 shadow-3xs active:scale-[0.98] rotate-[0.3deg] rounded-none"
+    }
+    if (buttonStyle === "neobrutalist") {
+      return base + "bg-slate-950 text-white border border-slate-950 shadow-[2px_2px_0px_0px_rgba(15,23,42,1)] hover:shadow-[3px_3px_0px_0px_rgba(15,23,42,1)] active:translate-x-[1px] active:translate-y-[1px] active:shadow-[1px_1px_0px_0px_rgba(15,23,42,1)] rounded-none"
+    }
+    // folder
+    return base + "bg-[#F5EAD4] hover:bg-[#EBDCBE] border border-[#D9C4A2] border-b-0 rounded-t-lg text-amber-950 active:scale-[0.98] translate-y-[2px]"
+  }
 
   // Right card state (Second Brain)
   const [secondBrainText, setSecondBrainText] = useState("")
@@ -351,7 +442,7 @@ export default function Dashboard() {
           <Button 
             variant="outline" 
             onClick={handleCopyTrending}
-            className="h-8 px-3 rounded-full border border-slate-200 bg-white hover:bg-slate-50 text-slate-700 hover:text-slate-900 shadow-3xs active:scale-[0.98] transition-all flex items-center text-[11px] font-bold cursor-pointer"
+            className={getTopicHuntClass()}
           >
             {copiedTrending ? <Check className="h-3.5 w-3.5 mr-1 text-green-600 animate-in fade-in zoom-in-50 duration-200" /> : <Compass className="h-3.5 w-3.5 mr-1 text-amber-500" />}
             Topic Hunt
@@ -359,7 +450,7 @@ export default function Dashboard() {
           <Button 
             variant="outline" 
             onClick={handleCopyEngagement}
-            className="h-8 px-3 rounded-full border border-slate-200 bg-white hover:bg-slate-50 text-slate-700 hover:text-slate-900 shadow-3xs active:scale-[0.98] transition-all flex items-center text-[11px] font-bold cursor-pointer"
+            className={getEngageClass()}
           >
             {copiedEngagement ? <Check className="h-3.5 w-3.5 mr-1 text-green-600 animate-in fade-in zoom-in-50 duration-200" /> : <MessageSquare className="h-3.5 w-3.5 mr-1 text-sky-500" />}
             Engage
@@ -435,7 +526,7 @@ export default function Dashboard() {
                       onClick={handleGenerateIdea} 
                       disabled={isGeneratingIdea || isTailoring}
                       size="sm"
-                      className="h-9 sm:h-8 flex-1 sm:flex-initial px-4 cursor-pointer font-bold rounded-full border border-slate-200 bg-background text-slate-700 hover:bg-slate-50 hover:text-slate-900 shadow-xs active:scale-[0.98] transition-all flex items-center justify-center select-none text-xs"
+                      className={getGenerateIdeaClass()}
                     >
                       {isGeneratingIdea ? (
                         <RefreshCw className="h-3 w-3 animate-spin mr-1.5" />
@@ -446,7 +537,7 @@ export default function Dashboard() {
                       onClick={() => handleTailor("auto")} 
                       disabled={isTailoring || isGeneratingIdea}
                       size="sm"
-                      className="h-9 sm:h-8 flex-1 sm:flex-initial px-4 cursor-pointer font-bold rounded-full bg-slate-950 text-white hover:bg-slate-900 shadow-sm active:scale-[0.98] transition-all flex items-center justify-center select-none text-xs"
+                      className={getTailorClass()}
                     >
                       {isTailoring ? (
                         <RefreshCw className="h-3 w-3 animate-spin" />
@@ -556,7 +647,7 @@ export default function Dashboard() {
                 <Button 
                   variant="outline" 
                   onClick={handleCopyDraft}
-                  className="h-10 cursor-pointer font-semibold rounded-lg border border-border bg-background text-slate-700 hover:text-slate-900 hover:bg-slate-50 shadow-xs active:scale-[0.98] transition-all flex items-center justify-center select-none"
+                  className={getCopyDraftClass()}
                 >
                   {copiedDraft ? <Check className="h-4 w-4 mr-2 text-green-600" /> : <Copy className="h-4 w-4 mr-2" />}
                   Copy Draft Only
@@ -564,7 +655,7 @@ export default function Dashboard() {
                 <Button 
                   variant="outline" 
                   onClick={handleCopyGrok}
-                  className="h-10 cursor-pointer font-semibold rounded-lg border border-border bg-background text-slate-700 hover:text-slate-900 hover:bg-slate-50 shadow-xs active:scale-[0.98] transition-all flex items-center justify-center select-none"
+                  className={getCopyGrokClass()}
                 >
                   {copiedGrok ? <Check className="h-4 w-4 mr-2 text-green-600" /> : <Send className="h-4 w-4 mr-2 text-blue-500" />}
                   Copy Grok Packet
@@ -747,6 +838,24 @@ export default function Dashboard() {
             );
           })}
         </div>
+      </div>
+
+      {/* Floating Style Picker for Prototyping Options */}
+      <div className="fixed bottom-4 right-4 z-50 bg-slate-900/90 backdrop-blur-xs text-slate-100 rounded-lg p-2 shadow-lg border border-slate-800 flex items-center gap-2 select-none font-sans text-xs">
+        <span className="font-bold text-slate-400">Buttons:</span>
+        {(["flat", "washi", "neobrutalist", "folder"] as const).map((s) => (
+          <button
+            key={s}
+            onClick={() => setButtonStyle(s)}
+            className={`px-2 py-1 rounded font-semibold capitalize cursor-pointer transition-colors border-0 ${
+              buttonStyle === s
+                ? "bg-amber-500 text-slate-950 font-bold"
+                : "bg-transparent text-slate-300 hover:text-white hover:bg-slate-800"
+            }`}
+          >
+            {s}
+          </button>
+        ))}
       </div>
     </motion.div>
   )
