@@ -52,7 +52,7 @@ export function LexiconFilters({ avoidListString, setAvoidListString }: LexiconF
                     const filtered = words.filter((_, i) => i !== idx);
                     setAvoidListString(filtered.join(", "));
                   }}
-                  className="hover:text-slate-900 text-slate-400 font-bold focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-ring cursor-pointer size-4 inline-flex items-center justify-center rounded-full hover:bg-slate-200/50"
+                  className="hover:text-slate-900 text-slate-400 font-bold focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-ring cursor-pointer size-4 inline-flex items-center justify-center rounded-full hover:bg-slate-200/50 active:scale-[0.95]"
                 >
                   ×
                 </button>

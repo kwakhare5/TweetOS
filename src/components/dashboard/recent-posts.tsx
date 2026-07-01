@@ -72,7 +72,7 @@ export function RecentPosts({ profile }: RecentPostsProps) {
         {MOCK_TWEETS.map((tweet) => (
           <div 
             key={tweet.id} 
-            className="relative flex flex-col gap-4 rounded-xl border p-4 sm:p-5 bg-card text-card-foreground shadow-sm transition-all hover:translate-y-[-2px] hover:shadow-md border-b-[3px] border-slate-200/80"
+            className="relative flex flex-col gap-4 rounded-xl border p-4 sm:p-5 bg-card text-card-foreground shadow-sm transition-all sm:rotate-[0.2deg] rotate-0 hover:rotate-0 hover:shadow-md border-b-[3px] border-slate-200/80"
           >
             {/* Tweet Header */}
             <div className="flex flex-row items-start justify-between tracking-normal">

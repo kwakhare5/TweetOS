@@ -50,9 +50,11 @@ export function TailoredOutput({
               {(["auto", "dev", "shitpost", "personal"] as const).map((t) => (
                 <button
                   key={t}
+                  type="button"
+                  aria-label={`Select ${t} tone`}
                   onClick={() => handleTailor(t)}
                   disabled={isTailoring}
-                  className={`text-xs font-bold px-2 py-0.5 rounded transition-colors cursor-pointer border-0 ${
+                  className={`text-xs font-bold px-2 py-0.5 rounded transition-all active:scale-[0.98] cursor-pointer border-0 focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-slate-800 ${
                     activeTone === t
                       ? "bg-slate-950 text-white"
                       : "text-slate-500 hover:text-slate-900 hover:bg-slate-200/60"

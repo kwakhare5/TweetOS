@@ -9,7 +9,7 @@ interface ApiKeyConfigProps {
 
 export function ApiKeyConfig({ geminiApiKey, setGeminiApiKey }: ApiKeyConfigProps) {
   return (
-    <div className="relative flex flex-col bg-slate-950 border border-slate-900 text-slate-100 rounded-xl p-5 shadow-xl font-mono sm:rotate-[-0.2deg] rotate-0">
+    <div className="relative flex flex-col bg-slate-950 border border-slate-900 text-slate-100 rounded-xl p-5 shadow-xl font-mono sm:rotate-[-0.2deg] rotate-0 transition-transform hover:rotate-0">
       <div className="flex items-center justify-between border-b border-slate-800/80 pb-3 mb-4 select-none">
         <div className="flex items-center gap-1.5">
           <div className="h-2.5 w-2.5 rounded-full bg-slate-800 border border-slate-700" />
@@ -32,7 +32,7 @@ export function ApiKeyConfig({ geminiApiKey, setGeminiApiKey }: ApiKeyConfigProp
               type="password"
               value={geminiApiKey} 
               onChange={(e) => setGeminiApiKey(e.target.value)} 
-              placeholder="AIzaSy..."
+              placeholder="AIzaSy…"
               className="pl-9 bg-slate-900 border-slate-800 text-emerald-400 font-mono text-sm placeholder:text-slate-700 focus-visible:border-slate-700 focus-visible:ring-offset-0 focus-visible:ring-1 focus-visible:ring-slate-800 hover:border-slate-800 h-9"
             />
           </div>

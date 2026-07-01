@@ -44,7 +44,7 @@ export function MobileBottomNav() {
               key={item.title}
               href={item.url}
               className={cn(
-                "flex flex-col items-center justify-center gap-1 text-[10px] font-semibold transition-all duration-200 active:scale-95",
+                "flex flex-col items-center justify-center gap-1 text-[10px] font-semibold transition-all duration-200 active:scale-95 focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-slate-800 rounded-sm",
                 isActive
                   ? "text-slate-950 font-bold"
                   : "text-slate-400 hover:text-slate-700"
@@ -59,7 +59,7 @@ export function MobileBottomNav() {
         <button
           onClick={toggleSidebar}
           type="button"
-          className="flex flex-col items-center justify-center gap-1 text-[10px] font-semibold text-slate-400 hover:text-slate-700 transition-all duration-200 active:scale-95 cursor-pointer bg-transparent border-0"
+          className="flex flex-col items-center justify-center gap-1 text-[10px] font-semibold text-slate-400 hover:text-slate-700 transition-all duration-200 active:scale-95 cursor-pointer bg-transparent border-0 focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-slate-800 rounded-sm"
         >
           <Layers className="size-5" />
           <span>More</span>

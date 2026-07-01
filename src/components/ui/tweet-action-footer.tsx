@@ -35,6 +35,7 @@ export function TweetActionFooter({
       {...props}
     >
       <button 
+        type="button"
         onClick={onReply}
         aria-label="Reply"
         className="flex items-center gap-1.5 hover:text-blue-500 focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 transition-colors cursor-pointer bg-transparent border-0 p-0 rounded-sm"
@@ -44,6 +45,7 @@ export function TweetActionFooter({
       </button>
       
       <button 
+        type="button"
         onClick={onRetweet}
         aria-label="Retweet"
         className={cn(
@@ -56,6 +58,7 @@ export function TweetActionFooter({
       </button>
       
       <button 
+        type="button"
         onClick={onLike}
         aria-label="Like"
         className={cn(
@@ -68,6 +71,7 @@ export function TweetActionFooter({
       </button>
       
       <button 
+        type="button"
         aria-label="View analytics"
         className="flex items-center gap-1.5 hover:text-blue-500 focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 transition-colors cursor-pointer bg-transparent border-0 p-0 rounded-sm"
       >
@@ -76,6 +80,7 @@ export function TweetActionFooter({
       </button>
       
       <button 
+        type="button"
         onClick={onShare}
         aria-label="Share"
         className="flex items-center gap-1.5 hover:text-blue-500 focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 transition-colors cursor-pointer bg-transparent border-0 p-0 rounded-sm"

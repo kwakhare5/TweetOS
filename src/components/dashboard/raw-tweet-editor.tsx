@@ -86,7 +86,7 @@ export function RawTweetEditor({
   const avatarLetter = profile.name ? profile.name.charAt(0).toUpperCase() : "K"
 
   return (
-    <div className="relative flex h-fit w-full flex-col gap-4 rounded-xl border p-4 sm:p-5 bg-card text-card-foreground shadow-sm sm:rotate-[-0.3deg] rotate-0">
+    <div className="relative flex h-fit w-full flex-col gap-4 rounded-xl border p-4 sm:p-5 bg-card text-card-foreground shadow-sm sm:rotate-[-0.3deg] rotate-0 transition-transform hover:rotate-0">
       <WashiTape className="rotate-[-2deg]" />
       
       <div className="flex flex-row items-start justify-between tracking-normal">
@@ -121,7 +121,7 @@ export function RawTweetEditor({
           value={rawTweet}
           onChange={(e) => setRawTweet(e.target.value)}
           placeholder="What's happening? Dump raw thoughts or rough drafts…"
-          className="w-full bg-transparent border-0 outline-hidden focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 rounded px-1 py-1 resize-none text-base md:text-[15px] text-slate-900 placeholder:text-slate-400 leading-relaxed flex-1 font-normal"
+          className="w-full bg-transparent border-0 outline-hidden focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 rounded px-1 py-1 resize-none text-base md:text-[15px] text-slate-900 placeholder:text-slate-400 leading-relaxed flex-1 font-normal"
         />
         
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-t border-slate-100/80 pt-3">

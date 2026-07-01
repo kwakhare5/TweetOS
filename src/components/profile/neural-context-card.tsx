@@ -15,7 +15,7 @@ export function NeuralContextCard({
   inspirationsContext, setInspirationsContext
 }: NeuralContextCardProps) {
   return (
-    <div className="relative flex flex-col bg-[#FEF9C3] rounded-xl border border-yellow-200 shadow-[0_8px_30px_rgba(234,179,8,0.12)] sm:rotate-[0.3deg] rotate-0">
+    <div className="relative flex flex-col bg-[#FEF9C3] rounded-xl border border-yellow-200 shadow-[0_8px_30px_rgba(234,179,8,0.12)] sm:rotate-[0.3deg] rotate-0 transition-transform hover:rotate-0">
       {/* Paperclip overlay */}
       <Paperclip className="absolute top-[-16px] left-[85%] z-20 select-none pointer-events-none rotate-[10deg]" />
 
@@ -42,7 +42,7 @@ export function NeuralContextCard({
             aria-label="Second Brain"
             value={secondBrain} 
             onChange={(e) => setSecondBrain(e.target.value)} 
-            placeholder="Daily context dump... e.g. shipping local compilers, Pune weather sucks, debugging zustand hydration issues"
+            placeholder="Daily context dump… e.g. shipping local compilers, Pune weather sucks, debugging zustand hydration issues"
             className="bg-transparent border-0 outline-hidden focus-visible:ring-2 focus-visible:ring-amber-400/50 focus-visible:ring-offset-2 rounded px-2 py-1 resize-none min-h-[110px] text-yellow-950/95 placeholder:text-yellow-600/50 leading-[28px] font-handwriting text-base"
             style={{
               backgroundImage: "linear-gradient(to bottom, transparent 27px, rgba(202,138,4,0.15) 27px)",
@@ -61,7 +61,7 @@ export function NeuralContextCard({
             aria-label="Inspiration Context"
             value={inspirationsContext} 
             onChange={(e) => setInspirationsContext(e.target.value)} 
-            placeholder="Paste tweet structures, copywriting hooks, formatting styles or blueprints from creators you admire..."
+            placeholder="Paste tweet structures, copywriting hooks, formatting styles or blueprints from creators you admire…"
             className="bg-transparent border-0 outline-hidden focus-visible:ring-2 focus-visible:ring-amber-400/50 focus-visible:ring-offset-2 rounded px-2 py-1 resize-none min-h-[110px] text-yellow-950/95 placeholder:text-yellow-600/50 leading-[28px] font-handwriting text-base"
             style={{
               backgroundImage: "linear-gradient(to bottom, transparent 27px, rgba(202,138,4,0.15) 27px)",

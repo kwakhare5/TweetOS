@@ -222,6 +222,8 @@ export const TweetMedia = ({ tweet }: { tweet: EnrichedTweet }) => {
               // @ts-expect-error package doesn't have type definitions
               tweet.card.binding_values.thumbnail_image_large.image_value.url
             }
+            width={1200}
+            height={628}
             className="h-64 rounded-xl border object-cover shadow-sm"
             alt={tweet.text}
           />

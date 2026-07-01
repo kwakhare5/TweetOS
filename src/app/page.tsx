@@ -79,7 +79,7 @@ export default function Dashboard() {
         </div>
 
         {/* Right Column: macOS Yellow Sticky Note */}
-        <div className="lg:col-span-5 flex flex-col sm:rotate-[0.5deg] rotate-0">
+        <div className="lg:col-span-5 flex flex-col">
           <SecondBrainNote 
             initialText={profile.secondBrain || ""} 
             onSave={(text) => updateProfile({ secondBrain: text })} 

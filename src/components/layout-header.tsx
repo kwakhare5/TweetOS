@@ -38,7 +38,7 @@ export function LayoutHeader() {
           onClick={triggerSearch}
           type="button"
           aria-label="Search"
-          className="md:hidden flex h-8 w-8 items-center justify-center rounded-lg border border-slate-200/60 bg-white text-slate-600 hover:bg-slate-50 hover:text-slate-900 active:scale-95 shadow-3xs transition-all cursor-pointer"
+          className="md:hidden flex h-8 w-8 items-center justify-center rounded-lg border border-slate-200/60 bg-white text-slate-600 hover:bg-slate-50 hover:text-slate-900 active:scale-95 shadow-3xs transition-all cursor-pointer focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-slate-800 focus-visible:ring-offset-2"
         >
           <Search className="size-4" />
         </button>

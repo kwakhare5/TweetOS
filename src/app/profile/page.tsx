@@ -109,7 +109,7 @@ export default function ProfilePage() {
           ) : (
             <Save className="h-3.5 w-3.5 mr-1" />
           )}
-          {isSaving ? "Syncing..." : "Save DNA"}
+          {isSaving ? "Syncing…" : "Save DNA"}
         </Button>
       </div>
 
@@ -148,7 +148,7 @@ export default function ProfilePage() {
               {isSaving ? (
                 <>
                   <RefreshCw className="mr-2 h-4 w-4 animate-spin" />
-                  Syncing DNA...
+                  Syncing DNA…
                 </>
               ) : (
                 <>
