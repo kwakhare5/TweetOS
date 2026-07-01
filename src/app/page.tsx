@@ -3,17 +3,17 @@
 import { useState, useEffect } from "react"
 
 import { useProfileStore } from "@/store/use-profile-store"
-import { useTweetGenerator } from "@/hooks/use-tweet-generator"
-import { RawTweetEditor } from "@/components/dashboard/raw-tweet-editor"
-import { TailoredOutput } from "@/components/dashboard/tailored-output"
+import { useTweetComposer } from "@/hooks/use-tweet-composer"
+import { TweetComposer } from "@/components/dashboard/tweet-composer"
+import { PolishedDraftPreview } from "@/components/dashboard/polished-draft-preview"
 import { SecondBrainNote } from "@/components/dashboard/second-brain-note"
-import { RecentPosts } from "@/components/dashboard/recent-posts"
+import { RecentTweets } from "@/components/dashboard/recent-tweets"
 
 export default function Dashboard() {
   const { profile, updateProfile } = useProfileStore()
   const [mounted, setMounted] = useState(false)
   
-  const tweetGen = useTweetGenerator(profile)
+  const tweetGen = useTweetComposer(profile)
 
   useEffect(() => {
     if (profile) {
@@ -47,30 +47,30 @@ export default function Dashboard() {
         
         {/* Left Column: Tweet Editor & Output */}
         <div className="lg:col-span-7 flex flex-col gap-6">
-          <RawTweetEditor 
+          <TweetComposer 
             profile={profile}
-            rawTweet={tweetGen.rawTweet}
-            setRawTweet={tweetGen.setRawTweet}
-            isTailoring={tweetGen.isTailoring}
+            brainDump={tweetGen.brainDump}
+            setBrainDump={tweetGen.setBrainDump}
+            isPolishing={tweetGen.isPolishing}
             isGeneratingIdea={tweetGen.isGeneratingIdea}
             activeBrainstormAction={tweetGen.activeBrainstormAction}
             setActiveBrainstormAction={tweetGen.setActiveBrainstormAction}
             handleGenerateIdea={tweetGen.handleGenerateIdea}
             handleCopyTrending={tweetGen.handleCopyTrending}
             handleCopyEngagement={tweetGen.handleCopyEngagement}
-            handleTailor={tweetGen.handleTailor}
+            handlePolish={tweetGen.handlePolish}
           />
           
-          <TailoredOutput 
-            tailoredTweet={tweetGen.tailoredTweet}
+          <PolishedDraftPreview 
+            polishedDraft={tweetGen.polishedDraft}
             hooks={tweetGen.hooks}
             factCheck={tweetGen.factCheck}
-            activeTone={tweetGen.activeTone}
-            isTailoring={tweetGen.isTailoring}
-            copiedDraft={tweetGen.copiedDraft}
+            activeStyle={tweetGen.activeStyle}
+            isPolishing={tweetGen.isPolishing}
+            copiedPolishedDraft={tweetGen.copiedPolishedDraft}
             copiedGrok={tweetGen.copiedGrok}
-            handleTailor={tweetGen.handleTailor}
-            handleCopyDraft={tweetGen.handleCopyDraft}
+            handlePolish={tweetGen.handlePolish}
+            handleCopyPolishedDraft={tweetGen.handleCopyPolishedDraft}
             handleCopyGrok={tweetGen.handleCopyGrok}
           />
         </div>
@@ -85,7 +85,7 @@ export default function Dashboard() {
       </div>
 
       {/* Recent Tweets Section */}
-      <RecentPosts profile={profile} />
+      <RecentTweets profile={profile} />
     </div>
   )
 }

@@ -4,7 +4,7 @@
 import dynamic from 'next/dynamic'
 import { WashiTape } from "@/components/ui/washi-tape"
 
-const TweetMetaPreview = dynamic(() => import('@/components/dashboard/tweet-meta-preview').then(mod => mod.TweetMetaPreview), { ssr: false })
+const InspirationTweetPreview = dynamic(() => import('@/components/dashboard/inspiration-tweet-preview').then(mod => mod.InspirationTweetPreview), { ssr: false })
 
 export default function InspirationPage() {
   return (
@@ -20,7 +20,7 @@ export default function InspirationPage() {
         <div className="relative w-full max-w-xl bg-card border rounded-xl p-5 shadow-sm rotate-[0.3deg] ">
           {/* Translucent Washi Tape with diagonal stripes pattern */}
           <WashiTape className="rotate-[-2deg]" />
-          <TweetMetaPreview />
+          <InspirationTweetPreview />
         </div>
         
         <p className="text-sm text-muted-foreground mt-8 max-w-md">

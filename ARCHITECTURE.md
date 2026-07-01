@@ -1,206 +1,59 @@
-# TweetOS — Minimalist Tailoring Node
-## Architecture & Build Document v3.0
+# TweetOS: Technical Architecture & Implementation Blueprint
 
-> **What this is:** A hyper-minimalist local interface designed to bridge raw, unedited thoughts with Grok's cloud intelligence. It uses the user's Creator DNA to format ideas, and relies entirely on Grok for validation, trend hunting, and engagement strategies.
+## Overview
+TweetOS is built as a fast, offline-first Next.js web application. It combines rapid local state management with a background synchronization layer to ensure data persistence without compromising UI speed.
 
----
+## Core Technology Stack
+- **Framework**: Next.js 15 (App Router).
+- **Styling**: Tailwind CSS v4, utilizing a highly customized Neo-Skeuomorphic design system (see `CONTEXT.md` for visual details).
+- **Icons & Graphics**: Lucide React for standard iconography, custom inline SVGs for skeuomorphic elements (e.g., paperclips).
+- **State Management**: Zustand (Client-side global state).
+- **Database & Sync**: Supabase (PostgreSQL) for remote background sync.
+- **AI Integration**: `@google/generative-ai` (Gemini API) for local text generation and ideation.
 
-## Tech Stack
+## Data & State Architecture
 
-| Layer     | Tool                        | Why                                                |
-| --------- | --------------------------- | -------------------------------------------------- |
-| Framework | Next.js 15 (App Router)     | File-based routing, Vercel-native                  |
-| Language  | TypeScript                  | Type safety on all data models                     |
-| Styling   | Tailwind CSS v4             | Fast, clean, dark theme, glassmorphic panels       |
-| Icons     | lucide-react                | Professional icons                                 || AI        | Google Gemini 2.5 Pro       | Local text formatting via `@google/genai`          |
-| State     | Zustand                     | Fully local-first, zero latency, runs in browser   |
+### 1. Hybrid Sync Client (Zustand + Supabase)
+TweetOS prioritizes zero-latency interactions by using a "Local-First" architecture.
 
----
+- **Zustand Local Stores**: All application state (Creator DNA, active brain dumps, saved drafts) is managed via Zustand stores (`use-profile-store.ts`, `use-drafts-store.ts`).
+- **Local Storage Persistence**: The stores use Zustand's `persist` middleware. This means every state change is immediately written to the browser's Local Storage, providing instant offline caching and lightning-fast page loads.
+- **Supabase Background Synchronization**: 
+  - The application is wrapped in a `<SupabaseProvider>` (`src/components/supabase-provider.tsx`).
+  - On startup, this provider fetches the remote PostgreSQL tables (`profiles` and `drafts`).
+  - It handles two-way synchronization: If the remote database is empty, it uploads the local backups. During normal usage, store actions instantly update the local Zustand state while triggering asynchronous background `upsert` or `delete` requests to Supabase.
+  - *Rule*: Components must **never** query Supabase directly. They must always read from and write to the Zustand stores.
 
-## Core Paradigm: The 2-Step Flow
+### 2. The AI Pipeline (Gemini & Grok Packaging)
+TweetOS splits AI execution into two distinct phases:
 
-The old architecture was bloated with local scoring algorithms, libraries, and engagement dashboards. All of that has been aggressively deleted. 
+**Phase A: Local Generation (Gemini)**
+- Handled primarily by `src/hooks/use-tweet-composer.ts` and `src/lib/gemini.ts`.
+- When the user clicks "Polish Draft" or "Generate Idea", a prompt is constructed using the `UNIFIED_ROUTER_PROMPT` or `IDEA_GENERATOR_PROMPT`.
+- The prompt injects the user's Creator DNA (Voice, Guardrails, Avoid Words) and current context (Second Brain notes).
+- The Gemini API executes this request locally, returning a polished JSON payload or text, which is parsed and set in the local state for display.
 
-**TweetOS is now a pure passthrough node:**
-1. **Local Generation & Tailoring**: 
-   - **Generate Idea**: Clicking "Generate Idea" calls Gemini (locally) using the target Inspiration DNA blueprint and your Second Brain daily context to generate a complete dev-focused draft.
-   - **Tailor Draft**: Paste a raw thought/dump into the card, and Gemini formats it into a highly polished 280-char draft using your Voice rules and Inspiration blueprint.
-2. **Cloud Validation (Grok Packets)**: 1-click generators create massive, context-rich prompts. Paste these into Grok to execute the heavy lifting (scoring, trend discovery, reply generation).
+**Phase B: Stateless Execution (Grok Packets)**
+- TweetOS deliberately avoids connecting to the X/Twitter API or scraping live data.
+- Instead, it generates **"Grok Packets"** via `src/lib/grok-packager.ts`.
+- When the user clicks "Topic Hunt", "Engage Hunt", or "Copy for Grok", the app constructs a massive, highly detailed system prompt containing the user's profile context, target accounts, and the specific task (e.g., "Find trending topics for this niche").
+- This packet is copied to the user's clipboard to be pasted manually into Grok on X, bypassing the need for complex API integrations while leveraging Grok's live access to the X firehose.
 
----
+## File Structure & Routing
 
-## File Structure
+### `/src/app/` (Next.js App Router)
+- `layout.tsx`: Root layout defining fonts, rendering the `<SupabaseProvider>`, the `<LayoutHeader>`, and the mobile bottom navigation.
+- `page.tsx` (Command Center): The primary dashboard assembling the Tweet Composer, Polished Draft Preview, Second Brain Note, and Recent Tweets grid.
+- `profile/page.tsx` (Creator DNA): The settings interface assembling the Voice Profile, Core Identity, Guardrails, Avoid Words, and API Key configuration cards.
+- `inspiration/page.tsx`: The inspiration feed for viewing architectural tweet blueprints.
 
-```
-tweetOS/
-├── src/
-│   ├── app/
-│   │   ├── layout.tsx
-│   │   ├── page.tsx                      # Command Center (Minimal Dashboard)
-│   │   ├── profile/page.tsx              # Profile, Second Brain, Inspiration Context
-│   │   ├── inspiration/page.tsx          # Inspiration references page
-│   │   ├── analytics/page.tsx            # Analytics statistics page
-│   │   ├── globals.css                   
-│   │   ├── error.tsx
-│   │   └── loading.tsx
-│   │
-│   ├── components/
-│   │   ├── app-sidebar.tsx               # App Sidebar config
-│   │   ├── mobile-bottom-nav.tsx         # Mobile floating bottom bar
-│   │   ├── layout-header.tsx             # Shared header layout component
-│   │   ├── breadcrumbs.tsx               # Header breadcrumbs navigation
-│   │   ├── command-menu.tsx              # Command Search Dialog trigger (Ctrl+K)
-│   │   ├── theme-provider.tsx            # Theme provider context wrapper
-│   │   └── ui/
-│   │       ├── button.tsx
-│   │       ├── command.tsx
-│   │       ├── dialog.tsx
-│   │       ├── dropdown-menu.tsx
-│   │       ├── input-group.tsx
-│   │       ├── input.tsx
-│   │       ├── label.tsx
-│   │       ├── sidebar.tsx
-│   │       ├── sonner.tsx
-│   │       ├── switch.tsx
-│   │       ├── textarea.tsx
-│   │       └── tooltip.tsx
-│   │
-│   ├── lib/
-│   │   ├── gemini.ts                     # Google GenAI integration
-│   │   ├── prompts.ts                    # Routing & Tailoring prompts
-│   │   ├── grok-packager.ts              # 3 packet types: Draft, Trending, Engagement
-│   │   └── utils.ts
-│   │
-│   ├── types/
-│   │   └── index.ts
-│   │
-│   ├── store/
-│   │   ├── use-draft-store.ts            # Local draft archive store
-│   │   └── use-profile-store.ts          # Profile + Second Brain + Inspiration DNA
-│   │
-│   └── data/
-│       └── seed-profile.ts               # Default profile
-│
-│── e2e/
-│   └── dashboard.spec.ts                 # Playwright E2E tests
-├── .env.local
-├── CLAUDE.md                             # Rules & Mistake Tracker
-├── CONTEXT.md                            # Domain definitions
-├── README.md                             # Project overview
-└── next.config.ts
-```
+### `/src/components/`
+- **`dashboard/`**: Contains the core mechanics for the main page (`tweet-composer.tsx`, `polished-draft-preview.tsx`, `recent-tweets.tsx`, `second-brain-note.tsx`).
+- **`profile/`**: Contains the configuration cards for the Creator DNA (`voice-profile-card.tsx`, `guardrails-card.tsx`, `avoid-words-card.tsx`, `api-key-config.tsx`).
+- **`ui/`**: Low-level, reusable design system components (buttons, dropdowns, specialized skeuomorphic SVGs like `<Paperclip>`).
 
----
-
-## TypeScript Data Models
-
-**File:** `src/types/index.ts`
-
-```typescript
-// ─── PROFILE ─────────────────────────────────────────────────────────────────
-
-export interface UserProfile {
-  name: string
-  twitterHandle: string
-  niche: string
-  bio: string
-  contentPillars: ContentPillar[]
-  voice: VoiceConfig
-  audience: AudienceConfig
-  goals: string[]
-  admiredAccounts: string[]
-  postingFrequency: string
-  secondBrain?: string
-  inspirationsContext?: string
-  geminiApiKey?: string
-  createdAt: string
-  updatedAt: string
-}
-
-export interface ContentPillar {
-  id: string
-  name: string
-  description: string
-  percentage: number
-}
-
-export interface VoiceConfig {
-  tone: string
-  avoidList: string[]
-  exampleTweets: string[]
-  admiredExampleTweets: string[]
-  writingStyle: string
-  learningNotes: string[]
-}
-
-export interface AudienceConfig {
-  currentAudience: string
-  targetAudience: string
-  audienceProblems: string[]
-  audienceGoals: string[]
-}
-
-// ─── TWEET DRAFT ──────────────────────────────────────────────────────────────
-
-export interface TweetDraft {
-  id: string
-  content: string
-  isThread: boolean
-  threadTweets?: string[]
-  pillarId: string
-  momentType: string
-  hookVariations: string[]
-  algorithmScore: {
-    overall: number
-    suggestions: string[]
-    calculatedAt: string
-    [key: string]: unknown
-  } // Kept for type stability, unused locally
-  sessionId?: string
-  factCheckNote?: string
-  status: 'draft' | 'polished' | 'posted' | 'archived'
-  createdAt: string
-  updatedAt: string
-}
-
-// ─── GROK PACKET ──────────────────────────────────────────────────────────────
-
-export type GrokPacketMode = 'draft' | 'engagement' | 'trending'
-
-export interface DraftPacketConfig {
-  mode: 'draft'
-  selectedDraftIds: string[]
-  dumpMode?: 'dev' | 'personal' | 'shitpost' | 'auto'
-  customRequest?: string
-  includeScores?: boolean
-}
-
-export interface TrendingPacketConfig {
-  mode: 'trending'
-  focusAreas: string[]
-  customRequest?: string
-}
-
-export interface EngagementPacketConfig {
-  mode: 'engagement'
-  targetAccounts: string[]
-  topicKeywords: string[]
-  opportunityTypes: string[]
-  customRequest?: string
-}
-```
-
----
-
-## The Grok Packagers (`src/lib/grok-packager.ts`)
-
-Since Grok is stateless, we generate massive text prompts ("Packets") containing the full user context to paste into Grok.
-
-1. **Draft Review Packet (`generateDraftPacket`)**:
-   Injects the `UserProfile` + `InspirationsContext` + `SecondBrain` + the raw Draft. Commands Grok to score the draft and rewrite it explicitly cloning the Inspiration DNA.
-
-2. **Topic Hunt Packet (`generateTrendingPacket`)**:
-   Injects the `UserProfile` + `InspirationsContext` + `SecondBrain`. Commands Grok to scour X for live trends and generate 3 ideas perfectly matched to the user's Creator DNA.
-
-3. **Engagement Hunt Packet (`generateEngagementPacket`)**:
-   Injects the `UserProfile` + `InspirationsContext`. Commands Grok to find reply and quote-tweet opportunities for the target audience and draft responses using the Inspiration DNA.
+### `/src/lib/` & `/src/hooks/`
+- **`lib/gemini.ts`**: Wrapper for the `@google/generative-ai` SDK.
+- **`lib/prompts.ts`**: The central repository for all Gemini system prompts and router logic.
+- **`lib/grok-packager.ts`**: Utility functions for assembling the clipboard-ready Grok packets.
+- **`hooks/use-tweet-composer.ts`**: The monolithic React hook managing the state, loading indicators, and API calls for the Tweet Composer component.

@@ -8,10 +8,10 @@ import { toast } from "sonner"
 import { Save, RefreshCw } from "lucide-react"
 
 import { CoreIdentityCard } from "@/components/profile/core-identity-card"
-import { SubroutinesCard } from "@/components/profile/subroutines-card"
+import { GuardrailsCard } from "@/components/profile/guardrails-card"
 import { ApiKeyConfig } from "@/components/profile/api-key-config"
-import { NeuralContextCard } from "@/components/profile/neural-context-card"
-import { LexiconFilters } from "@/components/profile/lexicon-filters"
+import { VoiceProfileCard } from "@/components/profile/voice-profile-card"
+import { AvoidWordsCard } from "@/components/profile/avoid-words-card"
 
 export default function ProfilePage() {
   const { profile, updateProfile } = useProfileStore()
@@ -120,17 +120,17 @@ export default function ProfilePage() {
             twitterHandle={twitterHandle} setTwitterHandle={setTwitterHandle}
             niche={niche} setNiche={setNiche}
           />
-          <SubroutinesCard />
+          <GuardrailsCard />
           <ApiKeyConfig geminiApiKey={geminiApiKey} setGeminiApiKey={setGeminiApiKey} />
         </div>
 
         {/* Right Column: Neural Context, Lexicon */}
         <div className="lg:col-span-6 flex flex-col gap-6">
-          <NeuralContextCard 
+          <VoiceProfileCard 
             secondBrain={secondBrain} setSecondBrain={setSecondBrain}
             inspirationsContext={inspirationsContext} setInspirationsContext={setInspirationsContext}
           />
-          <LexiconFilters 
+          <AvoidWordsCard 
             avoidListString={avoidListString} setAvoidListString={setAvoidListString}
           />
 

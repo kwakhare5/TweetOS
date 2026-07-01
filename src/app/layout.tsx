@@ -9,7 +9,7 @@ import {
   SidebarProvider,
 } from "@/components/ui/sidebar"
 import { TooltipProvider } from "@/components/ui/tooltip"
-import { CommandMenu } from "@/components/command-menu"
+
 import { LayoutHeader } from "@/components/layout-header"
 import { MobileBottomNav } from "@/components/mobile-bottom-nav"
 import { SupabaseProvider } from "@/components/supabase-provider"
@@ -67,7 +67,6 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
                   </main>
                 </SidebarInset>
                 <MobileBottomNav />
-                <CommandMenu />
                 <Toaster />
               </SidebarProvider>
             </SupabaseProvider>

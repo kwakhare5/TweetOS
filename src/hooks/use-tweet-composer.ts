@@ -1,6 +1,6 @@
 import { useState } from "react"
 import { toast } from "sonner"
-import { Profile, TweetDraft } from "@/types"
+import { UserProfile, TweetDraft } from "@/types"
 import { geminiText } from "@/lib/gemini"
 import { UNIFIED_ROUTER_PROMPT, IDEA_GENERATOR_PROMPT } from "@/lib/prompts"
 import { 
@@ -9,63 +9,63 @@ import {
   generateEngagementPacket 
 } from "@/lib/grok-packager"
 
-export function useTweetGenerator(profile: Profile) {
+export function useTweetComposer(profile: UserProfile) {
   // Core state
-  const [rawTweet, setRawTweet] = useState("")
-  const [activeTone, setActiveTone] = useState<"dev" | "personal" | "shitpost" | "auto">("auto")
-  const [isTailoring, setIsTailoring] = useState(false)
-  const [tailoredTweet, setTailoredTweet] = useState("")
+  const [brainDump, setBrainDump] = useState("")
+  const [activeStyle, setActiveStyle] = useState<"dev" | "personal" | "shitpost" | "auto">("auto")
+  const [isPolishing, setIsPolishing] = useState(false)
+  const [polishedDraft, setPolishedDraft] = useState("")
   const [hooks, setHooks] = useState<string[]>([])
   const [factCheck, setFactCheck] = useState("")
   
   // UI states
-  const [copiedDraft, setCopiedDraft] = useState(false)
+  const [copiedPolishedDraft, setCopiedPolishedDraft] = useState(false)
   const [copiedGrok, setCopiedGrok] = useState(false)
   const [isGeneratingIdea, setIsGeneratingIdea] = useState(false)
   const [activeBrainstormAction, setActiveBrainstormAction] = useState<"idea" | "trending" | "engagement">("idea")
 
-  const handleTailor = async (overrideTone?: "dev" | "personal" | "shitpost" | "auto") => {
-    if (!rawTweet.trim()) {
+  const handlePolish = async (overrideStyle?: "dev" | "personal" | "shitpost" | "auto") => {
+    if (!brainDump.trim()) {
       toast.error("Please enter a raw tweet or idea first.")
       return
     }
 
-    setIsTailoring(true)
-    setTailoredTweet("")
+    setIsPolishing(true)
+    setPolishedDraft("")
     setHooks([])
     setFactCheck("")
 
-    const targetTone: "dev" | "personal" | "shitpost" | "auto" = overrideTone || "auto"
-    setActiveTone(targetTone)
+    const targetStyle: "dev" | "personal" | "shitpost" | "auto" = overrideStyle || "auto"
+    setActiveStyle(targetStyle)
 
     try {
-      const prompt = UNIFIED_ROUTER_PROMPT(rawTweet, profile, "", targetTone)
+      const prompt = UNIFIED_ROUTER_PROMPT(brainDump, profile, "", targetStyle)
       const res = await geminiText(prompt)
       
       try {
         const parsed = JSON.parse(res)
         if (parsed.intent === "draft" && parsed.moments?.[0]) {
           const mainMoment = parsed.moments[0]
-          setTailoredTweet(mainMoment.tweet || "")
+          setPolishedDraft(mainMoment.tweet || "")
           setHooks(mainMoment.hookVariations || [])
           setFactCheck(mainMoment.factCheckNote || "")
         } else if (parsed.tightenedText) {
-          setTailoredTweet(parsed.tightenedText)
+          setPolishedDraft(parsed.tightenedText)
         } else if (parsed.tweet) {
-          setTailoredTweet(parsed.tweet)
+          setPolishedDraft(parsed.tweet)
         } else {
-          setTailoredTweet(res) // fallback to raw
+          setPolishedDraft(res) // fallback to raw
         }
       } catch {
         // Fallback for non-JSON or raw text return
-        setTailoredTweet(res)
+        setPolishedDraft(res)
       }
 
-      toast.success("Tweet tailored successfully!")
+      toast.success("Tweet polished successfully!")
     } catch (err: unknown) {
-      toast.error(err instanceof Error ? err.message : "Tailoring failed.")
+      toast.error(err instanceof Error ? err.message : "Polishing failed.")
     } finally {
-      setIsTailoring(false)
+      setIsPolishing(false)
     }
   }
 
@@ -76,10 +76,10 @@ export function useTweetGenerator(profile: Profile) {
       const res = await geminiText(prompt)
       const idea = res.trim()
       
-      if (rawTweet.trim()) {
-        setRawTweet(prev => `${prev}\n\n${idea}`)
+      if (brainDump.trim()) {
+        setBrainDump(prev => `${prev}\n\n${idea}`)
       } else {
-        setRawTweet(idea)
+        setBrainDump(idea)
       }
       toast.success("Idea generated!")
     } catch (err: unknown) {
@@ -89,24 +89,24 @@ export function useTweetGenerator(profile: Profile) {
     }
   }
 
-  const handleCopyDraft = async () => {
-    if (!tailoredTweet) return
+  const handleCopyPolishedDraft = async () => {
+    if (!polishedDraft) return
     try {
-      await navigator.clipboard.writeText(tailoredTweet)
-      setCopiedDraft(true)
+      await navigator.clipboard.writeText(polishedDraft)
+      setCopiedPolishedDraft(true)
       toast.success("Draft copied to clipboard!")
-      setTimeout(() => setCopiedDraft(false), 2000)
+      setTimeout(() => setCopiedPolishedDraft(false), 2000)
     } catch {
       toast.error("Failed to copy.")
     }
   }
 
   const handleCopyGrok = async () => {
-    if (!tailoredTweet) return
+    if (!polishedDraft) return
     try {
       const mockDraft: TweetDraft = {
         id: "temp",
-        content: tailoredTweet,
+        content: polishedDraft,
         isThread: false,
         threadTweets: [],
         pillarId: "",
@@ -126,7 +126,7 @@ export function useTweetGenerator(profile: Profile) {
       const packet = generateDraftPacket(profile, [mockDraft], {
         mode: "draft",
         selectedDraftIds: ["temp"],
-        dumpMode: activeTone,
+        dumpMode: activeStyle,
         includeScores: false
       })
 
@@ -165,19 +165,19 @@ export function useTweetGenerator(profile: Profile) {
   }
 
   return {
-    rawTweet, setRawTweet,
-    activeTone, setActiveTone,
-    isTailoring,
-    tailoredTweet,
+    brainDump, setBrainDump,
+    activeStyle, setActiveStyle,
+    isPolishing,
+    polishedDraft,
     hooks,
     factCheck,
-    copiedDraft,
+    copiedPolishedDraft,
     copiedGrok,
     isGeneratingIdea,
     activeBrainstormAction, setActiveBrainstormAction,
-    handleTailor,
+    handlePolish,
     handleGenerateIdea,
-    handleCopyDraft,
+    handleCopyPolishedDraft,
     handleCopyGrok,
     handleCopyTrending,
     handleCopyEngagement

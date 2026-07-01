@@ -1,41 +1,33 @@
-# CLAUDE.md — Local Project Context
+# Agent Instructions (TweetOS)
 
-# Note: All AI behaviors, commands (@TDD, @GRILL), and context maintenance rules
+As an AI agent working on this repository, you must strictly adhere to the following rules, conventions, and architectural guidelines. Failure to follow these rules will break the application's unique visual identity and offline-first performance.
 
-# are now globally enforced via ~/.gemini/config/AGENTS.md. Do not duplicate them here.
+## 1. Design & UI Guardrails (CRITICAL)
+TweetOS uses a highly custom **Neo-Skeuomorphic (SaaS & Scrapbook Fusion)** design system. It is meant to feel like a physical desk with premium digital components.
 
----
+- **NO "AI Slop"**: You are strictly forbidden from adding glowing ambient background blur blobs, neon text, or over-animated gradient borders.
+- **NO Purple/Generic SaaS Colors**: Do not use generic purple or indigo gradients. Stick to the defined physical color palette: off-white/beige canvas grids (`#FAF8F5`), charcoal/slate for high-contrast text (`#020617` / `text-slate-950`), and specific physical item colors like sticky-note yellow (`#FEF9C3`).
+- **Use the Existing Skeuomorphic Elements**: When creating new cards or notes, leverage the existing UI motifs:
+  - Slight physical rotations (e.g., `rotate-[-0.3deg]`).
+  - Washi tape anchors (simulated frosted tape).
+  - Tactile 3D metal paperclips (import from existing components).
+- **Typography**: Strictly use `DM Sans` (or `Geist`) for body/headings and `Fira Code` for monospace/system labels. Do not import new Google fonts arbitrarily.
+- **Minimalism**: Do not clutter the dashboard (`/`). If a feature adds friction to the core 2-step (Ideate -> Grok) workflow, it should be hidden in settings or discarded.
 
-## 1. PROJECT IDENTITY
+## 2. Architecture & State Management
+TweetOS uses a **Local-First** hybrid architecture.
 
-**Name:** TweetOS
-**Goal:** Personal Twitter growth system — replicates inspiration creator DNA combined with user's live second brain context, drafts/tailors tweets locally with Gemini, and packages stateless packets for Grok scoring and trend hunting.
+- **Zustand is the Source of Truth**: All UI components must read from and write to the local Zustand stores (e.g., `use-profile-store.ts`).
+- **DO NOT Query Supabase Directly**: Never write `supabase.from('profiles').select('*')` directly inside a UI component to fetch active state. The `<SupabaseProvider>` handles background synchronization automatically. Your job is to update the Zustand store, and the provider will handle pushing it to the database in the background.
+- **Grok Packets over Live APIs**: Do not attempt to integrate the Twitter/X API. TweetOS interacts with X exclusively by generating massive, structured system prompts ("Grok Packets") that the user copies to their clipboard and pastes into Grok manually.
 
-**AI POINTER:** If you need database schemas, business logic, prompt templates, or third-party API details, you MUST autonomously read `ARCHITECTURE.md`. Do not guess.
+## 3. Code Organization & Commands
+- **Check Existing Components First**: Before building a new UI component, check `src/components/dashboard` and `src/components/profile` to see if a reusable skeuomorphic card or button already exists.
+- **Next.js 15 App Router**: Ensure all new pages are added to `src/app/` following Next.js 15 server/client component conventions. Use `"use client"` only at the leaf nodes where interactivity (hooks, event listeners) is required.
+- **Verification**: Always run `npm run lint` and `npx tsc --noEmit` after modifying React components or TypeScript types. Ensure zero errors before concluding your work.
 
-## 2. TECH STACK
-
-- **Frontend:** Next.js 15 (App Router), TypeScript, Tailwind CSS v4, shadcn/ui, lucide-react
-- **Backend:** None (100% local-first, runs entirely in browser Local Storage)
-- **AI:** Google Gemini 2.5 Flash via `@google/genai`
-- **State:** Zustand (with persist middleware)
-- **Hosting:** Vercel
-
-## 3. EXECUTION & VERIFICATION
-
-- **Run Dev Server:** `npm run dev`
-- **Run Linting:** `npm run lint`
-- **Run Build:** `npm run build`
-
-## 4. LOCAL ARCHITECTURE RULES
-
-1. **All prompts → `src/lib/prompts.ts` ONLY.** Never inline AI prompts in components.
-2. **All types → `src/types/index.ts`.** No local type definitions scattered across files.
-3. **280-char limit is a HARD FAIL in scorer, not a weak signal.** Enforce at UI level too (live counter everywhere).
-4. **Mobile-first.** Bottom tab bar is primary nav. Sidebar = desktop only.
-5. **Seed profile auto-loads on mount** (`src/data/seedProfile.ts`) if no profile is found in local storage.
-6. **UI Aesthetic**: Zite-inspired premium light-mode dashboard styling using a soft grayish-white background (`#f9f9fb`), white canvas cards with fine borders, a floating capsule top navigation bar, and custom **DM Sans** (body & headings) paired with **Fira Code** (monospace) typography.
-7. **Inline Tutorials**: No separate tutorial pages; onboarding instructions are integrated directly into the UI.
+## 4. Updates to Documentation
+- If you add a new major feature or alter the state management flow, you must autonomously update `CONTEXT.md` and `ARCHITECTURE.md` to reflect the new state of the project.
 
 ## 5. AI COMMAND CHEAT SHEET
 
@@ -69,8 +61,5 @@ _Autonomously updated by the AI whenever it encounters a project-specific error,
 
 ## 7. CURRENT BUILD PHASE
 
-Phase 16 ✅ DONE — Profile Redesign & Navigation Cleanup
-
-- Redesigned the Profile DNA page (`src/app/profile/page.tsx`) to match the tactile scrapbook neo-skeuomorphic aesthetic, featuring ruled sticky notes, a dark monospace developer console, and silver paperclips.
-- Deleted the placeholder directories and page files (`integrations`, `keys`, `drafts`) and cleaned up navigation references (`app-sidebar.tsx`, `mobile-bottom-nav.tsx`, `breadcrumbs.tsx`, `layout-header.tsx`).
-- Fixed browser dialog context runtime crashes and updated E2E tests to achieve 100% test suite success.
+Phase 17 ✅ DONE — Documentation Overhaul & Design Enforcement
+- Completely rewrote `CONTEXT.md`, `ARCHITECTURE.md`, and `CLAUDE.md` to accurately reflect the 100% Neo-Skeuomorphic visual layer and the Zustand/Supabase Local-First hybrid state architecture.

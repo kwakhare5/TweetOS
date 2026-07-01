@@ -1,78 +1,54 @@
-# Context: TweetOS Domain Context & Status
+# TweetOS: Product Vision & Core Features
 
-## Domain Paradigm: The Tailoring Node
-TweetOS is a hyper-minimal local workspace that acts as a bridge between the user's brain and Grok. It is strictly a 2-step system:
-1. **Local Tailoring**: The user dumps raw thoughts. TweetOS uses Gemini (locally) combined with the user's permanent Voice and Inspiration DNA to format and polish the dump into a 280-character draft.
-2. **Stateless Grok Execution**: The user clicks a button to generate a "Packet" (a massive, context-rich prompt). They paste this packet into Grok to have Grok find trending topics, score/rewrite drafts, or find engagement opportunities on live X.
+## The Paradigm: The Local Tailoring Node
+TweetOS is not an automated AI social media agent that runs in the cloud. It is a **hyper-minimal local workspace** that acts as a bridge between the user's unstructured thoughts and the stateless execution power of Grok. 
 
-## Core Mechanics
+The application operates on a strictly controlled 2-step system:
+1. **Local Tailoring (Gemini)**: The user dumps raw thoughts into the workspace. TweetOS uses Gemini (running locally via API keys) combined with the user's permanent "Creator DNA" (Voice, Guardrails, Avoid Words) to format, polish, and ideate 280-character drafts.
+2. **Stateless Execution (Grok Packets)**: The user clicks a button to generate a "Grok Packet" (a massive, context-rich prompt copied to the clipboard). They paste this packet into Grok on X to have Grok find trending topics, score/rewrite drafts, or find high-value engagement opportunities on live X.
+
+---
+
+## Core Features & Mechanics
 
 ### 1. The Command Center (`/`)
-The entire workspace has been aggressively stripped down to a single minimal interface:
-- **Brain Dump Box / Card Editor**: A massive text area for raw input.
-- **Generate Idea Button**: Uses Gemini to generate a complete, emoji-free tweet draft matching the user's developer persona DNA, populating it directly into the dump box.
-- **Tailor Draft Button**: Refines and polishes the raw dump box content into a highly styled 280-character post draft using the user's Voice and Inspiration DNA.
-- **Topic Hunt Packet Button**: Generates a Grok prompt commanding it to scour X for trending topics and craft ideas perfectly matching the user's Inspiration DNA.
-- **Engage Packet Button**: Generates a Grok prompt commanding it to find reply and quote-tweet opportunities that match the user's niche.
-- **Copy to Grok Button**: After tailoring a draft, this copies a Review Packet for Grok to score and finalize the tweet.
+The main dashboard is aggressively stripped down to focus purely on creation.
+- **Tweet Composer (Brain Dump Box)**: A massive textarea for raw input. Users dump their unfiltered thoughts, ideas, or frustrations here.
+- **Generate Idea**: Uses local Gemini to generate a complete, authentic tweet idea matching the user's persona and appends it to the dump box.
+- **Polish Draft**: Refines the raw brain dump into a highly styled, perfectly formatted 280-character post draft, strictly enforcing the user's Voice and Guardrails.
+- **Topic Hunt**: Generates a Grok prompt commanding Grok to scour X for trending topics and craft ideas perfectly matching the user's specific sub-niche.
+- **Engage Hunt**: Generates a Grok prompt commanding it to find reply and quote-tweet opportunities across the user's admired accounts.
+- **Polished Draft Preview**: Displays the final output after Gemini finishes polishing. Includes a "Copy for Grok" button that generates a Review Packet for Grok to score and finalize the tweet against real-time X data.
+- **Second Brain Note**: A macOS sticky-note widget for dumping random, unstructured context, background info, and daily life updates. It automatically syncs in the background and is injected into Gemini prompts to anchor outputs to real life.
+- **Recent X Posts**: A dedicated 3-column layout grid that cleanly displays the final, published outputs as a historical feed.
 
-### 2. The Inspiration Engine & Creator DNA
-- **Inspirations Context**: A new setting in `/profile` where the user pastes a "Creator DNA Blueprint" (extracted by Grok).
-- **DNA Override**: All local tailoring and Grok packets forcefully instruct the AI to clone the psychological framing, formatting habits, and vocabulary from this Inspiration DNA.
+### 2. Creator DNA Configuration (`/profile`)
+This is the central nervous system of TweetOS. The data configured here strictly controls how Gemini behaves.
+- **Core Identity Card**: Defines the user's name, X handle, and primary sub-niche (e.g., "sarcastic Pune comp-eng student vibe-coding real AI projects").
+- **Voice Profile Card**: A permanent memory bank capturing the user's tone. Ensures outputs are dry, blunt, lowercase-heavy, or frustrated when deserved, rather than reading like generic AI.
+- **System Guardrails Card**: Explicit negative constraints. Prevents the AI from using emojis, hashtags, enthusiastic corporate-speak, or asking engagement-bait questions.
+- **Avoid Words Card**: A strict blocklist (Lexicon Filter) of words the AI is forbidden from using (e.g., "delve", "testament", "crucial", "tapestry").
+- **API Key Configuration**: Secure local storage of the Gemini API key required for all local generation tasks.
 
-### 3. Second Brain (Live Context)
-- Managed in the Profile Settings.
-- A permanent memory bank containing Karan's background, active projects, frustrations, and daily context.
-- Automatically injected into all Gemini tailoring prompts and Grok packets so outputs are anchored to real life, not generic takes.
+### 3. The Inspiration Feed (`/inspiration`)
+- A visual feed of curated tweets that serve as architectural blueprints.
+- Used to clone the structural habits, formatting styles, and pacing of other top creators.
 
-## Architectural Notes
+---
 
-- **Aggressive Minimalism**: The Scorecard, Engage Hub (`/engage`), Workshop utility buttons, and Learning Notes have been completely deleted or hidden from the main dashboard to remove friction.
-- **Premium Command Center Visuals**: The UI is styled with a premium light-mode theme inspired by the Zite website: a floating top capsule navbar, soft off-white/beige canvas grids, borderless cards, and custom `DM Sans` (body & headings) paired with `Fira Code` (monospace) typography. It supports lock-to-screen on desktop for speed, and full scroll responsiveness on mobile viewports.
-- **Power Features**: Keyboard shortcuts like `Ctrl+Enter` to tailor drafts instantly, and a floating Command Palette (`Ctrl+K` dialog modal) for quick navigation.
-- **Hybrid Sync Client (Zustand + Supabase)**: All stores persist their state to browser Local Storage using Zustand's `persist` middleware for instant offline/caching performance. A client-side synchronization wrapper (`SupabaseProvider`) background-syncs this local state with a Supabase PostgreSQL database (`profiles` and `drafts` tables) on startup, uploading local backups if remote tables are uninitialized. Store actions update local state instantly while triggering background upserts/deletes to Supabase.
-- **Mobile-First Responsive Layout**: 
-  - **Mobile Bottom Navigation Bar**: A sticky glassmorphic bottom bar (`bg-[#FAF8F5]/85` with backdrop-blur) that displays on viewports `< md`. Includes quick links for primary screens (Dashboard, Inspiration, Profile) and a "More" action that opens the mobile sidebar drawer sheet.
-  - **Layout Header**: The static layout header is replaced by `<LayoutHeader />`, which renders desktop breadcrumbs or a clean mobile-only page title. Includes a mobile search icon button that dispatches a custom event (`toggle-command-menu`) to trigger the keyboardless command search palette.
-  - **iOS Touch & Sizing Adjustments**: Set all input sizes to `h-9` on mobile for better target size, suppress card rotates on mobile to avoid overflow scrolling, and ensure textareas have a minimum of `16px` font size to block iOS auto-zoom viewport issues.
-  - **Command Dialog Context**: Wrapped the subcomponents in the `<Command>` context provider in `src/components/ui/command.tsx` to fix React 19 / cmdk runtime crashes on page load.
+## Neo-Skeuomorphic Design System (SaaS & Scrapbook Fusion)
 
-## Design System & Theme Guidelines (SaaS & Scrapbook Fusion)
-TweetOS uses a highly custom, tactile **SaaS & Scrapbook Fusion (Neo-Skeuomorphic)** theme. The visual model balances high-performance SaaS components with a physical collage/desk environment.
+TweetOS uses a highly custom, tactile theme. The visual model balances high-performance SaaS components with a physical collage/desk environment.
 
-* **No Purple Color & No AI Slop**: Absolutely no purple gradients, ambient glowing background blur blobs, or hyper-animated gradient text. The design uses clean, flat, physical colors.
-* **Canvas & Page Background (Warm Sepia Dot Grid)**: A global sepia background (#FAF8F5) with a sepia dot-matrix grid (`rgba(120, 90, 40, 0.08)`) spaced at 20px intervals.
-* **Overlapping Card Tilts (Physical Realism)**: Cards and notes are tilted slightly (e.g. `rotate-[-0.2deg]`, `rotate-[0.4deg]`, `rotate-[-0.3deg]`) to simulate physical sheets of paper scattered naturally on a desk.
-* **Translucent Washi Tape Anchors**:
-  * Simulated frosted washi tape (`rgba(254, 240, 138, 0.4)`) with a subtle diagonal sepia-amber stripes pattern holds up the Core Identity, Subroutines, and Tweet Editor cards.
-  * Sits absolutely at the top center of cards and is rotated slightly (`rotate-[-2deg]` or `rotate-[2deg]`).
-* **Tactile Metal Paperclips**:
-  * Custom 3D SVG silver paperclips (featuring realistic metal drop shadows and shiny highlights) are used on notes and details cards (e.g. Second Brain note, Neural Context card).
-  * Placed absolutely at the top-left edge of the card, rotated slightly (`rotate-[-10deg]`).
-* **macOS Yellow Sticky Note (Second Brain)**:
-  * Styled with a warm sticky yellow (#FEF9C3) background and an top window bar (#FEF08A) with simulated close, minimize, and zoom dots (red, yellow, green).
-  * Feature horizontal rules/lines (linear gradient lines spaced at 28px) aligned with the textarea font line height (`leading-[28px]`) so text characters sit precisely on the lines.
-  * No inner labels or sync badges; action controls are integrated directly in the top window bar.
-* **Subtle Premium Controls (Buttons)**:
-  * Primary actions (e.g., Tailor Draft, Synchronize DNA) use bold, clean charcoal fills (`bg-slate-950 text-white hover:bg-slate-900`) and rounded-lg outlines, with subtle lift effects on hover.
-  * Secondary actions use white backgrounds, thin borders (`border-border`), and clean hover transitions.
-  * All buttons feature micro-compression scales on click (`active:scale-[0.98]`) for soft, premium tactile feedback.
-* **Typography**:
-  * **Sans-Serif (Default)**: `Geist` (clean geometric sans-serif) for general copy, headings, and labels.
-  * **Monospace (Secondary)**: `Fira Code` for developer items, system logs, labels, and API input blocks.
-  * **Text Colors**: Dark charcoal/slate (`text-slate-950` / `oklch(0.145 0.008 240)`) for high-contrast primary content; slate-gray (`text-slate-500` / `oklch(0.55 0.01 240)`) for secondary descriptions and labels.
+- **Aggressive Minimalism**: Utility hubs, complex scorecards, and learning notes are hidden or deleted to remove friction.
+- **Premium Canvas**: A floating top capsule navbar, soft off-white/beige canvas grids (#FAF8F5), and borderless cards.
+- **Physical Realism (Overlapping Card Tilts)**: Cards and notes are tilted slightly (e.g., `rotate-[-0.2deg]`, `rotate-[0.4deg]`) to simulate physical sheets of paper scattered naturally on a desk.
+- **Translucent Washi Tape Anchors**: Simulated frosted washi tape (`rgba(254, 240, 138, 0.4)`) with a subtle diagonal stripes pattern holds up the Core Identity, System Guardrails, and Tweet Composer cards. They sit absolutely at the top center of cards and are rotated slightly.
+- **Tactile Metal Paperclips**: Custom 3D SVG silver paperclips featuring realistic metal drop shadows and shiny highlights used on notes and details cards (e.g., Second Brain note).
+- **macOS Yellow Sticky Note (Second Brain)**: Styled with a warm sticky yellow (#FEF9C3) background and a top window bar (#FEF08A) with simulated close, minimize, and zoom dots (red, yellow, green). Features horizontal linear gradient lines aligned precisely with the text line-height.
+- **Typography**: 
+  - `DM Sans` / `Geist` (clean geometric sans-serif) for body and headings.
+  - `Fira Code` (monospace) for developer items, logs, and system labels.
+- **Subtle Premium Controls**: Buttons feature micro-compression scales on click (`active:scale-[0.98]`) for soft, premium tactile feedback. Primary actions use bold charcoal fills (`bg-slate-950`).
 
-## Target Sub-Niche & Profile
-- **Niche**: Lowercase, sarcastic Pune comp-eng student vibe-coding real AI projects and dropping blunt, dry, frustrated takes on tools, shipping, and dev life.
-- **Content Pillars**: Tool Reality Checks, Project Fragments, Journey Notes, Sharp Takes, Quick Connects.
-- **Voice**: Lowercase-heavy, direct, sarcastic/frustrated when deserved, dry wit, short dense sentences.
-
-
-## The Inspiration Replication Loop (Grok & Gemini)
-To clone the structural habits and formatting styles of other creators, TweetOS uses a hybrid extraction workflow:
-1. **Extraction (Grok)**: The user runs a profiling command in Grok while viewing the inspiration target's profile. Grok outputs a structured "Creator DNA Blueprint" mapping their mechanics, hook archetypes, and topic focus.
-2. **Context Seeding (TweetOS)**: The user copies this blueprint and pastes it into the **Inspirations Context** box in `/profile`.
-3. **Local Generation & Tailoring (Gemini)**:
-   - When clicking **Generate Idea**, local Gemini combines the Inspirations Context with the user's active Second Brain and niche to write a complete, dev-focused tweet draft.
-   - When clicking **Tailor Draft**, local Gemini uses this blueprint to format, tilt, and polish the user's custom raw brain dumps.
-
+*(Note: Generic SaaS aesthetics like glowing purple gradient background blobs, neon text, and "AI slop" are strictly prohibited in this design system.)*
