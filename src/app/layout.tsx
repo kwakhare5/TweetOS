@@ -1,5 +1,5 @@
 import type { Metadata } from 'next'
-import { Geist, Fira_Code } from 'next/font/google'
+import { Geist, Fira_Code, Caveat } from 'next/font/google'
 import './globals.css'
 import { Toaster } from "@/components/ui/sonner"
 import { ThemeProvider } from "@/components/theme-provider"
@@ -25,6 +25,12 @@ const firaCode = Fira_Code({
   variable: "--font-mono",
 })
 
+const caveat = Caveat({
+  subsets: ["latin"],
+  variable: "--font-handwriting",
+  weight: ["400", "500", "600", "700"],
+})
+
 export const metadata: Metadata = {
   title: 'TweetOS — Twitter Growth System',
   description: 'Personal AI system for drafting, scoring, and optimizing tweets in your voice.',
@@ -33,7 +39,7 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <body className={`${geist.variable} ${firaCode.variable} font-sans antialiased bg-background text-foreground min-h-screen relative`}>
+      <body className={`${geist.variable} ${firaCode.variable} ${caveat.variable} font-sans antialiased bg-background text-foreground min-h-screen relative`}>
         <ThemeProvider
           attribute="class"
           defaultTheme="light"
