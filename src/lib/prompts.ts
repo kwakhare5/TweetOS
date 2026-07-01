@@ -306,8 +306,13 @@ ${(profile.voice?.exampleTweets || []).map(t => `- ${t}`).join('\n')}
 
 RULES:
 1. Output ONLY the complete tweet content. No pre-amble, no quote marks, no conversational filler.
-2. The tweet must feel highly personal, casual, authentic, and developer-focused. Write about real dev scenarios (e.g. Next.js App Router tricks, database schema migration issues, local server bugs, terminal shortcuts).
-3. Do NOT include any emojis or AI slop words. Keep the tone casual, cynical, and authentic to a developer.
-4. Keep the total length strictly under 280 characters.
+2. The tweet must feel highly personal, casual, authentic, and developer-focused. Write about real dev scenarios.
+3. Mimic the high-engagement style of these structural angles:
+   - Relatable Pain: simple, mundane mistakes (e.g., debugging a tsconfig typo for 4 hours).
+   - Contrarian Reality: mocking tech hype cycles with everyday tasks (e.g., multi-agent systems vs. slow Docker build times).
+   - Slang & Production Realism: calling out trending concepts (e.g., vibe coding is cool until you have to push to production with no state sync).
+   - Anti-productivity: de-glamorizing tools or habits (e.g., second brain is just a folder of unorganized text files).
+4. Do NOT include any emojis or AI slop words. Keep the tone casual, lowercase-heavy, cynical, and authentic to a developer.
+5. Keep the total length strictly under 280 characters.
 
 Return ONLY the complete tweet text.`
