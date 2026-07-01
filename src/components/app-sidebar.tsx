@@ -63,7 +63,13 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
 
   return (
     <Sidebar variant="inset" {...props}>
-      <SidebarHeader>
+      <SidebarHeader className="pt-4 pb-2">
+        {/* macOS Window Controls */}
+        <div className="flex items-center space-x-1.5 px-3 pb-3 border-b border-slate-200/20 select-none">
+          <div className="size-2.5 rounded-full bg-red-400/90 border border-red-500/10" />
+          <div className="size-2.5 rounded-full bg-amber-400/90 border border-amber-500/10" />
+          <div className="size-2.5 rounded-full bg-green-400/90 border border-green-500/10" />
+        </div>
         <SidebarMenu>
           <SidebarMenuItem>
             <SidebarMenuButton size="lg" render={<Link href="/" />}>

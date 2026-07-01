@@ -598,7 +598,14 @@ export default function Dashboard() {
 
           {/* Tailored Output Display (rendered when output exists) */}
           {tailoredTweet && (
-            <div className="border border-border bg-card text-card-foreground shadow-sm rounded-xl p-5 space-y-4">
+            <div className="border border-border bg-card text-card-foreground shadow-sm rounded-xl p-5 space-y-4 relative pt-8">
+              {/* macOS traffic light window dots */}
+              <div className="absolute top-3.5 left-4 flex items-center space-x-1.5 select-none">
+                <div className="size-2 rounded-full bg-red-400/90 border border-red-500/10" />
+                <div className="size-2 rounded-full bg-amber-400/90 border border-amber-500/10" />
+                <div className="size-2 rounded-full bg-green-400/90 border border-green-500/10" />
+              </div>
+
               <div className="space-y-2">
                 <div className="flex justify-between items-center">
                   <Label className="text-xs font-bold text-slate-500 uppercase tracking-wider flex items-center gap-1.5">
@@ -642,12 +649,21 @@ export default function Dashboard() {
 
               {/* Hook variations if present */}
               {hooks.length > 0 && (
-                <div className="space-y-2">
-                  <Label className="text-xs font-bold text-slate-600">Alternative Hooks:</Label>
-                  <ul className="space-y-1.5 text-xs text-slate-600 list-disc list-inside">
+                <div className="relative bg-[#FCFAF2] border border-amber-200/40 rounded-lg p-4 shadow-3xs overflow-hidden select-text rotate-[-0.5deg]">
+                  {/* Red vertical margin line on the left */}
+                  <div className="absolute top-0 bottom-0 left-8 w-[1px] bg-red-200" />
+                  
+                  {/* Notebook header */}
+                  <div className="text-[10px] font-bold text-amber-800 uppercase tracking-widest pl-6 pb-2 border-b border-dashed border-slate-200/60 select-none">
+                    Alternative Hooks
+                  </div>
+                  
+                  {/* Lined content list */}
+                  <ul className="space-y-0.5 text-xs text-slate-800 pl-6 pt-2 font-handwriting">
                     {hooks.map((h, idx) => (
-                      <li key={idx} className="leading-relaxed">
-                        <span className="font-semibold text-slate-800">{String.fromCharCode(65 + idx)})</span> {h}
+                      <li key={idx} className="py-1 border-b border-dashed border-slate-200/40 leading-relaxed list-none flex items-start gap-1.5">
+                        <span className="font-bold text-amber-700/80 text-[11px] select-none shrink-0">{String.fromCharCode(65 + idx)})</span>
+                        <span>{h}</span>
                       </li>
                     ))}
                   </ul>
@@ -827,24 +843,24 @@ export default function Dashboard() {
                 </div>
 
                 {/* Tweet Stats */}
-                <div className="flex justify-between items-center pt-3 border-t border-slate-100 text-xs text-slate-400 select-none">
-                  <div className="flex items-center gap-1.5 hover:text-blue-500 transition-colors">
+                <div className="flex justify-between items-center pt-3 border-t border-slate-100/80 text-xs text-slate-400 select-none">
+                  <div className="flex items-center gap-1.5 hover:text-sky-500 transition-all duration-150 cursor-pointer active:scale-90">
                     <MessageCircle className="h-3.5 w-3.5" />
                     <span>{tweet.replies}</span>
                   </div>
-                  <div className="flex items-center gap-1.5 hover:text-green-600 transition-colors">
+                  <div className="flex items-center gap-1.5 hover:text-green-500 transition-all duration-150 cursor-pointer active:scale-90">
                     <Repeat2 className="h-3.5 w-3.5" />
                     <span>{tweet.retweets}</span>
                   </div>
-                  <div className="flex items-center gap-1.5 hover:text-red-500 transition-colors">
+                  <div className="flex items-center gap-1.5 hover:text-pink-600 transition-all duration-150 cursor-pointer active:scale-90">
                     <Heart className="h-3.5 w-3.5" />
                     <span>{tweet.likes}</span>
                   </div>
-                  <div className="flex items-center gap-1.5 hover:text-blue-500 transition-colors">
+                  <div className="flex items-center gap-1.5 hover:text-sky-500 transition-all duration-150 cursor-pointer active:scale-90">
                     <BarChart3 className="h-3.5 w-3.5" />
                     <span>{tweet.views}</span>
                   </div>
-                  <div className="flex items-center hover:text-blue-500 transition-colors">
+                  <div className="flex items-center hover:text-sky-500 transition-all duration-150 cursor-pointer active:scale-90">
                     <Share className="h-3.5 w-3.5" />
                   </div>
                 </div>
