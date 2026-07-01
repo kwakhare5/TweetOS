@@ -117,7 +117,7 @@ export default function Dashboard() {
 
   // Right card state (Second Brain)
   const [secondBrainText, setSecondBrainText] = useState("")
-  const [isUpdatingBrain, setIsUpdatingBrain] = useState(false)
+  const [saveStatus, setSaveStatus] = useState<"idle" | "saving" | "saved">("idle")
 
   // Engagement stats for raw card
   const [likes, setLikes] = useState(12)
@@ -136,6 +136,27 @@ export default function Dashboard() {
       setMounted(true)
     }
   }, [profile, updateProfile])
+
+  // Debounced auto-save effect for Second Brain note
+  useEffect(() => {
+    if (!mounted) return
+    if (secondBrainText === (profile.secondBrain || "")) {
+      return
+    }
+
+    setSaveStatus("saving")
+    const timer = setTimeout(() => {
+      updateProfile({ secondBrain: secondBrainText })
+      setSaveStatus("saved")
+      
+      const resetTimer = setTimeout(() => {
+        setSaveStatus("idle")
+      }, 1500)
+      return () => clearTimeout(resetTimer)
+    }, 800)
+
+    return () => clearTimeout(timer)
+  }, [secondBrainText, mounted, profile.secondBrain, updateProfile])
 
   const handleTailor = async () => {
     if (!rawTweet.trim()) {
@@ -179,14 +200,7 @@ export default function Dashboard() {
     }
   }
 
-  const handleUpdateBrain = () => {
-    setIsUpdatingBrain(true)
-    setTimeout(() => {
-      updateProfile({ secondBrain: secondBrainText })
-      toast.success("Second Brain updated successfully")
-      setIsUpdatingBrain(false)
-    }, 400)
-  }
+
 
   const handleCopyDraft = async () => {
     if (!tailoredTweet) return
@@ -494,19 +508,27 @@ export default function Dashboard() {
                 Sticky Notes
               </span>
               
-              {/* Top Bar Save Action Button */}
-              <button 
-                onClick={handleUpdateBrain} 
-                disabled={isUpdatingBrain}
-                className="p-1 hover:bg-yellow-200/50 rounded text-yellow-800/80 cursor-pointer transition-colors bg-transparent border-0 flex items-center justify-center"
-                title="Save Brain Memory"
-              >
-                {isUpdatingBrain ? (
-                  <RefreshCw className="h-3.5 w-3.5 animate-spin" />
-                ) : (
-                  <Save className="h-3.5 w-3.5" />
+              {/* Sync Status Badge */}
+              <div className="flex items-center gap-1.5 text-[10px] font-bold text-yellow-800/60 uppercase tracking-wider select-none">
+                {saveStatus === "saving" && (
+                  <>
+                    <RefreshCw className="h-3 w-3 animate-spin text-yellow-700/70" />
+                    <span>Syncing...</span>
+                  </>
                 )}
-              </button>
+                {saveStatus === "saved" && (
+                  <>
+                    <Check className="h-3 w-3 text-emerald-600" />
+                    <span className="text-emerald-700/80">Saved</span>
+                  </>
+                )}
+                {saveStatus === "idle" && (
+                  <>
+                    <div className="h-1.5 w-1.5 rounded-full bg-yellow-600/40" />
+                    <span>Synced</span>
+                  </>
+                )}
+              </div>
             </div>
 
             {/* Note writing area with yellow rule lining texture */}
@@ -516,7 +538,7 @@ export default function Dashboard() {
                 value={secondBrainText}
                 onChange={(e) => setSecondBrainText(e.target.value)}
                 placeholder="Studying code? Building a chrome extension? Write it down, Gemini uses this memory..."
-                className="w-full bg-transparent border-0 outline-none focus:ring-0 focus-visible:ring-0 focus-visible:ring-offset-0 px-0 py-0 resize-none flex-1 min-h-[240px] text-[17px] font-normal text-yellow-950/95 placeholder:text-yellow-600/50 leading-[28px] font-handwriting pt-[0px]"
+                className="w-full bg-transparent border-0 outline-none focus:ring-0 focus-visible:ring-0 focus-visible:ring-offset-0 px-0 py-0 resize-none flex-1 min-h-[240px] text-[17px] font-normal text-yellow-950/95 placeholder:text-yellow-600/50 leading-[28px] font-handwriting pt-[0px] caret-amber-700"
                 style={{
                   backgroundImage: "linear-gradient(to bottom, transparent 27px, rgba(202,138,4,0.15) 27px)",
                   backgroundSize: "100% 28px"
