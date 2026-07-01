@@ -270,8 +270,8 @@ export default function Dashboard() {
               <TwitterBirdIcon className="text-muted-foreground hover:text-foreground size-5 items-start transition-all ease-in-out hover:scale-105 cursor-pointer" />
             </div>
 
-            {/* TweetBody / Textarea */}
-            <div className="pt-2 min-h-[140px] flex flex-col">
+            {/* Tweet Body / Textarea */}
+            <div className="pt-2 min-h-[140px] flex flex-col gap-3">
               <textarea 
                 id="raw-tweet"
                 value={rawTweet}
@@ -279,6 +279,34 @@ export default function Dashboard() {
                 placeholder="What's happening? Dump raw thoughts or rough drafts..."
                 className="w-full bg-transparent border-0 outline-none focus:ring-0 focus-visible:ring-0 focus-visible:ring-offset-0 px-0 py-0 resize-none text-[15px] text-slate-900 placeholder:text-slate-400 leading-relaxed flex-1 font-normal"
               />
+
+              {/* Tone Profile Selector inside Card (styled like compose settings) */}
+              <div className="flex items-center justify-between border-t border-slate-100 pt-3">
+                <div className="flex items-center gap-1.5 flex-1">
+                  <span className="text-xs font-semibold text-slate-400 uppercase tracking-wider mr-2">Tone:</span>
+                  <div className="flex gap-1 p-0.5 bg-slate-100/60 rounded-md border border-slate-200/50">
+                    {MODES.map((m) => (
+                      <button
+                        key={m}
+                        type="button"
+                        onClick={() => setMode(m)}
+                        className={`px-2 py-0.5 text-[11px] font-semibold rounded transition-all cursor-pointer ${
+                          mode === m 
+                            ? 'bg-white shadow-sm text-slate-900 border border-slate-200/30' 
+                            : 'text-slate-500 hover:text-slate-800'
+                        }`}
+                      >
+                        {m === "auto" ? "⚡ Auto" : m.toUpperCase()}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+                <div className="text-right">
+                  <span className={`text-xs font-semibold ${rawTweet.length > 280 ? 'text-red-500' : 'text-slate-400'}`}>
+                    {rawTweet.length} / 280
+                  </span>
+                </div>
+              </div>
             </div>
 
             {/* Interactive Stats Footer */}
@@ -315,33 +343,6 @@ export default function Dashboard() {
           {/* Workbench Controls (Under the main Tweet Card) */}
           <div className="border border-border bg-card text-card-foreground shadow-sm rounded-xl p-5 space-y-4">
             
-            {/* Tone Selector & Chars */}
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-              <div className="space-y-1.5 flex-1">
-                <Label className="text-xs font-bold text-slate-500 uppercase tracking-wider">Tone Profile</Label>
-                <div className="flex flex-wrap gap-1 p-1 bg-slate-100/80 rounded-lg border border-slate-200">
-                  {MODES.map((m) => (
-                    <button
-                      key={m}
-                      onClick={() => setMode(m)}
-                      className={`flex-1 min-w-[70px] py-1 text-xs font-semibold rounded-md transition-all cursor-pointer ${
-                        mode === m 
-                          ? 'bg-white shadow-sm text-slate-900 border border-slate-200/50' 
-                          : 'text-slate-500 hover:text-slate-800'
-                      }`}
-                    >
-                      {m === "auto" ? "⚡ Auto" : m.toUpperCase()}
-                    </button>
-                  ))}
-                </div>
-              </div>
-              <div className="text-right sm:self-end">
-                <span className={`text-sm font-semibold ${rawTweet.length > 280 ? 'text-red-500' : 'text-slate-400'}`}>
-                  {rawTweet.length} / 280 chars
-                </span>
-              </div>
-            </div>
-
             {/* Action Buttons */}
             <Button 
               onClick={handleTailor} 
