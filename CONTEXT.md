@@ -9,8 +9,9 @@ TweetOS is a hyper-minimal local workspace that acts as a bridge between the use
 
 ### 1. The Command Center (`/`)
 The entire workspace has been aggressively stripped down to a single minimal interface:
-- **Brain Dump Box**: A massive text area for raw input.
-- **Tailor Draft Button**: Merges the dump with the user's Voice and Inspiration DNA.
+- **Brain Dump Box / Card Editor**: A massive text area for raw input.
+- **Generate Idea Button**: Uses Gemini to generate a complete, emoji-free tweet draft matching the user's developer persona DNA, populating it directly into the dump box.
+- **Tailor Draft Button**: Refines and polishes the raw dump box content into a highly styled 280-character post draft using the user's Voice and Inspiration DNA.
 - **Topic Hunt Packet Button**: Generates a Grok prompt commanding it to scour X for trending topics and craft ideas perfectly matching the user's Inspiration DNA.
 - **Engage Packet Button**: Generates a Grok prompt commanding it to find reply and quote-tweet opportunities that match the user's niche.
 - **Copy to Grok Button**: After tailoring a draft, this copies a Review Packet for Grok to score and finalize the tweet.
