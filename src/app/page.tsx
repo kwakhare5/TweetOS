@@ -31,7 +31,7 @@ import {
 import { generateDraftPacket } from "@/lib/grok-packager"
 import { TweetDraft } from "@/types"
 import { geminiText } from "@/lib/gemini"
-import { UNIFIED_ROUTER_PROMPT } from "@/lib/prompts"
+import { UNIFIED_ROUTER_PROMPT, IDEA_GENERATOR_PROMPT } from "@/lib/prompts"
 
 const MODES = ["auto", "dev", "personal", "shitpost"] as const
 type ModeType = typeof MODES[number]
@@ -118,6 +118,7 @@ export default function Dashboard() {
   // Right card state (Second Brain)
   const [secondBrainText, setSecondBrainText] = useState("")
   const [saveStatus, setSaveStatus] = useState<"idle" | "saving" | "saved">("idle")
+  const [isGeneratingIdea, setIsGeneratingIdea] = useState(false)
 
   // Engagement stats for raw card
   const [likes, setLikes] = useState(12)
@@ -197,6 +198,26 @@ export default function Dashboard() {
       toast.error(err.message || "Tailoring failed.")
     } finally {
       setIsTailoring(false)
+    }
+  }
+
+  const handleGenerateIdea = async () => {
+    setIsGeneratingIdea(true)
+    try {
+      const prompt = IDEA_GENERATOR_PROMPT(profile, mode)
+      const res = await geminiText(prompt)
+      const idea = res.trim()
+      
+      if (rawTweet.trim()) {
+        setRawTweet(prev => `${prev}\n\n${idea}`)
+      } else {
+        setRawTweet(idea)
+      }
+      toast.success("Idea generated!")
+    } catch (err: any) {
+      toast.error(err.message || "Failed to generate idea.")
+    } finally {
+      setIsGeneratingIdea(false)
     }
   }
 
@@ -378,8 +399,19 @@ export default function Dashboard() {
                     {rawTweet.length} / 280
                   </span>
                   <Button 
+                    onClick={handleGenerateIdea} 
+                    disabled={isGeneratingIdea || isTailoring}
+                    size="sm"
+                    className="h-8 px-4 cursor-pointer font-bold rounded-full border border-slate-200 bg-background text-slate-700 hover:bg-slate-50 hover:text-slate-900 shadow-xs active:scale-[0.98] transition-all flex items-center justify-center select-none text-xs"
+                  >
+                    {isGeneratingIdea ? (
+                      <RefreshCw className="h-3 w-3 animate-spin mr-1.5" />
+                    ) : null}
+                    {isGeneratingIdea ? "Generating..." : "Generate Idea"}
+                  </Button>
+                  <Button 
                     onClick={handleTailor} 
-                    disabled={isTailoring}
+                    disabled={isTailoring || isGeneratingIdea}
                     size="sm"
                     className="h-8 px-4 cursor-pointer font-bold rounded-full bg-slate-950 text-white hover:bg-slate-900 shadow-sm active:scale-[0.98] transition-all flex items-center justify-center select-none text-xs"
                   >
