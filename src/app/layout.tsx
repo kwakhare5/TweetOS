@@ -13,7 +13,6 @@ import { CommandMenu } from "@/components/command-menu"
 import { LayoutHeader } from "@/components/layout-header"
 import { MobileBottomNav } from "@/components/mobile-bottom-nav"
 import { SupabaseProvider } from "@/components/supabase-provider"
-import { SidebarStyleProvider } from "@/components/sidebar-style-provider"
 
 const geist = Geist({
   subsets: ["latin"],
@@ -41,14 +40,7 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <body 
-        className={`${geist.variable} ${firaCode.variable} ${kalam.variable} font-sans antialiased bg-background text-foreground min-h-screen relative`}
-        style={{
-          backgroundColor: "#FAF8F5",
-          backgroundImage: "radial-gradient(rgba(120, 90, 40, 0.08) 1px, transparent 1px)",
-          backgroundSize: "20px 20px"
-        }}
-      >
+      <body className={`${geist.variable} ${firaCode.variable} ${kalam.variable} font-sans antialiased bg-background text-foreground min-h-screen relative`}>
         <ThemeProvider
           attribute="class"
           defaultTheme="light"
@@ -61,7 +53,14 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
                 <AppSidebar />
                 <SidebarInset>
                   <LayoutHeader />
-                  <main className="flex-1 overflow-auto relative">
+                  <main 
+                    className="flex-1 overflow-auto relative"
+                    style={{
+                      backgroundColor: "#FAF8F5",
+                      backgroundImage: "radial-gradient(rgba(120, 90, 40, 0.08) 1px, transparent 1px)",
+                      backgroundSize: "20px 20px"
+                    }}
+                  >
                     <div className="relative z-10 pb-20 md:pb-6">
                       {children}
                     </div>
@@ -69,7 +68,6 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
                 </SidebarInset>
                 <MobileBottomNav />
                 <CommandMenu />
-                <SidebarStyleProvider />
                 <Toaster />
               </SidebarProvider>
             </SupabaseProvider>

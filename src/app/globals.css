@@ -115,27 +115,11 @@ input, textarea, [contenteditable] {
 }
 
 /* Sidebar Theme Customizations */
-body.sidebar-style-transparent {
-  --sidebar-background: transparent;
-  --sidebar-border: transparent;
-}
-body.sidebar-style-transparent [data-slot="sidebar-inner"] {
+[data-sidebar="sidebar"],
+[data-slot="sidebar-container"] {
   background-color: transparent !important;
+  border-right-color: transparent !important;
 }
-
-body.sidebar-style-frosted {
-  --sidebar-background: rgba(250, 248, 245, 0.4);
-  --sidebar-border: rgba(120, 90, 40, 0.08);
-}
-body.sidebar-style-frosted [data-slot="sidebar-inner"] {
-  background-color: rgba(250, 248, 245, 0.4) !important;
-  backdrop-filter: blur(12px) !important;
-}
-
-body.sidebar-style-solid {
-  --sidebar-background: #F4F1EB;
-  --sidebar-border: rgba(120, 90, 40, 0.12);
-}
-body.sidebar-style-solid [data-slot="sidebar-inner"] {
-  background-color: #F4F1EB !important;
+[data-slot="sidebar-inner"] {
+  background-color: transparent !important;
 }

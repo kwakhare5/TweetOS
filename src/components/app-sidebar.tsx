@@ -67,8 +67,8 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         <SidebarMenu>
           <SidebarMenuItem>
             <SidebarMenuButton size="lg" render={<Link href="/" />}>
-              <div className="flex aspect-square size-8 items-center justify-center rounded-lg bg-sidebar-primary text-sidebar-primary-foreground">
-                <Layers className="size-4" />
+              <div className="flex aspect-square size-8 items-center justify-center rounded-lg bg-amber-200/60 border border-amber-300/30 text-amber-955 shadow-3xs font-bold rotate-[1.5deg]">
+                <Layers className="size-4 text-amber-950" />
               </div>
               <div className="flex flex-col gap-0.5 leading-none">
                 <span className="font-semibold">TweetOS</span>
@@ -91,14 +91,14 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                     <SidebarMenuItem key={item.title}>
                       <SidebarMenuButton 
                         isActive={isActive} 
-                        className={`h-9 px-3 rounded-md transition-all font-medium text-[15px]
+                        className={`h-9 px-3 rounded-t-lg transition-all font-medium text-[15px] select-none border-0
                           ${isActive 
-                            ? "bg-muted text-foreground font-semibold" 
-                            : "text-muted-foreground hover:bg-muted/50 hover:text-foreground"
+                            ? "bg-slate-100/60 border border-slate-300/40 text-slate-800 shadow-3xs font-semibold rotate-[-1deg] translate-y-[-1px] scale-[1.01]" 
+                            : "text-slate-500 hover:text-slate-900 hover:bg-slate-100/30 hover:rotate-[0.5deg] hover:scale-[1.005]"
                           }`}
                         render={<Link href={item.url} />}
                       >
-                        <item.icon />
+                        <item.icon className={isActive ? "text-slate-700" : "text-slate-400"} />
                         <span>{item.title}</span>
                       </SidebarMenuButton>
                     </SidebarMenuItem>
