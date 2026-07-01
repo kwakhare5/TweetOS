@@ -1,7 +1,7 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import { motion } from "motion/react"
+
 import { useProfileStore } from "@/store/use-profile-store"
 import { Button } from "@/components/ui/button"
 import { toast } from "sonner"
@@ -86,11 +86,8 @@ export default function ProfilePage() {
   if (!mounted) return null
 
   return (
-    <motion.div 
-      initial={{ opacity: 0, y: 10 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.3 }}
-      className="flex flex-col gap-6 px-4 py-4 sm:px-6 md:px-8 lg:px-12 md:py-6 w-full max-w-7xl mx-auto"
+    <div 
+      className="flex flex-col gap-6 px-4 py-4 sm:px-6 md:px-8 lg:px-12 md:py-6 w-full max-w-7xl mx-auto pb-16"
     >
       {/* Header section */}
       <div className="flex flex-row items-center justify-between mb-2">
@@ -102,7 +99,7 @@ export default function ProfilePage() {
           size="sm" 
           onClick={handleSave} 
           disabled={isSaving}
-          className="lg:hidden h-9 px-4 cursor-pointer font-bold rounded-lg bg-slate-950 text-white hover:bg-slate-900 shadow-sm active:scale-[0.98] transition-all flex items-center justify-center select-none text-xs"
+          className="lg:hidden h-9 px-4 cursor-pointer font-bold rounded-lg bg-slate-950 text-white hover:bg-slate-900 shadow-sm transition-colors flex items-center justify-center select-none text-xs"
         >
           {isSaving ? (
             <RefreshCw className="h-3.5 w-3.5 animate-spin mr-1" />
@@ -143,7 +140,7 @@ export default function ProfilePage() {
               size="lg" 
               onClick={handleSave} 
               disabled={isSaving}
-              className="w-full h-11 cursor-pointer font-bold rounded-lg bg-slate-950 text-white hover:bg-slate-900 shadow-sm active:scale-[0.98] transition-all flex items-center justify-center select-none"
+              className="w-full h-11 cursor-pointer font-bold rounded-lg bg-slate-950 text-white hover:bg-slate-900 shadow-sm transition-colors flex items-center justify-center select-none"
             >
               {isSaving ? (
                 <>
@@ -160,6 +157,7 @@ export default function ProfilePage() {
           </div>
         </div>
       </div>
-    </motion.div>
+    </div>
   )
 }
+

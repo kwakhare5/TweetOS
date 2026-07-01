@@ -97,7 +97,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                     <SidebarMenuItem key={item.title}>
                       <SidebarMenuButton 
                         isActive={isActive} 
-                        className={`h-9 px-3 rounded-t-lg transition-all font-medium text-[15px] select-none border-0
+                        className={`h-9 px-3 rounded-t-lg transition-colors font-medium text-[15px] select-none border-0
                           ${isActive 
                             ? "bg-slate-100/60 border border-slate-300/40 text-slate-800 shadow-3xs font-semibold rotate-[-1deg] translate-y-[-1px] scale-[1.01]" 
                             : "text-slate-500 hover:text-slate-900 hover:bg-slate-100/30 hover:rotate-[0.5deg] hover:scale-[1.005]"
@@ -118,3 +118,4 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
     </Sidebar>
   )
 }
+

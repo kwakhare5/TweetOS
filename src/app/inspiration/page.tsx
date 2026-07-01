@@ -1,6 +1,6 @@
 "use client"
 
-import { motion } from "motion/react"
+
 import dynamic from 'next/dynamic'
 import { WashiTape } from "@/components/ui/washi-tape"
 
@@ -8,10 +8,7 @@ const TweetMetaPreview = dynamic(() => import('@/components/dashboard/tweet-meta
 
 export default function InspirationPage() {
   return (
-    <motion.div 
-      initial={{ opacity: 0, y: 10 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.3 }}
+    <div 
       className="flex flex-col items-center justify-center min-h-[calc(100vh-4rem)] px-6 md:px-8 lg:px-12 py-6 w-full max-w-4xl mx-auto"
     >
       <div className="flex flex-col items-center justify-center space-y-8 text-center">
@@ -20,7 +17,7 @@ export default function InspirationPage() {
           <p className="text-muted-foreground">Analyze top performing hooks to craft your next masterpiece.</p>
         </div>
         
-        <div className="relative w-full max-w-xl bg-card border rounded-xl p-5 shadow-sm rotate-[0.3deg]">
+        <div className="relative w-full max-w-xl bg-card border rounded-xl p-5 shadow-sm rotate-[0.3deg] ">
           {/* Translucent Washi Tape with diagonal stripes pattern */}
           <WashiTape className="rotate-[-2deg]" />
           <TweetMetaPreview />
@@ -30,6 +27,7 @@ export default function InspirationPage() {
           This viral tweet is embedded natively using the newly installed MagicUI Tweet Card component.
         </p>
       </div>
-    </motion.div>
+    </div>
   )
 }
+

@@ -140,7 +140,7 @@ export const TweetHeader = ({ tweet }: { tweet: EnrichedTweet }) => (
     </div>
     <a href={tweet.url} target="_blank" rel="noreferrer">
       <span className="sr-only">Link to tweet</span>
-      <Twitter className="text-muted-foreground hover:text-foreground size-5 items-start transition-all ease-in-out hover:scale-105" />
+      <Twitter className="text-muted-foreground hover:text-foreground size-5 items-start transition-colors ease-in-out hover:scale-105" />
     </a>
   </div>
 )
@@ -308,3 +308,4 @@ export const TweetCard = async ({
     </Suspense>
   )
 }
+

@@ -63,7 +63,7 @@ export default function GlobalError({
             <div className="flex items-center gap-2.5 pt-2 select-none">
               <button
                 onClick={reset}
-                className="h-8 px-3 gap-1.5 flex-initial cursor-pointer font-bold transition-all flex items-center justify-center select-none text-xs border-0 bg-amber-200/60 hover:bg-amber-200/80 border-amber-300/30 text-amber-950 focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-amber-500 shadow-3xs active:scale-[0.98] rotate-[0.3deg] rounded-md"
+                className="h-8 px-3 gap-1.5 flex-initial cursor-pointer font-bold transition-colors flex items-center justify-center select-none text-xs border-0 bg-amber-200/60 hover:bg-amber-200/80 border-amber-300/30 text-amber-950 focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-amber-500 shadow-3xs rotate-[0.3deg] rounded-md"
               >
                 <RotateCw className="size-3.5" />
                 <span>Try Again</span>
@@ -71,7 +71,7 @@ export default function GlobalError({
 
               <button
                 onClick={() => window.location.href = "/"}
-                className="h-8 px-3 gap-1.5 flex-initial cursor-pointer font-bold transition-all flex items-center justify-center select-none text-xs border-0 bg-slate-100/60 hover:bg-slate-200/60 border-slate-300/40 text-slate-800 focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-slate-500 shadow-3xs active:scale-[0.98] rotate-[-0.3deg] rounded-md"
+                className="h-8 px-3 gap-1.5 flex-initial cursor-pointer font-bold transition-colors flex items-center justify-center select-none text-xs border-0 bg-slate-100/60 hover:bg-slate-200/60 border-slate-300/40 text-slate-800 focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-slate-500 shadow-3xs rotate-[-0.3deg] rounded-md"
               >
                 <Home className="size-3.5" />
                 <span>Dashboard</span>
@@ -83,3 +83,4 @@ export default function GlobalError({
     </div>
   )
 }
+

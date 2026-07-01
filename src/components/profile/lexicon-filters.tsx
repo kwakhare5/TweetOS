@@ -10,7 +10,7 @@ interface LexiconFiltersProps {
 
 export function LexiconFilters({ avoidListString, setAvoidListString }: LexiconFiltersProps) {
   return (
-    <div className="relative flex flex-col border border-slate-200/60 rounded-xl p-5 bg-card text-card-foreground shadow-sm sm:rotate-[-0.3deg] rotate-0 transition-transform hover:rotate-0">
+    <div className="relative flex flex-col border border-slate-200/60 rounded-xl p-5 bg-card text-card-foreground shadow-sm sm:rotate-[-0.3deg] rotate-0 ">
       {/* Translucent Washi Tape with diagonal stripes pattern */}
       <WashiTape className="rotate-[2deg]" />
 
@@ -52,7 +52,7 @@ export function LexiconFilters({ avoidListString, setAvoidListString }: LexiconF
                     const filtered = words.filter((_, i) => i !== idx);
                     setAvoidListString(filtered.join(", "));
                   }}
-                  className="hover:text-slate-900 text-slate-400 font-bold focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-ring cursor-pointer size-4 inline-flex items-center justify-center rounded-full hover:bg-slate-200/50 active:scale-[0.95]"
+                  className="hover:text-slate-900 text-slate-400 font-bold focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-ring cursor-pointer size-4 inline-flex items-center justify-center rounded-full hover:bg-slate-200/50"
                 >
                   ×
                 </button>
@@ -64,3 +64,4 @@ export function LexiconFilters({ avoidListString, setAvoidListString }: LexiconF
     </div>
   )
 }
+

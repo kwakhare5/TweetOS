@@ -5,7 +5,7 @@ import { Paperclip } from "@/components/ui/paperclip"
 
 export function SubroutinesCard() {
   return (
-    <div className="relative flex flex-col border border-slate-200/60 rounded-xl p-5 bg-card text-card-foreground shadow-sm sm:rotate-[0.2deg] rotate-0 transition-transform hover:rotate-0">
+    <div className="relative flex flex-col border border-slate-200/60 rounded-xl p-5 bg-card text-card-foreground shadow-sm sm:rotate-[0.2deg] rotate-0 ">
       {/* Paperclip overlay */}
       <Paperclip className="absolute top-[-16px] left-[10%] z-20 select-none pointer-events-none rotate-[-5deg]" />
 
@@ -38,3 +38,4 @@ export function SubroutinesCard() {
     </div>
   )
 }
+

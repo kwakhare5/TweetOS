@@ -1,15 +1,12 @@
 "use client"
 
-import { motion } from "motion/react"
+
 import { BarChart2 } from "lucide-react"
 import { WashiTape } from "@/components/ui/washi-tape"
 
 export default function AnalyticsPage() {
   return (
-    <motion.div 
-      initial={{ opacity: 0, y: 10 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.3 }}
+    <div 
       className="flex flex-col items-center justify-center min-h-[calc(100vh-4rem)] px-6 md:px-8 lg:px-12 py-6 w-full max-w-4xl mx-auto"
     >
       <div className="flex flex-col items-center justify-center space-y-8 text-center">
@@ -30,6 +27,7 @@ export default function AnalyticsPage() {
           </p>
         </div>
       </div>
-    </motion.div>
+    </div>
   )
 }
+

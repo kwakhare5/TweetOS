@@ -86,7 +86,7 @@ export function RawTweetEditor({
   const avatarLetter = profile.name ? profile.name.charAt(0).toUpperCase() : "K"
 
   return (
-    <div className="relative flex h-fit w-full flex-col gap-4 rounded-xl border p-4 sm:p-5 bg-card text-card-foreground shadow-sm sm:rotate-[-0.3deg] rotate-0 transition-transform hover:rotate-0">
+    <div className="relative flex h-fit w-full flex-col gap-4 rounded-xl border p-4 sm:p-5 bg-card text-card-foreground shadow-sm sm:rotate-[-0.3deg] rotate-0 ">
       <WashiTape className="rotate-[-2deg]" />
       
       <div className="flex flex-row items-start justify-between tracking-normal">
@@ -137,7 +137,7 @@ export function RawTweetEditor({
                   <Button 
                     disabled={isGeneratingIdea || isTailoring}
                     size="sm"
-                    className="h-8 px-3 gap-1 flex-initial cursor-pointer font-bold transition-all flex items-center justify-center select-none text-xs outline-hidden border border-slate-300/40 rounded-t-lg bg-slate-100/60 hover:bg-slate-200/60 text-slate-800 shadow-3xs active:scale-[0.98] rotate-[-0.3deg]"
+                    className="h-8 px-3 gap-1 flex-initial cursor-pointer font-bold transition-colors flex items-center justify-center select-none text-xs outline-hidden border border-slate-300/40 rounded-t-lg bg-slate-100/60 hover:bg-slate-200/60 text-slate-800 shadow-3xs rotate-[-0.3deg]"
                   >
                     {isGeneratingIdea && activeBrainstormAction === "idea" ? (
                       <RefreshCw className="h-3.5 w-3.5 mr-1.5 animate-spin text-slate-500" />
@@ -194,7 +194,7 @@ export function RawTweetEditor({
                 onClick={() => handleTailor("auto")} 
                 disabled={isTailoring || isGeneratingIdea}
                 size="sm"
-                className="h-8 flex-initial px-3 gap-1 cursor-pointer font-bold transition-all flex items-center justify-center select-none text-xs border border-amber-300/30 rounded-t-lg bg-amber-200/60 hover:bg-amber-200/80 text-amber-950 shadow-3xs active:scale-[0.98] rotate-[0.3deg]"
+                className="h-8 flex-initial px-3 gap-1 cursor-pointer font-bold transition-colors flex items-center justify-center select-none text-xs border border-amber-300/30 rounded-t-lg bg-amber-200/60 hover:bg-amber-200/80 text-amber-950 shadow-3xs rotate-[0.3deg]"
               >
                 {isTailoring ? (
                   <RefreshCw className="h-3 w-3 animate-spin text-amber-500" />
@@ -223,3 +223,4 @@ export function RawTweetEditor({
     </div>
   )
 }
+

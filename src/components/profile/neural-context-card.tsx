@@ -15,7 +15,7 @@ export function NeuralContextCard({
   inspirationsContext, setInspirationsContext
 }: NeuralContextCardProps) {
   return (
-    <div className="relative flex flex-col bg-[#FEF9C3] rounded-xl border border-yellow-200 shadow-[0_8px_30px_rgba(234,179,8,0.12)] sm:rotate-[0.3deg] rotate-0 transition-transform hover:rotate-0">
+    <div className="relative flex flex-col bg-[#FEF9C3] rounded-xl border border-yellow-200 shadow-[0_8px_30px_rgba(234,179,8,0.12)] sm:rotate-[0.3deg] rotate-0 ">
       {/* Paperclip overlay */}
       <Paperclip className="absolute top-[-16px] left-[85%] z-20 select-none pointer-events-none rotate-[10deg]" />
 
@@ -73,3 +73,4 @@ export function NeuralContextCard({
     </div>
   )
 }
+

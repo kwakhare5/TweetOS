@@ -54,7 +54,7 @@ export function TailoredOutput({
                   aria-label={`Select ${t} tone`}
                   onClick={() => handleTailor(t)}
                   disabled={isTailoring}
-                  className={`text-xs font-bold px-2 py-0.5 rounded transition-all active:scale-[0.98] cursor-pointer border-0 focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-slate-800 ${
+                  className={`text-xs font-bold px-2 py-0.5 rounded transition-colors cursor-pointer border-0 focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-slate-800 ${
                     activeTone === t
                       ? "bg-slate-950 text-white"
                       : "text-slate-500 hover:text-slate-900 hover:bg-slate-200/60"
@@ -109,7 +109,7 @@ export function TailoredOutput({
         <Button 
           variant="outline" 
           onClick={handleCopyDraft}
-          className="h-8 px-3 gap-1 flex-initial cursor-pointer font-semibold transition-all flex items-center justify-center select-none text-xs bg-slate-100/60 hover:bg-slate-200/60 border border-slate-300/40 text-slate-800 shadow-3xs active:scale-[0.98] rotate-[-0.3deg] rounded-t-lg"
+          className="h-8 px-3 gap-1 flex-initial cursor-pointer font-semibold transition-colors flex items-center justify-center select-none text-xs bg-slate-100/60 hover:bg-slate-200/60 border border-slate-300/40 text-slate-800 shadow-3xs rotate-[-0.3deg] rounded-t-lg"
         >
           {copiedDraft ? <Check className="h-4 w-4 mr-2 text-green-600" /> : <Copy className="h-4 w-4 mr-2 text-slate-500" />}
           Copy Draft Only
@@ -117,7 +117,7 @@ export function TailoredOutput({
         <Button 
           variant="outline" 
           onClick={handleCopyGrok}
-          className="h-8 px-3 gap-1 flex-initial cursor-pointer font-semibold transition-all flex items-center justify-center select-none text-xs bg-amber-200/60 hover:bg-amber-200/80 border border-amber-300/30 text-amber-950 shadow-3xs active:scale-[0.98] rotate-[0.3deg] rounded-t-lg"
+          className="h-8 px-3 gap-1 flex-initial cursor-pointer font-semibold transition-colors flex items-center justify-center select-none text-xs bg-amber-200/60 hover:bg-amber-200/80 border border-amber-300/30 text-amber-950 shadow-3xs rotate-[0.3deg] rounded-t-lg"
         >
           {copiedGrok ? <Check className="h-4 w-4 mr-2 text-green-600" /> : <Send className="h-4 w-4 mr-2 text-amber-500" />}
           Copy Grok Packet
@@ -126,3 +126,4 @@ export function TailoredOutput({
     </div>
   )
 }
+

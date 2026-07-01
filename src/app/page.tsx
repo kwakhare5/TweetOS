@@ -1,7 +1,7 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import { motion } from "motion/react"
+
 import { useProfileStore } from "@/store/use-profile-store"
 import { useTweetGenerator } from "@/hooks/use-tweet-generator"
 import { RawTweetEditor } from "@/components/dashboard/raw-tweet-editor"
@@ -31,10 +31,7 @@ export default function Dashboard() {
   if (!mounted) return null
 
   return (
-    <motion.div 
-      initial={{ opacity: 0, y: 10 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.3 }}
+    <div 
       className="flex flex-col gap-6 px-4 py-4 sm:px-6 md:px-8 lg:px-12 md:py-6 w-full max-w-7xl mx-auto"
     >
       {/* Workbench Header */}
@@ -89,6 +86,6 @@ export default function Dashboard() {
 
       {/* Recent Tweets Section */}
       <RecentPosts profile={profile} />
-    </motion.div>
+    </div>
   )
 }

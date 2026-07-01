@@ -33,7 +33,7 @@ export function SecondBrainNote({ initialText, onSave }: SecondBrainNoteProps) {
   }, [secondBrainText, initialText, onSave])
 
   return (
-    <div className="relative flex flex-col h-full bg-[#FEF9C3] rounded-xl border border-yellow-200 shadow-[0_8px_30px_rgba(234,179,8,0.15)] flex-1 sm:rotate-[0.5deg] rotate-0 transition-transform hover:rotate-0">
+    <div className="relative flex flex-col h-full bg-[#FEF9C3] rounded-xl border border-yellow-200 shadow-[0_8px_30px_rgba(234,179,8,0.15)] flex-1 sm:rotate-[0.5deg] rotate-0 ">
       {/* Paperclip overlay */}
       <Paperclip className="absolute top-[-16px] left-[10%] z-20 select-none pointer-events-none rotate-[-10deg]" />
       
@@ -93,3 +93,4 @@ export function SecondBrainNote({ initialText, onSave }: SecondBrainNoteProps) {
     </div>
   )
 }
+

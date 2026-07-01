@@ -18,7 +18,7 @@ export function CoreIdentityCard({
   niche, setNiche
 }: CoreIdentityCardProps) {
   return (
-    <div className="relative flex flex-col border border-slate-200/60 rounded-xl p-5 bg-card text-card-foreground shadow-sm sm:rotate-[-0.3deg] rotate-0 transition-transform hover:rotate-0">
+    <div className="relative flex flex-col border border-slate-200/60 rounded-xl p-5 bg-card text-card-foreground shadow-sm sm:rotate-[-0.3deg] rotate-0 ">
       {/* Translucent Washi Tape with diagonal stripes pattern */}
       <WashiTape className="rotate-[-2deg]" />
       
@@ -72,3 +72,4 @@ export function CoreIdentityCard({
     </div>
   )
 }
+
