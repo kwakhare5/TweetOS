@@ -232,20 +232,12 @@ export default function Dashboard() {
   const avatarLetter = profile.name ? profile.name.charAt(0).toUpperCase() : "K"
 
   return (
-    <div 
-      className="w-full min-h-[calc(100vh-4rem)] p-4 md:p-6"
-      style={{
-        backgroundColor: "#FAF8F5",
-        backgroundImage: "radial-gradient(rgba(120, 90, 40, 0.08) 1px, transparent 1px)",
-        backgroundSize: "20px 20px"
-      }}
+    <motion.div 
+      initial={{ opacity: 0, y: 10 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.3 }}
+      className="flex flex-col gap-6 p-4 md:p-6 w-full max-w-7xl mx-auto"
     >
-      <motion.div 
-        initial={{ opacity: 0, y: 10 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.3 }}
-        className="flex flex-col gap-6 w-full max-w-7xl mx-auto"
-      >
       {/* Workbench Header */}
       <div className="flex items-center justify-between mb-2">
         <div>
@@ -512,6 +504,5 @@ export default function Dashboard() {
 
       </div>
     </motion.div>
-    </div>
   )
 }

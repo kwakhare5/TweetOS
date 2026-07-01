@@ -44,7 +44,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             <SidebarProvider>
               <AppSidebar />
               <SidebarInset>
-                <header className="flex h-16 shrink-0 items-center gap-2 border-b px-4 bg-background/60 backdrop-blur-md sticky top-0 z-50">
+                <header className="flex h-16 shrink-0 items-center gap-2 border-b border-slate-200/50 px-4 bg-[#FAF8F5]/70 backdrop-blur-md sticky top-0 z-50">
                   <SidebarTrigger className="-ml-1" />
                   <Breadcrumbs />
                   <div className="ml-auto hidden md:flex items-center gap-2 text-sm text-muted-foreground border rounded-md px-2 py-1 bg-muted/30">
@@ -54,9 +54,14 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
                     </kbd>
                   </div>
                 </header>
-                <main className="flex-1 overflow-auto bg-background relative">
-                  <div className="absolute top-0 left-1/4 w-96 h-96 bg-primary/5 rounded-full blur-3xl pointer-events-none" />
-                  <div className="absolute bottom-0 right-1/4 w-[30rem] h-[30rem] bg-secondary/10 rounded-full blur-3xl pointer-events-none" />
+                <main 
+                  className="flex-1 overflow-auto relative"
+                  style={{
+                    backgroundColor: "#FAF8F5",
+                    backgroundImage: "radial-gradient(rgba(120, 90, 40, 0.08) 1px, transparent 1px)",
+                    backgroundSize: "20px 20px"
+                  }}
+                >
                   <div className="relative z-10">
                     {children}
                   </div>

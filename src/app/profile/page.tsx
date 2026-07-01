@@ -12,6 +12,17 @@ import { toast } from "sonner"
 import { UserCircle, Settings, Save, BrainCircuit, Network, Cpu, Key } from "lucide-react"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 
+// Realistic 3D SVG Pushpin Icon
+const PushpinIcon = ({ className }: { className?: string }) => (
+  <svg viewBox="0 0 24 24" className={className} width="24" height="24">
+    <ellipse cx="12" cy="18" rx="4" ry="2" fill="rgba(0,0,0,0.12)" />
+    <line x1="12" y1="12" x2="12" y2="17" stroke="#94A3B8" strokeWidth="2" strokeLinecap="round" />
+    <path d="M12 2C9.79 2 8 3.79 8 6c0 1.25.57 2.37 1.48 3.12L9 11h6l-.48-1.88C15.43 8.37 16 7.25 16 6c0-2.21-1.79-4-4-4z" fill="#EF4444" />
+    <rect x="10" y="11" width="4" height="2" rx="0.5" fill="#DC2626" />
+    <ellipse cx="10.5" cy="5" rx="1.5" ry="1" fill="rgba(255,255,255,0.4)" />
+  </svg>
+)
+
 export default function ProfilePage() {
   const { profile, updateProfile } = useProfileStore()
   const [mounted, setMounted] = useState(false)
@@ -89,7 +100,15 @@ export default function ProfilePage() {
         <div className="lg:col-span-8 flex flex-col gap-6">
           
           {/* Core Identity Card */}
-          <Card className="flex flex-col border border-border bg-card text-card-foreground shadow-sm">
+          <Card className="relative flex flex-col border border-border bg-card text-card-foreground shadow-sm rotate-[-0.2deg]">
+            {/* Translucent Washi Tape */}
+            <div 
+              className="absolute top-[-10px] left-[50%] translate-x-[-50%] w-24 h-5 border border-amber-200/20 shadow-xs rotate-[-2deg] opacity-75 z-10 select-none pointer-events-none"
+              style={{
+                backgroundColor: "rgba(254, 240, 138, 0.35)",
+                backdropFilter: "blur(2px)"
+              }}
+            />
             <CardHeader className="flex flex-row items-start justify-between space-y-0 pb-4">
               <div className="space-y-1">
                 <CardTitle className="text-lg font-bold tracking-tight flex items-center gap-2">
@@ -141,7 +160,9 @@ export default function ProfilePage() {
           </Card>
 
           {/* Neural Context Card */}
-          <Card className="flex flex-col border border-border bg-card text-card-foreground shadow-sm">
+          <Card className="relative flex flex-col border border-border bg-card text-card-foreground shadow-sm rotate-[0.3deg]">
+            {/* Red Pushpin overlay */}
+            <PushpinIcon className="absolute top-[-12px] left-[50%] translate-x-[-50%] z-20 select-none pointer-events-none" />
             <CardHeader className="flex flex-row items-start justify-between space-y-0 pb-4">
               <div className="space-y-1">
                 <CardTitle className="text-lg font-bold tracking-tight flex items-center gap-2">
@@ -186,7 +207,9 @@ export default function ProfilePage() {
         <div className="lg:col-span-4 flex flex-col gap-6">
           
           {/* System Engine Card */}
-          <Card className="flex flex-col border border-border bg-card text-card-foreground shadow-sm">
+          <Card className="relative flex flex-col border border-border bg-card text-card-foreground shadow-sm rotate-[0.4deg]">
+            {/* Red Pushpin overlay */}
+            <PushpinIcon className="absolute top-[-12px] left-[50%] translate-x-[-50%] z-20 select-none pointer-events-none" />
             <CardHeader className="flex flex-row items-start justify-between space-y-0 pb-4">
               <div className="space-y-1">
                 <CardTitle className="text-lg font-bold tracking-tight flex items-center gap-2">
@@ -228,7 +251,15 @@ export default function ProfilePage() {
           </Card>
 
           {/* Subroutines Card */}
-          <Card className="flex flex-col border border-border bg-card text-card-foreground shadow-sm">
+          <Card className="relative flex flex-col border border-border bg-card text-card-foreground shadow-sm rotate-[-0.3deg]">
+            {/* Translucent Washi Tape */}
+            <div 
+              className="absolute top-[-10px] left-[50%] translate-x-[-50%] w-24 h-5 border border-amber-200/20 shadow-xs rotate-[2deg] opacity-75 z-10 select-none pointer-events-none"
+              style={{
+                backgroundColor: "rgba(254, 240, 138, 0.35)",
+                backdropFilter: "blur(2px)"
+              }}
+            />
             <CardHeader className="flex flex-row items-start justify-between space-y-0 pb-4">
               <div className="space-y-1">
                 <CardTitle className="text-lg font-bold tracking-tight flex items-center gap-2">
@@ -261,7 +292,7 @@ export default function ProfilePage() {
               size="lg" 
               onClick={handleSave} 
               disabled={isSaving}
-              className="w-full h-11 shadow-sm cursor-pointer"
+              className="w-full h-11 cursor-pointer font-bold rounded-full bg-slate-950 text-white hover:bg-slate-900 shadow-md transition-all active:scale-[0.98]"
             >
               {isSaving ? (
                 <>

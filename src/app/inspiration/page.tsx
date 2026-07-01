@@ -19,7 +19,15 @@ export default function InspirationPage() {
           <p className="text-muted-foreground">Analyze top performing hooks to craft your next masterpiece.</p>
         </div>
         
-        <div className="w-full max-w-xl">
+        <div className="relative w-full max-w-xl bg-card border rounded-xl p-5 shadow-sm rotate-[0.3deg]">
+          {/* Translucent Washi Tape */}
+          <div 
+            className="absolute top-[-10px] left-[50%] translate-x-[-50%] w-24 h-5 border border-amber-200/20 shadow-xs rotate-[-2deg] opacity-75 z-10 select-none pointer-events-none"
+            style={{
+              backgroundColor: "rgba(254, 240, 138, 0.35)",
+              backdropFilter: "blur(2px)"
+            }}
+          />
           <TweetMetaPreview />
         </div>
         
