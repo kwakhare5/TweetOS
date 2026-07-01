@@ -111,20 +111,7 @@ export const SEED_PROFILE: UserProfile = {
   ],
 
   postingFrequency: "3-5 short tweets/day + 20-30 replies/day in builder community, optimizing for evening IST windows (6-9PM)",
-  secondBrain: `ACTIVE NOW (update daily):
-- [What you're building or debugging today]
-- [Any frustration, blocker, or win from last 24hrs]
-- [Status of anything you're waiting on — internship replies, PR reviews, etc.]
-- [Any new project started or shipped]
-- [Something you observed, read, or thought about today that felt tweet-worthy]
-- [Current mood / energy level if relevant]
-
-EXAMPLE (replace with your real today):
-- Swiggy Builders: applied, no reply yet. refreshed email 4 times.
-- Debugging auth middleware on TweetOS — supabase session not persisting across tabs
-- Shipped Grok packet improvements this morning with Antigravity IDE
-- Read about Claude 4 Sonnet context window — feels like cheating for RAG apps
-- Feeling behind on DSA prep but shipped 2 things this week so net positive`,
+  secondBrain: "",
   createdAt: new Date().toISOString(),
   updatedAt: new Date().toISOString()
 }

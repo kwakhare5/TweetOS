@@ -127,10 +127,15 @@ export default function Dashboard() {
 
   useEffect(() => {
     if (profile) {
-      setSecondBrainText(profile.secondBrain || "")
+      if (profile.secondBrain?.startsWith("ACTIVE NOW (update daily):")) {
+        updateProfile({ secondBrain: "" })
+        setSecondBrainText("")
+      } else {
+        setSecondBrainText(profile.secondBrain || "")
+      }
       setMounted(true)
     }
-  }, [profile])
+  }, [profile, updateProfile])
 
   const handleTailor = async () => {
     if (!rawTweet.trim()) {

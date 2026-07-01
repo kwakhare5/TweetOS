@@ -72,10 +72,17 @@ export default function ProfilePage() {
     setGeminiApiKey(profile.geminiApiKey || "")
     setNiche(profile.niche || "")
     setAvoidListString((profile.voice?.avoidList || []).join(", "))
-    setSecondBrain(profile.secondBrain || "")
+    
+    if (profile.secondBrain?.startsWith("ACTIVE NOW (update daily):")) {
+      updateProfile({ secondBrain: "" })
+      setSecondBrain("")
+    } else {
+      setSecondBrain(profile.secondBrain || "")
+    }
+
     setInspirationsContext(profile.inspirationsContext || "")
     setMounted(true)
-  }, [profile])
+  }, [profile, updateProfile])
 
   const handleSave = () => {
     setIsSaving(true)
