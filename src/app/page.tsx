@@ -487,81 +487,64 @@ export default function Dashboard() {
                 </div>
                 <div className="flex items-center justify-between sm:justify-end gap-3 w-full sm:w-auto">
                   <div className="flex items-center gap-2 w-full sm:w-auto justify-end">
-                    <div className="inline-flex items-center select-none">
-                      <Button 
-                        disabled={isGeneratingIdea || isTailoring}
-                        size="sm"
-                        onClick={async () => {
-                          if (activeBrainstormAction === "idea") {
+                    <DropdownMenu>
+                      <DropdownMenuTrigger render={
+                        <Button 
+                          disabled={isGeneratingIdea || isTailoring}
+                          size="sm"
+                          className={getBrainstormTriggerClass()}
+                        >
+                          {isGeneratingIdea && activeBrainstormAction === "idea" ? (
+                            <RefreshCw className="h-3.5 w-3.5 mr-1.5 animate-spin text-indigo-500" />
+                          ) : activeBrainstormAction === "idea" ? (
+                            <Sparkles className="h-3.5 w-3.5 mr-1.5 text-indigo-500" />
+                          ) : activeBrainstormAction === "trending" ? (
+                            <Compass className="h-3.5 w-3.5 mr-1.5 text-amber-500" />
+                          ) : (
+                            <MessageSquare className="h-3.5 w-3.5 mr-1.5 text-sky-500" />
+                          )}
+                          <span>
+                            {activeBrainstormAction === "idea" ? "Generate Idea" :
+                             activeBrainstormAction === "trending" ? "Topic Hunt" :
+                             "Engage Hunt"}
+                          </span>
+                          <ChevronDown className="h-3 w-3 text-slate-400 ml-1.5" />
+                        </Button>
+                      } />
+                      <DropdownMenuContent align="end" className="w-48 bg-white border border-slate-200 rounded-lg shadow-md p-1 font-sans z-50">
+                        <DropdownMenuItem 
+                          onClick={async () => {
+                            setActiveBrainstormAction("idea")
                             await handleGenerateIdea()
-                          } else if (activeBrainstormAction === "trending") {
+                          }}
+                          disabled={isGeneratingIdea || isTailoring}
+                          className="text-xs font-semibold px-2.5 py-2 cursor-pointer flex items-center gap-2 hover:bg-slate-50 rounded-md transition-colors text-slate-700 hover:text-slate-900"
+                        >
+                          <Sparkles className="h-3.5 w-3.5 text-indigo-500" />
+                          Generate Idea
+                        </DropdownMenuItem>
+                        <DropdownMenuItem 
+                          onClick={async () => {
+                            setActiveBrainstormAction("trending")
                             await handleCopyTrending()
-                          } else {
+                          }}
+                          className="text-xs font-semibold px-2.5 py-2 cursor-pointer flex items-center gap-2 hover:bg-slate-50 rounded-md transition-colors text-slate-700 hover:text-slate-900"
+                        >
+                          <Compass className="h-3.5 w-3.5 text-amber-500" />
+                          Topic Hunt
+                        </DropdownMenuItem>
+                        <DropdownMenuItem 
+                          onClick={async () => {
+                            setActiveBrainstormAction("engagement")
                             await handleCopyEngagement()
-                          }
-                        }}
-                        className={getBrainstormTriggerClass("left")}
-                      >
-                        {isGeneratingIdea && activeBrainstormAction === "idea" ? (
-                          <RefreshCw className="h-3.5 w-3.5 mr-1.5 animate-spin text-indigo-500" />
-                        ) : activeBrainstormAction === "idea" ? (
-                          <Sparkles className="h-3.5 w-3.5 mr-1.5 text-indigo-500" />
-                        ) : activeBrainstormAction === "trending" ? (
-                          <Compass className="h-3.5 w-3.5 mr-1.5 text-amber-500" />
-                        ) : (
-                          <MessageSquare className="h-3.5 w-3.5 mr-1.5 text-sky-500" />
-                        )}
-                        <span>
-                          {activeBrainstormAction === "idea" ? "Generate Idea" :
-                           activeBrainstormAction === "trending" ? "Topic Hunt" :
-                           "Engage Hunt"}
-                        </span>
-                      </Button>
-                      <DropdownMenu>
-                        <DropdownMenuTrigger render={
-                          <Button 
-                            disabled={isGeneratingIdea || isTailoring}
-                            size="sm"
-                            className={`${getBrainstormTriggerClass("right")} px-2.5`}
-                          >
-                            <ChevronDown className="h-3 w-3 text-slate-400" />
-                          </Button>
-                        } />
-                        <DropdownMenuContent align="end" className="w-48 bg-white border border-slate-200 rounded-lg shadow-md p-1 font-sans z-50">
-                          <DropdownMenuItem 
-                            onClick={async () => {
-                              setActiveBrainstormAction("idea")
-                              await handleGenerateIdea()
-                            }}
-                            disabled={isGeneratingIdea || isTailoring}
-                            className="text-xs font-semibold px-2.5 py-2 cursor-pointer flex items-center gap-2 hover:bg-slate-50 rounded-md transition-colors text-slate-700 hover:text-slate-900"
-                          >
-                            <Sparkles className="h-3.5 w-3.5 text-indigo-500" />
-                            Generate Idea
-                          </DropdownMenuItem>
-                          <DropdownMenuItem 
-                            onClick={async () => {
-                              setActiveBrainstormAction("trending")
-                              await handleCopyTrending()
-                            }}
-                            className="text-xs font-semibold px-2.5 py-2 cursor-pointer flex items-center gap-2 hover:bg-slate-50 rounded-md transition-colors text-slate-700 hover:text-slate-900"
-                          >
-                            <Compass className="h-3.5 w-3.5 text-amber-500" />
-                            Topic Hunt
-                          </DropdownMenuItem>
-                          <DropdownMenuItem 
-                            onClick={async () => {
-                              setActiveBrainstormAction("engagement")
-                              await handleCopyEngagement()
-                            }}
-                            className="text-xs font-semibold px-2.5 py-2 cursor-pointer flex items-center gap-2 hover:bg-slate-50 rounded-md transition-colors text-slate-700 hover:text-slate-900"
-                          >
-                            <MessageSquare className="h-3.5 w-3.5 text-sky-500" />
-                            Engage Hunt
-                          </DropdownMenuItem>
-                        </DropdownMenuContent>
-                      </DropdownMenu>
-                    </div>
+                          }}
+                          className="text-xs font-semibold px-2.5 py-2 cursor-pointer flex items-center gap-2 hover:bg-slate-50 rounded-md transition-colors text-slate-700 hover:text-slate-900"
+                        >
+                          <MessageSquare className="h-3.5 w-3.5 text-sky-500" />
+                          Engage Hunt
+                        </DropdownMenuItem>
+                      </DropdownMenuContent>
+                    </DropdownMenu>
                     <Button 
                       onClick={() => handleTailor("auto")} 
                       disabled={isTailoring || isGeneratingIdea}
