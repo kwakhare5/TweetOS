@@ -4,7 +4,6 @@ import { useState, useEffect } from "react"
 import { motion } from "motion/react"
 import { useProfileStore } from "@/store/use-profile-store"
 import { Button } from "@/components/ui/button"
-import { Textarea } from "@/components/ui/textarea"
 import { Label } from "@/components/ui/label"
 import { toast } from "sonner"
 import { 
@@ -15,14 +14,25 @@ import {
   Send, 
   Save, 
   RefreshCw,
-  HelpCircle,
-  FileText
+  FileText,
+  MessageCircle,
+  Repeat2,
+  Heart,
+  BarChart3,
+  Share,
+  Settings
 } from "lucide-react"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from "@/components/ui/card"
-import { geminiText } from "@/lib/gemini"
-import { UNIFIED_ROUTER_PROMPT } from "@/lib/prompts"
 import { generateDraftPacket } from "@/lib/grok-packager"
 import { TweetDraft } from "@/types"
+import { geminiText } from "@/lib/gemini"
+import { UNIFIED_ROUTER_PROMPT } from "@/lib/prompts"
+
+const TwitterIcon = ({ className }: { className?: string }) => (
+  <svg viewBox="0 0 24 24" aria-hidden="true" className={className} fill="currentColor">
+    <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
+  </svg>
+)
+
 
 const MODES = ["auto", "dev", "personal", "shitpost"] as const
 type ModeType = typeof MODES[number]
@@ -44,6 +54,12 @@ export default function Dashboard() {
   // Right card state (Second Brain)
   const [secondBrainText, setSecondBrainText] = useState("")
   const [isUpdatingBrain, setIsUpdatingBrain] = useState(false)
+
+  // Engagement stats for raw card
+  const [likes, setLikes] = useState(12)
+  const [retweets, setRetweets] = useState(3)
+  const [hasLiked, setHasLiked] = useState(false)
+  const [hasRetweeted, setHasRetweeted] = useState(false)
 
   useEffect(() => {
     if (profile) {
@@ -153,7 +169,32 @@ export default function Dashboard() {
     }
   }
 
+  const toggleLike = () => {
+    if (hasLiked) {
+      setLikes(likes - 1)
+      setHasLiked(false)
+    } else {
+      setLikes(likes + 1)
+      setHasLiked(true)
+      toast.success("Tweet liked!")
+    }
+  }
+
+  const toggleRetweet = () => {
+    if (hasRetweeted) {
+      setRetweets(retweets - 1)
+      setHasRetweeted(false)
+    } else {
+      setRetweets(retweets + 1)
+      setHasRetweeted(true)
+      toast.success("Retweeted!")
+    }
+  }
+
   if (!mounted) return null
+
+  // Fallback initial for avatar
+  const avatarLetter = profile.name ? profile.name.charAt(0).toUpperCase() : "K"
 
   return (
     <motion.div 
@@ -166,81 +207,138 @@ export default function Dashboard() {
       <div className="flex items-center justify-between mb-2">
         <div>
           <h1 className="text-2xl font-bold tracking-tight">Creator Workbench</h1>
-          <p className="text-sm text-muted-foreground">Draft ideas, customize output tone, and sync real-time brain dumps.</p>
+          <p className="text-sm text-muted-foreground">Draft ideas directly inside a live Tweet card simulator and edit sticky notes.</p>
         </div>
       </div>
 
       {/* Main Column Split */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-stretch">
         
-        {/* Left Card: Raw Tweet Editor */}
-        <Card className="lg:col-span-7 flex flex-col border border-border bg-card text-card-foreground shadow-sm">
-          <CardHeader className="pb-4">
-            <div className="flex items-center gap-2">
-              <FileText className="h-5 w-5 text-muted-foreground" />
-              <CardTitle className="text-lg font-bold tracking-tight">Tweet Editor & Tailoring</CardTitle>
-            </div>
-            <CardDescription className="text-sm text-muted-foreground">
-              Write raw thoughts, select tone, and generate tailored, high-performance tweets.
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-4 flex-1 flex flex-col">
+        {/* Left Card: Tweet Editor in a Mock Tweet Card shape */}
+        <div className="lg:col-span-7 flex flex-col gap-6">
+          <div className="relative border border-border bg-card text-card-foreground shadow-sm rounded-xl p-5 space-y-4">
             
-            {/* Raw Input */}
-            <div className="space-y-2 flex-1 flex flex-col min-h-[160px]">
-              <div className="flex justify-between items-center">
-                <Label htmlFor="raw-tweet" className="text-sm font-medium">Raw Tweet / Topic Idea</Label>
-                <span className="text-xs text-muted-foreground">{rawTweet.length} chars</span>
+            {/* Tweet Header */}
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                {/* Avatar */}
+                <div className="h-10 w-10 rounded-full bg-slate-200 border border-border flex items-center justify-center font-bold text-slate-700 text-sm overflow-hidden select-none">
+                  {profile.avatarUrl ? (
+                    // eslint-disable-next-line @next/next/no-img-element
+                    <img src={profile.avatarUrl} alt="Avatar" className="h-full w-full object-cover" />
+                  ) : (
+                    avatarLetter
+                  )}
+                </div>
+                {/* Name / Handle */}
+                <div className="flex flex-col">
+                  <div className="flex items-center gap-1">
+                    <span className="font-bold text-slate-900 text-sm hover:underline cursor-pointer leading-tight">
+                      {profile.name || "Karan"}
+                    </span>
+                    {/* Blue Verified Badge */}
+                    <div className="h-4.5 w-4.5 bg-blue-500 rounded-full flex items-center justify-center text-[9px] text-white font-bold select-none" title="Verified Creator">
+                      ✓
+                    </div>
+                  </div>
+                  <span className="text-xs text-muted-foreground leading-none">
+                    @{profile.twitterHandle || "kwakhare5"}
+                  </span>
+                </div>
               </div>
-              <Textarea 
+              <TwitterIcon className="h-5 w-5 text-[#1DA1F2]" />
+            </div>
+
+            {/* Tweet Body / Textarea */}
+            <div className="pt-2 min-h-[140px] flex flex-col">
+              <textarea 
                 id="raw-tweet"
                 value={rawTweet}
                 onChange={(e) => setRawTweet(e.target.value)}
-                placeholder="Dump raw thoughts or copy a rough tweet draft here..."
-                className="bg-background resize-none flex-1 min-h-[140px] text-base leading-relaxed"
+                placeholder="What's happening? Dump raw thoughts or rough drafts..."
+                className="w-full bg-transparent border-0 outline-none focus:ring-0 focus-visible:ring-0 focus-visible:ring-offset-0 px-0 py-0 resize-none text-base text-slate-900 placeholder:text-slate-400 leading-relaxed flex-1"
               />
             </div>
 
-            {/* Mode Select Buttons */}
-            <div className="space-y-2">
-              <Label className="text-sm font-medium">Tone Mode</Label>
-              <div className="flex gap-1.5 p-1 bg-slate-100/80 rounded-lg border border-slate-200">
-                {MODES.map((m) => (
-                  <button
-                    key={m}
-                    onClick={() => setMode(m)}
-                    className={`flex-1 py-1.5 text-xs font-semibold rounded-md transition-all cursor-pointer ${
-                      mode === m 
-                        ? 'bg-white shadow-sm text-slate-900 border border-slate-200/50' 
-                        : 'text-slate-500 hover:text-slate-800'
-                    }`}
-                  >
-                    {m === "auto" ? "⚡ Auto" : m.toUpperCase()}
-                  </button>
-                ))}
+            {/* Tweet Action Footer (Interactive stats) */}
+            <div className="flex justify-between items-center pt-3 border-t border-slate-100 text-xs text-slate-400 select-none">
+              <button className="flex items-center gap-2 hover:text-blue-500 transition-colors cursor-pointer group bg-transparent border-0 p-0">
+                <MessageCircle className="h-4 w-4 group-hover:scale-110 transition-transform" />
+                <span>0</span>
+              </button>
+              <button 
+                onClick={toggleRetweet}
+                className={`flex items-center gap-2 transition-colors cursor-pointer group bg-transparent border-0 p-0 ${hasRetweeted ? "text-green-600 font-semibold" : "hover:text-green-600"}`}
+              >
+                <Repeat2 className="h-4 w-4 group-hover:scale-110 transition-transform" />
+                <span>{retweets}</span>
+              </button>
+              <button 
+                onClick={toggleLike}
+                className={`flex items-center gap-2 transition-colors cursor-pointer group bg-transparent border-0 p-0 ${hasLiked ? "text-red-500 font-semibold" : "hover:text-red-500"}`}
+              >
+                <Heart className={`h-4 w-4 group-hover:scale-110 transition-transform ${hasLiked ? "fill-red-500 text-red-500" : ""}`} />
+                <span>{likes}</span>
+              </button>
+              <button className="flex items-center gap-2 hover:text-blue-500 transition-colors cursor-pointer group bg-transparent border-0 p-0">
+                <BarChart3 className="h-4 w-4 group-hover:scale-110 transition-transform" />
+                <span>1.4K</span>
+              </button>
+              <button className="flex items-center gap-2 hover:text-blue-500 transition-colors cursor-pointer group bg-transparent border-0 p-0">
+                <Share className="h-4 w-4 group-hover:scale-110 transition-transform" />
+              </button>
+            </div>
+
+          </div>
+
+          {/* Workbench Controls (Under the main Tweet Card) */}
+          <div className="border border-border bg-card text-card-foreground shadow-sm rounded-xl p-5 space-y-4">
+            
+            {/* Tone Selector & Chars */}
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+              <div className="space-y-1.5 flex-1">
+                <Label className="text-xs font-bold text-slate-500 uppercase tracking-wider">Tone Profile</Label>
+                <div className="flex flex-wrap gap-1 p-1 bg-slate-100/80 rounded-lg border border-slate-200">
+                  {MODES.map((m) => (
+                    <button
+                      key={m}
+                      onClick={() => setMode(m)}
+                      className={`flex-1 min-w-[70px] py-1 text-xs font-semibold rounded-md transition-all cursor-pointer ${
+                        mode === m 
+                          ? 'bg-white shadow-sm text-slate-900 border border-slate-200/50' 
+                          : 'text-slate-500 hover:text-slate-800'
+                      }`}
+                    >
+                      {m === "auto" ? "⚡ Auto" : m.toUpperCase()}
+                    </button>
+                  ))}
+                </div>
+              </div>
+              <div className="text-right sm:self-end">
+                <span className={`text-sm font-semibold ${rawTweet.length > 280 ? 'text-red-500' : 'text-slate-400'}`}>
+                  {rawTweet.length} / 280 chars
+                </span>
               </div>
             </div>
 
-            {/* Action Trigger */}
-            <div className="pt-2">
-              <Button 
-                onClick={handleTailor} 
-                disabled={isTailoring}
-                className="w-full h-11 cursor-pointer font-semibold"
-              >
-                {isTailoring ? (
-                  <>
-                    <RefreshCw className="h-4 w-4 mr-2 animate-spin" />
-                    Tailoring Draft with DNA...
-                  </>
-                ) : (
-                  <>
-                    <Sparkles className="h-4 w-4 mr-2" />
-                    Tailor Draft
-                  </>
-                )}
-              </Button>
-            </div>
+            {/* Action Buttons */}
+            <Button 
+              onClick={handleTailor} 
+              disabled={isTailoring}
+              className="w-full h-11 cursor-pointer font-semibold"
+            >
+              {isTailoring ? (
+                <>
+                  <RefreshCw className="h-4 w-4 mr-2 animate-spin" />
+                  Synchronizing with Creator DNA...
+                </>
+              ) : (
+                <>
+                  <Sparkles className="h-4 w-4 mr-2" />
+                  Tailor Draft
+                </>
+              )}
+            </Button>
 
             {/* Tailored Output Display */}
             {tailoredTweet && (
@@ -251,9 +349,9 @@ export default function Dashboard() {
               >
                 <div className="space-y-2">
                   <div className="flex justify-between items-center">
-                    <Label className="text-sm font-bold text-slate-800 flex items-center gap-1.5">
+                    <Label className="text-xs font-bold text-slate-500 uppercase tracking-wider flex items-center gap-1.5">
                       <Sparkles className="h-4 w-4 text-amber-500" />
-                      Polished DNA Draft
+                      Polished Draft
                     </Label>
                     <span className={`text-xs font-semibold ${tailoredTweet.length > 280 ? 'text-red-500' : 'text-slate-400'}`}>
                       {tailoredTweet.length} / 280 chars
@@ -307,54 +405,68 @@ export default function Dashboard() {
               </motion.div>
             )}
 
-          </CardContent>
-        </Card>
+          </div>
+        </div>
 
-        {/* Right Card: Second Brain Dump */}
-        <Card className="lg:col-span-5 flex flex-col border border-border bg-card text-card-foreground shadow-sm">
-          <CardHeader className="pb-4">
-            <div className="flex items-center gap-2">
-              <BrainCircuit className="h-5 w-5 text-muted-foreground" />
-              <CardTitle className="text-lg font-bold tracking-tight">Second Brain Box</CardTitle>
+        {/* Right Card: macOS Yellow Sticky Note */}
+        <div className="lg:col-span-5 flex flex-col">
+          <div className="flex-1 flex flex-col bg-[#FEF9C3] rounded-xl border border-yellow-200 shadow-[0_8px_30px_rgba(234,179,8,0.12)] overflow-hidden">
+            
+            {/* macOS Sticky top bar */}
+            <div className="flex items-center justify-between px-4 py-2.5 bg-[#FEF08A]/60 border-b border-yellow-200/60 select-none">
+              {/* macOS window dots */}
+              <div className="flex items-center gap-1.5">
+                <div className="h-3 w-3 rounded-full bg-red-400 border border-red-500/20 shadow-sm hover:bg-red-500 transition-colors" />
+                <div className="h-3 w-3 rounded-full bg-yellow-400 border border-yellow-500/20 shadow-sm hover:bg-yellow-500 transition-colors" />
+                <div className="h-3 w-3 rounded-full bg-green-400 border border-green-500/20 shadow-sm hover:bg-green-500 transition-colors" />
+              </div>
+              <span className="text-[11px] font-bold text-yellow-800/80 uppercase tracking-wider font-mono">
+                Sticky Notes
+              </span>
             </div>
-            <CardDescription className="text-sm text-muted-foreground">
-              Dump current thoughts, focus items, or projects. This updates your permanent Creator DNA context instantly.
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-4 flex-1 flex flex-col">
-            <div className="flex justify-between items-center">
-              <Label htmlFor="second-brain" className="text-sm font-medium">Daily Context & Brain Dump</Label>
-              <span className="text-[10px] font-semibold px-2 py-0.5 rounded border border-blue-500/20 bg-blue-500/10 text-blue-700">DNA Linked</span>
+
+            {/* Note writing area */}
+            <div className="p-5 flex-1 flex flex-col space-y-3">
+              <div className="flex justify-between items-center">
+                <Label htmlFor="second-brain" className="text-xs font-bold text-yellow-800">
+                  SECOND BRAIN (DAILY CONTEXT)
+                </Label>
+                <span className="text-[9px] font-bold px-1.5 py-0.5 rounded border border-yellow-400 bg-yellow-100 text-yellow-800">
+                  AUTO-SYNCED
+                </span>
+              </div>
+              <textarea
+                id="second-brain"
+                value={secondBrainText}
+                onChange={(e) => setSecondBrainText(e.target.value)}
+                placeholder="Studying code? Building a chrome extension? Refused to go to college? Write it down, Gemini uses this memory."
+                className="w-full bg-transparent border-0 outline-none focus:ring-0 focus-visible:ring-0 focus-visible:ring-offset-0 px-0 py-0 resize-none flex-1 min-h-[300px] text-sm text-yellow-950 placeholder:text-yellow-600/60 leading-relaxed font-sans"
+              />
             </div>
-            <Textarea
-              id="second-brain"
-              value={secondBrainText}
-              onChange={(e) => setSecondBrainText(e.target.value)}
-              placeholder="Dump current focus, active projects, frustrations, or what you are studying today..."
-              className="bg-background resize-none flex-1 min-h-[300px] text-sm leading-relaxed"
-            />
-          </CardContent>
-          <CardFooter className="pt-2 pb-6 flex justify-end">
-            <Button 
-              size="lg" 
-              onClick={handleUpdateBrain} 
-              disabled={isUpdatingBrain}
-              className="w-full h-11 cursor-pointer font-semibold"
-            >
-              {isUpdatingBrain ? (
-                <>
-                  <RefreshCw className="h-4 w-4 mr-2 animate-spin" />
-                  Updating DNA...
-                </>
-              ) : (
-                <>
-                  <Save className="h-4 w-4 mr-2" />
-                  Update Brain Context
-                </>
-              )}
-            </Button>
-          </CardFooter>
-        </Card>
+
+            {/* Sticky Note footer button */}
+            <div className="px-5 pb-5 pt-2 flex justify-end">
+              <Button 
+                onClick={handleUpdateBrain} 
+                disabled={isUpdatingBrain}
+                className="w-full h-10 bg-yellow-400 hover:bg-yellow-500 text-yellow-950 border border-yellow-500/30 hover:border-yellow-500/50 shadow-sm cursor-pointer font-bold transition-all text-xs"
+              >
+                {isUpdatingBrain ? (
+                  <>
+                    <RefreshCw className="h-3.5 w-3.5 mr-2 animate-spin text-yellow-950" />
+                    SYNCING MEMORY...
+                  </>
+                ) : (
+                  <>
+                    <Save className="h-3.5 w-3.5 mr-2 text-yellow-950" />
+                    SAVE TO BRAIN
+                  </>
+                )}
+              </Button>
+            </div>
+
+          </div>
+        </div>
 
       </div>
     </motion.div>
