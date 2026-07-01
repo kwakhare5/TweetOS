@@ -83,7 +83,7 @@ export function SecondBrainNote({ initialText, onSave }: SecondBrainNoteProps) {
  setSaveStatus("saving") 
  }}
  placeholder=""
- className="w-full bg-transparent border-0 outline-hidden focus-visible:ring-2 focus-visible:ring-amber-400/50 focus-visible:ring-offset-2 rounded px-2 py-1 resize-none flex-1 min-h-[240px] text-[17px] font-normal text-yellow-950/95 placeholder:text-yellow-600/50 leading-[28px] font-handwriting"
+ className="w-full bg-transparent border-0 outline-hidden focus:outline-hidden focus:ring-0 focus-visible:ring-0 focus-visible:outline-hidden rounded px-2 py-1 resize-none flex-1 min-h-[240px] text-[17px] font-normal text-yellow-950/95 placeholder:text-yellow-600/50 leading-[28px] font-handwriting"
  style={{
  backgroundImage: "linear-gradient(to bottom, transparent 27px, rgba(202,138,4,0.15) 27px)",
  backgroundSize: "100% 28px"
