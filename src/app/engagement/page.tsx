@@ -82,9 +82,9 @@ export default function EngagementPage() {
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0 }}
-              className="h-64 flex flex-col items-center justify-center border-2 border-dashed border-amber-900/10 rounded-xl bg-card/50"
+              className="h-64 flex flex-col items-center justify-center border-2 border-dashed border-border rounded-xl bg-card/50"
             >
-              <div className="w-12 h-12 bg-amber-100 text-amber-600 rounded-full flex items-center justify-center mb-4">
+              <div className="w-12 h-12 bg-primary/10 text-primary rounded-full flex items-center justify-center mb-4">
                 <Search size={24} />
               </div>
               <h3 className="text-lg font-medium text-foreground font-sans">Ready to hunt?</h3>
@@ -102,7 +102,7 @@ export default function EngagementPage() {
               exit={{ opacity: 0 }}
               className="flex flex-col items-center justify-center h-64 space-y-4"
             >
-              <Loader2 size={32} className="text-amber-600 animate-spin" />
+              <Loader2 size={32} className="text-primary animate-spin" />
               <div className="text-center">
                 <p className="font-medium text-foreground font-sans">Scraping the timeline...</p>
                 <p className="text-sm text-muted-foreground font-sans mt-1">Analyzing tweets and drafting reply options</p>
@@ -127,8 +127,8 @@ export default function EngagementPage() {
               className="space-y-6"
             >
               {strategyNote && (
-                <div className="p-4 bg-amber-50 border border-amber-200 rounded-xl">
-                  <h4 className="text-xs font-bold text-amber-800 uppercase tracking-wider mb-2">Strategy Note</h4>
+                <div className="p-4 bg-muted border border-border rounded-xl">
+                  <h4 className="text-xs font-bold text-foreground uppercase tracking-wider mb-2">Strategy Note</h4>
                   <p className="text-sm text-foreground font-sans">{strategyNote}</p>
                 </div>
               )}
@@ -145,7 +145,7 @@ export default function EngagementPage() {
             <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
-              className="p-8 text-center bg-card border border-amber-900/10 rounded-xl"
+              className="p-8 text-center bg-card border border-border rounded-xl"
             >
               <p className="text-foreground font-medium">No strong opportunities found.</p>
               <p className="text-sm text-muted-foreground mt-1">Try expanding your target accounts or keywords.</p>
