@@ -100,11 +100,13 @@ export function CustomCursor() {
 
   // Touch device check — run once
   useEffect(() => {
-    setIsTouchDevice(
-      "ontouchstart" in window ||
-      navigator.maxTouchPoints > 0 ||
-      (window.matchMedia?.("(any-pointer: coarse)").matches ?? false)
-    )
+    setTimeout(() => {
+      setIsTouchDevice(
+        "ontouchstart" in window ||
+        navigator.maxTouchPoints > 0 ||
+        (window.matchMedia?.("(any-pointer: coarse)").matches ?? false)
+      )
+    }, 0)
   }, [])
 
   // Cursor tracking — stable deps only (MotionValues never change identity)

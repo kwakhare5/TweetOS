@@ -84,7 +84,7 @@ html {
   /* Fonts */
   --font-sans:        var(--font-sans), ui-sans-serif, system-ui, sans-serif;
   --font-mono:        var(--font-mono), ui-monospace, SFMono-Regular, monospace;
-  --font-handwriting: var(--font-handwriting), "Kalam", cursive;
+  --font-handwriting: var(--font-handwriting), "Playpen Sans", cursive;
 
   /* Semantic colors */
   --color-background:         var(--background);

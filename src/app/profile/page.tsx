@@ -2,7 +2,6 @@
 
 import { useState, useEffect, useRef } from "react"
 import { useProfileStore } from "@/store/use-profile-store"
-import { Save } from "lucide-react"
 import { CoreIdentityCard } from "@/components/profile/core-identity-card"
 import { ExtendedContextCard } from "@/components/profile/extended-context-card"
 import { VoiceProfileCard } from "@/components/profile/voice-profile-card"
@@ -10,7 +9,7 @@ import { AvoidWordsCard } from "@/components/profile/avoid-words-card"
 import { PageHeader } from "@/components/ui/page-header"
 import { SaveIndicator } from "@/components/ui/save-indicator"
 import { motion, useReducedMotion } from "motion/react"
-import { containerVariants, itemVariants, reducedContainerVariants, reducedItemVariants } from "@/lib/motion-variants"
+import { containerVariants, itemVariants, reducedContainerVariants } from "@/lib/motion-variants"
 
 export default function ProfilePage() {
   const { profile, updateProfile } = useProfileStore()
@@ -34,31 +33,33 @@ export default function ProfilePage() {
   useEffect(() => {
     if (!profile || mounted) return
 
-    setName(profile.name || "")
-    setTwitterHandle(profile.twitterHandle || "")
-    setNiche(profile.niche || "")
-    setAvoidListString((profile.voice?.avoidList || []).join("\n"))
-    setInspirationsContext(profile.inspirationsContext || "")
-    setBio(profile.bio || "")
-    setGoalsString((profile.goals || []).join("\n"))
-    setAdmiredString((profile.admiredAccounts || []).join("\n"))
-    setPillarsString(
-      (profile.contentPillars || [])
-        .map(p => p.name + (p.description ? ": " + p.description : ""))
-        .join("\n")
-    )
-    setAudienceString(
-      [
-        profile.audience?.targetAudience || "",
-        ...(profile.audience?.audienceProblems || []),
-        ...(profile.audience?.audienceGoals || []),
-      ]
-        .filter(Boolean)
-        .join("\n")
-    )
+    setTimeout(() => {
+      setName(profile.name || "")
+      setTwitterHandle(profile.twitterHandle || "")
+      setNiche(profile.niche || "")
+      setAvoidListString((profile.voice?.avoidList || []).join("\n"))
+      setInspirationsContext(profile.inspirationsContext || "")
+      setBio(profile.bio || "")
+      setGoalsString((profile.goals || []).join("\n"))
+      setAdmiredString((profile.admiredAccounts || []).join("\n"))
+      setPillarsString(
+        (profile.contentPillars || [])
+          .map(p => p.name + (p.description ? ": " + p.description : ""))
+          .join("\n")
+      )
+      setAudienceString(
+        [
+          profile.audience?.targetAudience || "",
+          ...(profile.audience?.audienceProblems || []),
+          ...(profile.audience?.audienceGoals || []),
+        ]
+          .filter(Boolean)
+          .join("\n")
+      )
 
-    setMounted(true)
-    setTimeout(() => { initialLoadDone.current = true }, 100)
+      setMounted(true)
+      setTimeout(() => { initialLoadDone.current = true }, 100)
+    }, 0)
   }, [profile, mounted])
 
   // Auto-save with 1 s debounce whenever any field changes

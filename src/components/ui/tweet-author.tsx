@@ -31,9 +31,9 @@ export function TweetAuthor({ name, handle, avatarUrl, interactive = false }: Tw
           <span className={`text-foreground font-bold text-[15px] truncate ${cursor}`}>
             {name || "Karan"}
           </span>
-          <VerifiedBadgeIcon className="inline size-4 text-[#0f1419] shrink-0" />
+          <VerifiedBadgeIcon className="inline size-4 text-blue-500 shrink-0" />
         </div>
-        <span className={`text-muted-foreground text-sm font-mono truncate ${cursor}`}>
+        <span className={`text-muted-foreground text-sm font-sans truncate ${cursor}`}>
           @{handle || "kwakhare5"}
         </span>
       </div>

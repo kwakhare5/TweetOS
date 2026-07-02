@@ -20,7 +20,7 @@ export function Breadcrumbs() {
   const route = ROUTE_MAP[pathname] ?? { group: "Workspace", title: "Dashboard" }
 
   return (
-    <Breadcrumb className="hidden md:flex">
+    <Breadcrumb className="flex">
       <BreadcrumbList>
         <BreadcrumbItem>
           <span className="text-muted-foreground/80 font-normal text-xs uppercase tracking-wider">

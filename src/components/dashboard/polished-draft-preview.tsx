@@ -39,10 +39,10 @@ export function PolishedDraftPreview({
 
       {/* Header: label + tone pills + char count */}
       <div className="space-y-2">
-        <div className="flex justify-between items-center">
+        <div className="flex flex-col sm:flex-row justify-between sm:items-center gap-3">
           <FieldLabel icon={Sparkles}>Polished Draft</FieldLabel>
 
-          <div className="flex items-center gap-3">
+          <div className="flex flex-wrap items-center gap-3">
             {/* Tone style pill selector */}
             <div className="flex items-center gap-1 bg-muted/80 px-1 py-0.5 rounded border border-border/50 select-none">
               {(["auto", "dev", "shitpost", "personal"] as const).map((t) => (

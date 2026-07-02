@@ -1,5 +1,5 @@
 import type { Metadata } from "next"
-import { Geist, Fira_Code, Kalam } from "next/font/google"
+import { Geist, Fira_Code, Playpen_Sans } from "next/font/google"
 import "./globals.css"
 import { Toaster } from "@/components/ui/sonner"
 import { ThemeProvider } from "@/components/theme-provider"
@@ -22,7 +22,7 @@ const firaCode = Fira_Code({
   variable: "--font-mono",
 })
 
-const kalam = Kalam({
+const playpenSans = Playpen_Sans({
   subsets: ["latin"],
   variable: "--font-handwriting",
   weight: ["400", "700"],
@@ -37,7 +37,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="en" suppressHydrationWarning>
       <body
-        className={`${geist.variable} ${firaCode.variable} ${kalam.variable} font-sans antialiased bg-background text-foreground min-h-screen relative paper-texture`}
+        className={`${geist.variable} ${firaCode.variable} ${playpenSans.variable} font-sans antialiased bg-background text-foreground min-h-screen relative paper-texture`}
       >
         <ThemeProvider attribute="class" defaultTheme="light" forcedTheme="light" disableTransitionOnChange>
           <TooltipProvider>

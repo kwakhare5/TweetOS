@@ -1,7 +1,7 @@
 import { useState } from "react"
 import { Textarea } from "@/components/ui/textarea"
 import { Button } from "@/components/ui/button"
-import { Contact, Target, ListTodo, Users, UserRound, Sparkles, Check, Copy } from "lucide-react"
+import { Contact, Target, ListTodo, Users, UserRound, Sparkles, Copy } from "lucide-react"
 import { toast } from "sonner"
 import { WashiTape } from "@/components/ui/washi-tape"
 import { CardHeaderRow } from "@/components/ui/card-header-row"
@@ -54,7 +54,7 @@ export function ExtendedContextCard({
         variant="outline"
         size="sm"
         onClick={copyPrompt}
-        className="hidden sm:flex"
+        className="flex"
       >
         <Copy className="h-3 w-3 mr-1.5" />
         Prompt
