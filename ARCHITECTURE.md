@@ -55,11 +55,12 @@ TweetOS splits AI execution into two distinct phases:
 - The prompt injects the user's Creator DNA (Voice, Guardrails, Avoid Words) and current context (Second Brain notes).
 - The Gemini API executes this request locally, returning a polished JSON payload or text, which is parsed and set in the local state for display.
 
-**Phase B: Stateless Execution (Grok Packets)**
-- TweetOS deliberately avoids connecting to the X/Twitter API or scraping live data.
-- Instead, it generates **"Grok Packets"** via `src/lib/grok-packager.ts`.
-- When the user clicks "Topic Hunt", "Engage Hunt", or "Copy for Grok", the app constructs a massive, highly detailed system prompt containing the user's profile context, target accounts, and the specific task (e.g., "Find trending topics for this niche").
-- This packet is copied to the user's clipboard to be pasted manually into Grok on X, bypassing the need for complex API integrations while leveraging Grok's live access to the X firehose.
+**Phase B: Automated X Scraping Pipeline**
+- TweetOS has pivoted away from manual "Grok Packets" to a frictionless automated backend.
+- Handled by Next.js API Routes (e.g. `src/app/api/scrape/route.ts`).
+- When the user clicks to analyze an account or topic, the backend uses `x-twitter-scraper` to pull the latest relevant tweets.
+- The raw tweets are fed securely to the `@google/genai` (Gemini API) directly on the server to extract the Voice Blueprint, Content Pillars, or Ideas.
+- The resulting JSON payload is returned to the client and persisted in Zustand/Supabase.
 
 ## File Structure & Routing
 
