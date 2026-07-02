@@ -8,6 +8,7 @@ import { EngagementOpportunity } from '@/types'
 import { HuntModal } from '@/components/ui/hunt-modal'
 import { OpportunityCard } from '@/components/engagement/opportunity-card'
 import { Button } from '@/components/ui/button'
+import { PageHeader } from '@/components/ui/page-header'
 
 export default function EngagementPage() {
   const profile = useProfileStore((state) => state.profile)
@@ -55,21 +56,24 @@ export default function EngagementPage() {
   }
 
   return (
-    <div className="max-w-4xl mx-auto py-8 px-4 h-[calc(100vh-2rem)] flex flex-col">
-      <div className="flex items-center justify-between mb-8">
-        <div>
-          <h1 className="text-2xl font-sans text-foreground">Engagement Hunt</h1>
-          <p className="text-sm text-muted-foreground font-sans mt-1">
-            Find high-value reply and quote-tweet opportunities to grow your network.
-          </p>
-        </div>
-        <Button
-          onClick={() => setIsModalOpen(true)}
-          disabled={isHunting}
-        >
-          <Search size={16} /> New Hunt
-        </Button>
-      </div>
+    <div className="flex flex-col gap-6 w-full max-w-4xl mx-auto h-[calc(100vh-2rem)]">
+      <motion.div
+        initial={{ opacity: 0, y: -10 }}
+        animate={{ opacity: 1, y: 0 }}
+      >
+        <PageHeader
+          title="Engagement Hunt"
+          subtitle="Find high-value reply and quote-tweet opportunities to grow your network."
+          actions={
+            <Button
+              onClick={() => setIsModalOpen(true)}
+              disabled={isHunting}
+            >
+              <Search size={16} className="mr-2" /> New Hunt
+            </Button>
+          }
+        />
+      </motion.div>
 
       <div className="flex-1 overflow-y-auto pr-2 pb-20 space-y-6">
         <AnimatePresence mode="wait">
