@@ -38,7 +38,7 @@ export async function runApifyScrape(options: ApifyScrapeOptions): Promise<Tweet
   
   for (const actorId of actorsToTry) {
     try {
-      console.log(`Starting Apify scrape using actor ${actorId}...`)
+
       
       const run = await apifyClient.actor(actorId).call({
         searchTerms: options.searchTerms,
@@ -46,15 +46,15 @@ export async function runApifyScrape(options: ApifyScrapeOptions): Promise<Tweet
         sort: options.sort,
       })
 
-      console.log(`Apify scrape finished for ${actorId}. Fetching dataset...`)
+
       const dataset = await apifyClient.dataset(run.defaultDatasetId).listItems()
       
       if (dataset.items && dataset.items.length > 0) {
         items = dataset.items as TweetItem[]
-        console.log(`Successfully extracted ${items.length} tweets using ${actorId}.`)
+
         break // Success! Exit the fallback loop
       } else {
-        console.log(`Actor ${actorId} returned 0 items. Trying backup...`)
+
       }
     } catch (err: unknown) {
       const msg = err instanceof Error ? err.message : String(err)

@@ -89,7 +89,7 @@ export function TweetComposer({
             interactive
           />
           <div className="self-start mt-1">
-            <XLogoIcon className="text-[#0f1419] size-5" />
+            <XLogoIcon className="text-brand-black size-5" />
           </div>
         </div>
 
@@ -101,12 +101,12 @@ export function TweetComposer({
             value={brainDump}
             onChange={(e) => setBrainDump(e.target.value)}
             placeholder="What's happening? Dump raw thoughts or rough drafts…"
-            className="w-full bg-transparent border-0 outline-hidden rounded px-0 py-1 resize-none text-[15px] text-foreground placeholder:text-muted-foreground leading-normal flex-1 font-normal min-h-[140px]"
+            className="w-full bg-transparent border-0 outline-hidden rounded px-0 py-1 resize-none text-sm text-foreground placeholder:text-muted-foreground leading-normal flex-1 font-normal min-h-36"
           />
 
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-t border-border/40 pt-2 mb-1">
             {/* Character counter */}
-            <span className={`text-xs tracking-wide select-none ${brainDump.length > 280 ? "text-[#f4212e]" : "text-foreground/60"}`}>
+            <span className={`text-xs tracking-wide select-none ${brainDump.length > 280 ? "text-twitter-red" : "text-foreground/60"}`}>
               {brainDump.length} / 280
             </span>
 

@@ -72,7 +72,7 @@ export async function POST(req: NextRequest) {
       tweetUrl: item.url
     })).filter(t => t.text.length > 0)
 
-    console.log(`Passing ${scrapedTweets.length} tweets to Gemini Engagement Hunt...`)
+
 
     const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY })
     

@@ -7,6 +7,7 @@ import { useProfileStore } from '@/store/use-profile-store'
 import { EngagementOpportunity } from '@/types'
 import { HuntModal } from '@/components/ui/hunt-modal'
 import { OpportunityCard } from '@/components/engagement/opportunity-card'
+import { Button } from '@/components/ui/button'
 
 export default function EngagementPage() {
   const profile = useProfileStore((state) => state.profile)
@@ -57,18 +58,17 @@ export default function EngagementPage() {
     <div className="max-w-4xl mx-auto py-8 px-4 h-[calc(100vh-2rem)] flex flex-col">
       <div className="flex items-center justify-between mb-8">
         <div>
-          <h1 className="text-2xl font-sans text-amber-950">Engagement Hunt</h1>
-          <p className="text-sm text-amber-900/60 font-sans mt-1">
+          <h1 className="text-2xl font-sans text-foreground">Engagement Hunt</h1>
+          <p className="text-sm text-muted-foreground font-sans mt-1">
             Find high-value reply and quote-tweet opportunities to grow your network.
           </p>
         </div>
-        <button
+        <Button
           onClick={() => setIsModalOpen(true)}
           disabled={isHunting}
-          className="flex items-center gap-2 px-4 py-2 bg-slate-950 text-white rounded-lg text-sm font-medium hover:bg-slate-800 transition-colors active:scale-[0.98] disabled:opacity-50"
         >
           <Search size={16} /> New Hunt
-        </button>
+        </Button>
       </div>
 
       <div className="flex-1 overflow-y-auto pr-2 pb-20 space-y-6">
@@ -78,13 +78,13 @@ export default function EngagementPage() {
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0 }}
-              className="h-64 flex flex-col items-center justify-center border-2 border-dashed border-amber-900/10 rounded-xl bg-white/50"
+              className="h-64 flex flex-col items-center justify-center border-2 border-dashed border-amber-900/10 rounded-xl bg-card/50"
             >
               <div className="w-12 h-12 bg-amber-100 text-amber-600 rounded-full flex items-center justify-center mb-4">
                 <Search size={24} />
               </div>
-              <h3 className="text-lg font-medium text-amber-950 font-sans">Ready to hunt?</h3>
-              <p className="text-sm text-amber-900/60 max-w-sm text-center mt-2 font-sans">
+              <h3 className="text-lg font-medium text-foreground font-sans">Ready to hunt?</h3>
+              <p className="text-sm text-muted-foreground max-w-sm text-center mt-2 font-sans">
                 Click &quot;New Hunt&quot; to scan your target accounts and keywords for engagement opportunities.
               </p>
             </motion.div>
@@ -100,8 +100,8 @@ export default function EngagementPage() {
             >
               <Loader2 size={32} className="text-amber-600 animate-spin" />
               <div className="text-center">
-                <p className="font-medium text-amber-950 font-sans">Scraping the timeline...</p>
-                <p className="text-sm text-amber-900/60 font-sans mt-1">Analyzing tweets and drafting reply options</p>
+                <p className="font-medium text-foreground font-sans">Scraping the timeline...</p>
+                <p className="text-sm text-muted-foreground font-sans mt-1">Analyzing tweets and drafting reply options</p>
               </div>
             </motion.div>
           )}
@@ -125,7 +125,7 @@ export default function EngagementPage() {
               {strategyNote && (
                 <div className="p-4 bg-amber-50 border border-amber-200 rounded-xl">
                   <h4 className="text-xs font-bold text-amber-800 uppercase tracking-wider mb-2">Strategy Note</h4>
-                  <p className="text-sm text-amber-900 font-sans">{strategyNote}</p>
+                  <p className="text-sm text-foreground font-sans">{strategyNote}</p>
                 </div>
               )}
               
@@ -141,10 +141,10 @@ export default function EngagementPage() {
             <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
-              className="p-8 text-center bg-white border border-amber-900/10 rounded-xl"
+              className="p-8 text-center bg-card border border-amber-900/10 rounded-xl"
             >
-              <p className="text-amber-950 font-medium">No strong opportunities found.</p>
-              <p className="text-sm text-amber-900/60 mt-1">Try expanding your target accounts or keywords.</p>
+              <p className="text-foreground font-medium">No strong opportunities found.</p>
+              <p className="text-sm text-muted-foreground mt-1">Try expanding your target accounts or keywords.</p>
             </motion.div>
           )}
         </AnimatePresence>

@@ -44,7 +44,7 @@ export function TweetActionFooter({
 
   return (
     <div
-      className={cn("flex justify-between items-center text-[13px] text-[#536471] select-none w-full max-w-full", className)}
+      className={cn("flex justify-between items-center text-sm text-muted-foreground select-none w-full max-w-full", className)}
       {...props}
     >
       <div className="flex justify-between items-center w-full max-w-[85%] pr-2">
@@ -62,7 +62,7 @@ export function TweetActionFooter({
           type="button"
           onClick={onRetweet}
           aria-label={hasRetweeted ? "Undo retweet" : "Retweet"}
-          className={cn(base, hasRetweeted ? "text-[#00ba7c]" : "")}
+          className={cn(base, hasRetweeted ? "text-twitter-green" : "")}
         >
           <div className="p-2 -m-2 rounded-full group-hover:bg-emerald-500/10 group-hover:text-emerald-500 transition-colors">
             <ActionIcon d="M4.5 3.88l4.432 4.14-1.364 1.46L5.5 7.55V16c0 1.1.896 2 2 2H13v2H7.5c-2.209 0-4-1.79-4-4V7.55L1.432 9.48.068 8.02 4.5 3.88zM16.5 6H11V4h5.5c2.209 0 4 1.79 4 4v8.45l2.068-1.93 1.364 1.46-4.432 4.14-4.432-4.14 1.364-1.46 2.068 1.93V8c0-1.1-.896-2-2-2z" />
@@ -75,7 +75,7 @@ export function TweetActionFooter({
           type="button"
           onClick={onLike}
           aria-label={hasLiked ? "Unlike" : "Like"}
-          className={cn(base, hasLiked ? "text-[#f91880]" : "")}
+          className={cn(base, hasLiked ? "text-twitter-pink" : "")}
         >
           <div className="p-2 -m-2 rounded-full group-hover:bg-pink-500/10 group-hover:text-pink-500 transition-colors">
             <ActionIcon d={hasLiked

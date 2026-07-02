@@ -1,6 +1,7 @@
 import { motion } from 'framer-motion'
 import { TopicHuntAngle } from '@/types'
-import { X, Zap, ArrowDownToLine, Tag } from 'lucide-react'
+import { Button } from '@/components/ui/button'
+import { X, Zap, Tag, Pencil } from 'lucide-react'
 
 interface TopicHuntResultsProps {
   results: TopicHuntAngle[]
@@ -17,11 +18,11 @@ export function TopicHuntResults({ results, keywords, onDismiss, onLoadIntoCompo
       initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, scale: 0.95 }}
-      className="mt-6 bg-[#FAF8F5] border border-amber-900/10 rounded-xl overflow-hidden shadow-sm relative"
+      className="mt-6 bg-background border border-amber-900/10 rounded-xl overflow-hidden shadow-sm relative"
     >
       <div className="absolute top-0 left-0 right-0 h-1.5 bg-yellow-200/40 opacity-70" />
       
-      <div className="flex items-center justify-between p-4 border-b border-amber-900/10 bg-white/50">
+      <div className="flex items-center justify-between p-4 border-b border-amber-900/10 bg-card/50">
         <div className="flex items-center gap-3">
           <div className="flex items-center gap-1.5 px-2 py-1 bg-amber-100 text-amber-800 text-xs font-semibold rounded-md uppercase tracking-wider">
             <Zap size={12} className="text-amber-600" /> Apify Auto
@@ -32,7 +33,8 @@ export function TopicHuntResults({ results, keywords, onDismiss, onLoadIntoCompo
         </div>
         <button 
           onClick={onDismiss}
-          className="p-1 text-amber-900/40 hover:text-amber-900/80 rounded-full hover:bg-amber-900/5 transition-colors"
+          aria-label="Dismiss results"
+          className="p-1 text-muted-foreground hover:text-foreground rounded-full hover:bg-muted transition-colors focus-visible:outline-hidden focus-visible:ring-1 focus-visible:ring-ring"
         >
           <X size={16} />
         </button>
@@ -40,7 +42,7 @@ export function TopicHuntResults({ results, keywords, onDismiss, onLoadIntoCompo
 
       <div className="p-4 grid grid-cols-1 md:grid-cols-2 gap-4">
         {results.map((angle) => (
-          <div key={angle.id} className="bg-white border border-amber-900/10 rounded-lg p-4 shadow-sm hover:shadow-md transition-shadow relative group">
+          <div key={angle.id} className="bg-card border border-amber-900/10 rounded-lg p-4 shadow-sm hover:shadow-md transition-shadow relative group">
             
             <div className="flex items-center justify-between mb-3">
               <span className="inline-flex items-center gap-1 px-2 py-0.5 bg-slate-100 text-slate-600 text-xs font-medium rounded">
@@ -69,13 +71,12 @@ export function TopicHuntResults({ results, keywords, onDismiss, onLoadIntoCompo
             </div>
 
             {/* Load Button (shows on hover) */}
-            <div className="absolute inset-0 bg-white/60 backdrop-blur-[1px] opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center rounded-lg">
-              <button
+            <div className="absolute inset-0 bg-card/60 backdrop-blur-[1px] opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center rounded-lg">
+              <Button
                 onClick={() => onLoadIntoComposer(angle)}
-                className="flex items-center gap-2 px-4 py-2 bg-slate-950 text-white text-sm font-medium rounded-lg shadow-lg hover:bg-slate-800 transition-transform hover:scale-105 active:scale-95"
               >
-                <ArrowDownToLine size={16} /> Load into Composer
-              </button>
+                <Pencil size={16} /> Load to Composer
+              </Button>
             </div>
           </div>
         ))}

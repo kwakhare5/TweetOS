@@ -38,7 +38,7 @@ export function AvoidWordsCard({ avoidListString, setAvoidListString }: AvoidWor
               value={avoidListString}
               onChange={(e) => setAvoidListString(e.target.value)}
               placeholder={"e.g. delve\nsupercharge\nunlock"}
-              className="bg-background/50 min-h-[150px] text-sm resize-none leading-relaxed"
+              className="bg-background/50 min-h-40 text-sm resize-none leading-relaxed"
             />
           ) : (
             <div className="flex flex-col gap-2 mt-2">

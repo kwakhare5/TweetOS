@@ -49,11 +49,11 @@ export function SecondBrainNote({ initialText, onSave }: SecondBrainNoteProps) {
       {/* Top bar — matches voice-profile-card exactly */}
       <div className="flex items-center justify-between px-4 py-2.5 bg-sticky-200/60 border-b border-yellow-200/60 rounded-t-xl select-none">
         <MacOsWindowDots />
-        <span className="text-[10px] font-bold text-yellow-800/80 uppercase tracking-widest font-mono">
+        <span className="text-xs font-bold text-yellow-800/80 uppercase tracking-widest font-mono">
           Sticky Notes
         </span>
         {/* Sync status — right-aligned to match Voice Blueprint's Prompt button position */}
-        <div className="flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-widest select-none min-w-[60px] justify-end">
+        <div className="flex items-center gap-1.5 text-xs font-bold uppercase tracking-widest select-none min-w-[60px] justify-end">
           {saveStatus === "saving" && (
             <>
               <RefreshCw className="h-3 w-3 animate-spin text-yellow-700/70" />
@@ -83,7 +83,7 @@ export function SecondBrainNote({ initialText, onSave }: SecondBrainNoteProps) {
           value={text}
           onChange={(e) => setText(e.target.value)}
           placeholder="Dump links, ideas, raw thoughts, things to remember…"
-          className="w-full bg-transparent border-0 outline-hidden focus:outline-hidden focus:ring-0 focus-visible:ring-0 focus-visible:outline-hidden rounded px-1 py-0 resize-none flex-1 min-h-[240px] text-[16px] font-normal text-yellow-950/95 placeholder:text-yellow-600/40 placeholder:font-handwriting leading-[26px] font-handwriting"
+          className="w-full bg-transparent border-0 outline-hidden focus:outline-hidden focus:ring-0 focus-visible:ring-0 focus-visible:outline-hidden rounded px-1 py-0 resize-none flex-1 min-h-60 text-base font-normal text-yellow-950/95 placeholder:text-yellow-600/40 placeholder:font-handwriting leading-relaxed font-handwriting"
           style={RULED_PAPER_STYLE}
         />
       </div>

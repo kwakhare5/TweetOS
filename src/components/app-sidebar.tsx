@@ -70,7 +70,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                     <SidebarMenuItem key={item.title} className="relative py-0.5">
                       <SidebarMenuButton
                         isActive={isActive}
-                        className={`h-9 px-3 rounded-md font-medium text-[15px] select-none border-0 transition-all ${
+                        className={`h-9 px-3 rounded-md font-medium text-sm select-none border-0 transition-all ${
                           isActive
                             ? "nav-item-active border border-green-300/40 text-green-900 shadow-sm font-semibold rotate-[-1.5deg] translate-y-[-1px] scale-[1.02]"
                             : "text-muted-foreground hover:bg-accent hover:text-accent-foreground"

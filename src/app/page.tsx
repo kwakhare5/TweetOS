@@ -153,7 +153,7 @@ export default function Dashboard() {
               handleCopyGrok={tweetGen.handleCopyGrok}
             />
           ) : (
-            <div className="flex items-center justify-center min-h-[120px] rounded-xl border border-dashed border-border/50 bg-card/50">
+            <div className="flex items-center justify-center min-h-32 rounded-xl border border-dashed border-border/50 bg-card/50">
               <p className="text-sm text-muted-foreground/50 select-none font-sans">
                 Polished draft will appear here…
               </p>

@@ -84,7 +84,7 @@ export function ExtendedContextCard({
               value={bio}
               onChange={(e) => setBio(e.target.value)}
               placeholder="Brief description of yourself..."
-              className="bg-background/50 min-h-[60px] text-sm resize-none"
+              className="bg-background/50 min-h-16 text-sm resize-none"
             />
           ) : (
             <p className="text-sm text-foreground italic border-l-2 border-border pl-3 py-1">{bio || "No bio set."}</p>
@@ -96,12 +96,12 @@ export function ExtendedContextCard({
           <FieldLabel icon={ListTodo}>Content Pillars</FieldLabel>
           {isEditing ? (
             <>
-              <p className="text-[10px] text-muted-foreground/70 mb-1">Format: Name: Description</p>
+              <p className="text-xs text-muted-foreground/70 mb-1">Format: Name: Description</p>
               <Textarea
                 value={pillarsString}
                 onChange={(e) => setPillarsString(e.target.value)}
                 placeholder={"Tool Checks: Blunt takes on AI tools\nJourney Notes: Building in public..."}
-                className="bg-background/50 min-h-[90px] text-sm resize-none leading-relaxed"
+                className="bg-background/50 min-h-24 text-sm resize-none leading-relaxed"
               />
             </>
           ) : (
@@ -132,7 +132,7 @@ export function ExtendedContextCard({
               value={audienceString}
               onChange={(e) => setAudienceString(e.target.value)}
               placeholder={"Indian indie devs\nPeople frustrated with AI hype..."}
-              className="bg-background/50 min-h-[70px] text-sm resize-none"
+              className="bg-background/50 min-h-20 text-sm resize-none"
             />
           ) : (
             <ul className="list-disc list-outside ml-4 space-y-1 mt-1 text-sm text-foreground marker:text-border">
@@ -153,7 +153,7 @@ export function ExtendedContextCard({
               value={goalsString}
               onChange={(e) => setGoalsString(e.target.value)}
               placeholder={"Grow engaged audience\nGet project visibility..."}
-              className="bg-background/50 min-h-[70px] text-sm resize-none"
+              className="bg-background/50 min-h-20 text-sm resize-none"
             />
           ) : (
             <ul className="list-disc list-outside ml-4 space-y-1 mt-1 text-sm text-foreground marker:text-border">
@@ -174,7 +174,7 @@ export function ExtendedContextCard({
               value={admiredString}
               onChange={(e) => setAdmiredString(e.target.value)}
               placeholder={"shydev69\nadxtyahq..."}
-              className="bg-background/50 min-h-[70px] text-sm resize-none"
+              className="bg-background/50 min-h-20 text-sm resize-none"
             />
           ) : (
             <div className="flex flex-wrap gap-2 mt-1">

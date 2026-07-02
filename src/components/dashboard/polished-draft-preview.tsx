@@ -63,7 +63,7 @@ export function PolishedDraftPreview({
               ))}
             </div>
 
-            <span className={`text-xs font-semibold tabular-nums ${polishedDraft.length > 280 ? "text-[#f4212e]" : "text-muted-foreground"}`}>
+            <span className={`text-xs font-semibold tabular-nums ${polishedDraft.length > 280 ? "text-twitter-red" : "text-muted-foreground"}`}>
               {polishedDraft.length} / 280
             </span>
           </div>
@@ -71,7 +71,7 @@ export function PolishedDraftPreview({
 
         {/* Draft body — select-all on click */}
         <div
-          className="p-4 rounded-lg border border-border bg-muted/30 text-foreground font-normal text-[15px] leading-relaxed whitespace-pre-wrap select-all cursor-text"
+          className="p-4 rounded-lg border border-border bg-muted/30 text-foreground font-normal text-sm leading-relaxed whitespace-pre-wrap select-all cursor-text"
           title="Click to select all"
           role="textbox"
           aria-label="Polished draft — click to select all"
@@ -92,16 +92,16 @@ export function PolishedDraftPreview({
       {hooks.length > 0 && (
         <div className="relative bg-sticky-draft border border-amber-200/40 rounded-lg p-4 shadow-sm overflow-hidden rotate-[-0.5deg]">
           {/* Red vertical margin line */}
-          <div className="absolute top-0 bottom-0 left-8 w-[1px] bg-red-200" />
+          <div className="absolute top-0 bottom-0 left-8 w-px bg-red-200" />
 
-          <div className="text-[10px] font-bold text-amber-800 uppercase tracking-widest pl-6 pb-2 border-b border-dashed border-border/40 select-none">
+          <div className="text-xs font-bold text-amber-800 uppercase tracking-widest pl-6 pb-2 border-b border-dashed border-border/40 select-none">
             Alternative Hooks
           </div>
 
           <ul className="space-y-0.5 text-xs text-foreground pl-6 pt-2 font-handwriting">
             {hooks.map((h, idx) => (
               <li key={idx} className="py-1 border-b border-dashed border-border/40 leading-relaxed list-none flex items-start gap-1.5">
-                <span className="font-bold text-amber-700/80 text-[11px] select-none shrink-0">{String.fromCharCode(65 + idx)})</span>
+                <span className="font-bold text-amber-700/80 text-xs select-none shrink-0">{String.fromCharCode(65 + idx)})</span>
                 <span>{h}</span>
               </li>
             ))}

@@ -43,7 +43,7 @@ export async function POST(req: NextRequest) {
       .map(item => `Tweet: ${item.text}`)
       .join("\\n\\n")
 
-    console.log(`Extracted ${items.length} tweets. Passing to Gemini...`)
+
 
     // 3. Pass to Gemini API for Blueprint Extraction
     const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY })

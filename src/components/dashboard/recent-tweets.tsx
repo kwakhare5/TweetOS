@@ -42,7 +42,7 @@ export function RecentTweets({ profile }: RecentTweetsProps) {
     <div className="mt-4 md:mt-6 space-y-6 max-w-7xl mx-auto w-full border-t border-border/40 pt-4 md:pt-6">
       <div className="flex items-center gap-3">
         <h2 className="text-xl font-bold tracking-tight text-foreground">Recent X Posts</h2>
-        <span className="inline-flex items-center px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider text-muted-foreground/60 border border-dashed border-border/60 rounded select-none">
+        <span className="inline-flex items-center px-2 py-0.5 text-xs font-bold uppercase tracking-wider text-muted-foreground/60 border border-dashed border-border/60 rounded select-none">
           Sample
         </span>
       </div>
@@ -52,7 +52,7 @@ export function RecentTweets({ profile }: RecentTweetsProps) {
         {MOCK_TWEETS.map((tweet) => (
           <div
             key={tweet.id}
-            className="relative flex h-full w-full max-w-lg flex-col gap-4 rounded-xl border border-border p-5 bg-card text-card-foreground shadow-sm hover:shadow-md transition-shadow duration-200 cursor-pointer"
+            className="relative flex h-full w-full max-w-lg flex-col gap-4 rounded-xl border border-border p-5 bg-card text-card-foreground shadow-sm hover:shadow-md transition-shadow cursor-pointer"
           >
             <div className="flex-1 flex flex-col gap-4">
               {/* Tweet header */}
@@ -68,7 +68,7 @@ export function RecentTweets({ profile }: RecentTweetsProps) {
               </div>
 
               {/* Tweet body */}
-              <p className="text-[15px] text-foreground leading-normal font-normal whitespace-pre-wrap">
+              <p className="text-sm text-foreground leading-normal font-normal whitespace-pre-wrap">
                 {tweet.content}
               </p>
             </div>

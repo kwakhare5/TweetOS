@@ -53,7 +53,7 @@ export async function POST(req: NextRequest) {
       author: item.user?.screen_name || item.author?.userName || "Unknown",
     })).filter(t => t.text.length > 0)
 
-    console.log(`Passing ${scrapedTweets.length} tweets to Gemini Topic Hunt...`)
+
 
     const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY })
     

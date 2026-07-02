@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { Zap, Clipboard, X, Check, Search, AtSign } from 'lucide-react'
+import { Zap, Clipboard, X, Check, Search, AtSign, Loader2, Play } from 'lucide-react'
+import { Button } from '@/components/ui/button'
 import { UserProfile } from '@/types'
 import { generateTrendingPacket, generateEngagementPacket } from '@/lib/grok-packager'
 
@@ -95,7 +96,7 @@ export function HuntModal({ isOpen, onClose, type, profile, onRunApify, isLoadin
         initial={{ opacity: 0, y: 10, scale: 0.95 }}
         animate={{ opacity: 1, y: 0, scale: 1 }}
         exit={{ opacity: 0, scale: 0.95 }}
-        className="relative w-full max-w-lg bg-[#FAF8F5] rounded-xl shadow-xl border border-amber-900/10 overflow-hidden"
+        className="relative w-full max-w-lg bg-background rounded-xl shadow-xl border border-amber-900/10 overflow-hidden"
       >
         {/* Washi tape detail */}
         <div className="absolute top-0 left-0 right-0 h-1.5 bg-yellow-200/40 opacity-70" />
@@ -104,8 +105,8 @@ export function HuntModal({ isOpen, onClose, type, profile, onRunApify, isLoadin
           <h2 className="font-sans font-medium text-amber-950 flex items-center gap-2">
             {type === 'topic' ? 'Topic Hunt' : 'Engagement Hunt'}
           </h2>
-          <button onClick={onClose} className="text-amber-900/40 hover:text-amber-900/60 p-1">
-            <X size={18} />
+          <button onClick={onClose} aria-label="Close modal" className="text-muted-foreground hover:text-foreground p-1 rounded-sm focus-visible:outline-hidden focus-visible:ring-1 focus-visible:ring-ring">
+            <X size={20} />
           </button>
         </div>
 
@@ -126,7 +127,7 @@ export function HuntModal({ isOpen, onClose, type, profile, onRunApify, isLoadin
                 <div className="grid grid-cols-2 gap-4">
                   <button
                     onClick={() => handleSelectMode('apify')}
-                    className="flex flex-col items-center justify-center gap-3 p-6 bg-white border border-amber-900/10 rounded-xl hover:border-amber-500/30 hover:shadow-sm hover:scale-[1.02] transition-all active:scale-[0.98] group"
+                    className="flex flex-col items-center justify-center gap-3 p-6 bg-card border border-amber-900/10 rounded-xl hover:border-amber-500/30 hover:shadow-sm hover:scale-[1.02] transition-all active:scale-[0.98] group"
                   >
                     <div className="w-12 h-12 rounded-full bg-amber-100 flex items-center justify-center text-amber-600 group-hover:scale-110 transition-transform">
                       <Zap size={24} />
@@ -140,7 +141,7 @@ export function HuntModal({ isOpen, onClose, type, profile, onRunApify, isLoadin
                   <button
                     onClick={() => handleSelectMode('manual')}
                     disabled={mode === 'manual'}
-                    className="flex flex-col items-center justify-center gap-3 p-6 bg-white border border-amber-900/10 rounded-xl hover:border-slate-500/30 hover:shadow-sm hover:scale-[1.02] transition-all active:scale-[0.98] group"
+                    className="flex flex-col items-center justify-center gap-3 p-6 bg-card border border-amber-900/10 rounded-xl hover:border-slate-500/30 hover:shadow-sm hover:scale-[1.02] transition-all active:scale-[0.98] group"
                   >
                     <div className="w-12 h-12 rounded-full bg-slate-100 flex items-center justify-center text-slate-600 group-hover:scale-110 transition-transform">
                       {copied ? <Check size={24} className="text-green-600" /> : <Clipboard size={24} />}
@@ -171,7 +172,7 @@ export function HuntModal({ isOpen, onClose, type, profile, onRunApify, isLoadin
                       {accounts.map(acc => (
                         <span key={acc} className="inline-flex items-center gap-1 px-2.5 py-1 bg-amber-100 text-amber-800 text-sm rounded-md font-sans">
                           @{acc}
-                          <button onClick={() => removeAccount(acc)} className="hover:text-amber-950"><X size={14} /></button>
+                          <button onClick={() => removeAccount(acc)} aria-label={`Remove account ${acc}`} className="hover:text-foreground rounded-sm focus-visible:outline-hidden focus-visible:ring-1 focus-visible:ring-ring"><X size={14} /></button>
                         </span>
                       ))}
                     </div>
@@ -183,7 +184,7 @@ export function HuntModal({ isOpen, onClose, type, profile, onRunApify, isLoadin
                         value={newAccount}
                         onChange={(e) => setNewAccount(e.target.value)}
                         onKeyDown={addAccount}
-                        className="w-full pl-8 pr-3 py-2 bg-white border border-amber-900/20 rounded-lg text-sm text-amber-950 focus:outline-none focus:border-amber-500 font-sans"
+                        className="w-full pl-8 pr-3 py-2 bg-card border border-amber-900/20 rounded-lg text-sm text-amber-950 focus:outline-none focus:border-amber-500 font-sans"
                       />
                     </div>
                   </div>
@@ -195,9 +196,9 @@ export function HuntModal({ isOpen, onClose, type, profile, onRunApify, isLoadin
                   </label>
                   <div className="flex flex-wrap gap-2 mb-2">
                     {keywords.map(kw => (
-                      <span key={kw} className="inline-flex items-center gap-1 px-2.5 py-1 bg-white border border-amber-900/20 text-amber-900 text-sm rounded-md font-sans shadow-sm">
+                      <span key={kw} className="inline-flex items-center gap-1 px-2.5 py-1 bg-card border border-amber-900/20 text-amber-900 text-sm rounded-md font-sans shadow-sm">
                         {kw}
-                        <button onClick={() => removeKeyword(kw)} className="hover:text-amber-950"><X size={14} /></button>
+                        <button onClick={() => removeKeyword(kw)} aria-label={`Remove keyword ${kw}`} className="hover:text-foreground rounded-sm focus-visible:outline-hidden focus-visible:ring-1 focus-visible:ring-ring"><X size={14} /></button>
                       </span>
                     ))}
                   </div>
@@ -209,7 +210,7 @@ export function HuntModal({ isOpen, onClose, type, profile, onRunApify, isLoadin
                       value={newKeyword}
                       onChange={(e) => setNewKeyword(e.target.value)}
                       onKeyDown={addKeyword}
-                      className="w-full pl-8 pr-3 py-2 bg-white border border-amber-900/20 rounded-lg text-sm text-amber-950 focus:outline-none focus:border-amber-500 font-sans"
+                      className="w-full pl-8 pr-3 py-2 bg-card border border-amber-900/20 rounded-lg text-sm text-amber-950 focus:outline-none focus:border-amber-500 font-sans"
                     />
                   </div>
                 </div>
@@ -221,22 +222,16 @@ export function HuntModal({ isOpen, onClose, type, profile, onRunApify, isLoadin
                   >
                     Back
                   </button>
-                  <button
+                  <Button
                     onClick={handleRunApify}
                     disabled={isLoading || (keywords.length === 0 && accounts.length === 0)}
-                    className="px-4 py-2 bg-slate-950 text-white rounded-lg text-sm font-medium hover:bg-slate-800 transition-colors active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
                   >
                     {isLoading ? (
-                      <span className="flex items-center gap-2">
-                        <motion.div animate={{ rotate: 360 }} transition={{ repeat: Infinity, duration: 1, ease: "linear" }}>
-                          <Zap size={14} className="opacity-70" />
-                        </motion.div>
-                        Hunting...
-                      </span>
+                      <Loader2 size={16} className="animate-spin mr-2" />
                     ) : (
-                      <>Run Apify <Zap size={14} className="text-yellow-400" /></>
+                      <Play size={16} className="mr-2 fill-current" />
                     )}
-                  </button>
+                  </Button>
                 </div>
               </motion.div>
             )}

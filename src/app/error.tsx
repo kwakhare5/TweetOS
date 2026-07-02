@@ -18,7 +18,7 @@ export default function GlobalError({
 
         {/* Fault badge */}
         <div
-          className="absolute top-[-12px] right-[10%] z-20 px-6 py-1 text-[10px] font-bold tracking-widest text-red-950 uppercase select-none rotate-[2.5deg] rounded-sm border border-dashed border-red-300/25"
+          className="absolute top-[-12px] right-[10%] z-20 px-6 py-1 text-xs font-bold tracking-widest text-red-950 uppercase select-none rotate-[2.5deg] rounded-sm border border-dashed border-red-300/25"
           style={{ backgroundColor: "rgba(239, 68, 68, 0.15)", fontFamily: "var(--font-mono)" }}
         >
           SYSTEM FAULT
@@ -26,7 +26,7 @@ export default function GlobalError({
 
         {/* Folder tab */}
         <div className="flex select-none">
-          <div className="bg-card border border-border border-b-0 px-4 py-1.5 rounded-t-lg text-[10px] font-bold text-red-600 uppercase tracking-wider translate-y-[1px] z-10 flex items-center gap-1.5 shadow-sm">
+          <div className="bg-card border border-border border-b-0 px-4 py-1.5 rounded-t-lg text-xs font-bold text-red-600 uppercase tracking-wider translate-y-[1px] z-10 flex items-center gap-1.5 shadow-sm">
             <AlertOctagon className="size-3.5" />
             <span>Process Error</span>
           </div>
@@ -44,7 +44,7 @@ export default function GlobalError({
           </div>
 
           {/* Error message */}
-          <div className="p-3.5 bg-red-50/50 border border-red-100 rounded-lg font-mono text-[11px] text-red-700/90 whitespace-pre-wrap break-all leading-normal select-all">
+          <div className="p-3.5 bg-red-50/50 border border-red-100 rounded-lg font-mono text-xs text-red-700/90 whitespace-pre-wrap break-all leading-normal select-all">
             {error.message || "Unknown execution exception."}
           </div>
 

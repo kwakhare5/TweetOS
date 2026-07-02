@@ -28,7 +28,7 @@ export function TweetAuthor({ name, handle, avatarUrl, interactive = false }: Tw
       </div>
       <div className="flex flex-col min-w-0 justify-center">
         <div className="flex items-center gap-x-1 leading-tight">
-          <span className={`text-foreground font-bold text-[15px] truncate ${cursor}`}>
+          <span className={`text-foreground font-bold text-sm truncate ${cursor}`}>
             {name || "Karan"}
           </span>
           <VerifiedBadgeIcon className="inline size-4 text-blue-500 shrink-0" />
