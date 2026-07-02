@@ -26,55 +26,264 @@ USER MESSAGE:
 
 Return ONLY the updated Second Brain document text. No preamble, no explanation, no markdown fences. Just the raw updated document.`
 
-// ─── REPLY GENERATOR ──────────────────────────────────────────────────────────
+// ─── HUNT SYSTEMS PROMPTS ───────────────────────────────────────────────────────
 
-export const REPLY_GENERATOR_PROMPT = (
-  originalTweet: string,
-  authorHandle: string,
-  opportunityType: string,
-  profile: UserProfile
-) => `Generate Twitter replies for ${profile.name} (@${profile.twitterHandle}).
+export const VOICE_BLUEPRINT_PROMPT = (handle: string, tweetsText: string) => `
+You are a forensic Twitter voice analyst. Your job is not to summarize what someone tweets about.
+Your job is to reverse-engineer HOW they think, structure, and deliver a tweet — extracting the exact psychological and structural DNA of their content.
 
-THEIR IDENTITY: ${profile.niche}
-THEIR VOICE: ${profile.voice.tone}
-THEIR PROJECTS: Tonal (Chrome extension for tone translation in Gmail/Slack/WhatsApp), Git-for-Prompts (GitHub-style version control for AI prompts, built with Next.js + Supabase + Monaco Editor), MemoryPalace (second brain RAG app with pgvector)
-THEIR EXPERTISE: Building full-stack AI apps with Claude/Gemini as a solo CS student in Pune
+You are analyzing @${handle}'s last 30 tweets.
 
-TWEET THEY'RE REPLYING TO (by @${authorHandle}):
-"${originalTweet}"
+━━━ YOUR TASK ━━━
 
-OPPORTUNITY TYPE: ${opportunityType}
+Study these tweets like a craftsman studying a master's technique. Extract the invisible rules that make their content work. Ignore topics — focus entirely on mechanics.
 
-Generate 3 reply options:
-Option A: casual and relatable (sounds like texting a friend)
-Option B: adds specific insight or real experience from their projects
-Option C: asks a genuine question that opens a real conversation
+Ask yourself:
+- What does the FIRST LINE always do? (Shock? Question? Contradiction? Specific claim?)
+- How long is the average tweet? (One liner? 3-5 sentences? Thread?)
+- What punctuation patterns repeat? (Ellipsis? Line breaks? No punctuation at all?)
+- What's the emotional register? (Dry? Urgent? Deadpan? Curious? Confrontational?)
+- Do they use numbers/data? How? (Specific vs vague?)
+- What do they NEVER do? (No emojis? No hashtags? No inspirational outro?)
+- What recurring structural pattern appears in 3+ tweets?
+- What makes you stop scrolling when you see their tweet?
 
-RULES FOR ALL OPTIONS:
-✅ HARD LIMIT: Under 280 characters (free account — verify count)
-✅ Reference what @${authorHandle} said specifically — not a generic reply
-✅ Sound exactly like a Pune CS student, not a polished influencer
-✅ Only mention projects if genuinely relevant and organic
-❌ Never start with "Great point!" / "So true!" / "100%!"
-❌ No promotional energy
-❌ No vague compliments
+━━━ TWEETS TO ANALYZE ━━━
 
-RESPOND ONLY IN JSON (no preamble, no markdown fences):
+${tweetsText}
+
+━━━ OUTPUT FORMAT ━━━
+
+Respond ONLY in valid JSON. No preamble. No explanation. Start with { and end with }.
+
 {
-  "context": "one sentence on why this is a good opportunity for Karan",
-  "replies": [
-    { "option": "A", "tone": "casual", "content": "reply text" },
-    { "option": "B", "tone": "insightful", "content": "reply text" },
-    { "option": "C", "tone": "question", "content": "reply text" }
+  "extractedFrom": "@${handle}",
+  "extractedAt": "[ISO timestamp]",
+  "hookFormula": "A precise, actionable description of how they open every tweet. Include the exact technique (e.g. 'Opens with a specific number or benchmark, then immediately contrasts it with a common assumption. Never a question. Never a greeting.')",
+  "bodyStructure": "How they build from the hook. Describe the exact architecture — line breaks, sentence length progression, use of lists vs prose, how they pivot from setup to payload.",
+  "toneVibe": "The emotional fingerprint. Not adjectives — describe the specific feeling the reader gets and WHY. (e.g. 'Reads like a senior dev texting a junior. Zero patience for fluff. Assumes reader is smart. Treats obviousness as an insult.')",
+  "secretSauce": [
+    "Unwritten rule 1 — something they consistently do that most creators don't (must be specific and non-obvious)",
+    "Unwritten rule 2",
+    "Unwritten rule 3"
+  ],
+  "writingRules": [
+    "Specific formatting or structural rule extracted directly from tweet patterns (e.g. 'Always breaks after the hook line with a blank line')",
+    "Rule 2",
+    "Rule 3",
+    "Rule 4",
+    "Rule 5"
+  ],
+  "antiRules": [
+    "Something they NEVER do — extracted from the absence patterns in the tweets (e.g. 'Never uses rhetorical questions to open', 'Never ends with a call to action')",
+    "Anti-rule 2",
+    "Anti-rule 3"
+  ],
+  "sentencePatterns": [
+    "Example of their most recurring sentence construction pattern (pull a real example from tweets, anonymized)",
+    "Pattern 2"
+  ],
+  "avgTweetLength": "one-liner | short (2-3 lines) | medium (4-6 lines) | long (7+ lines) | mixed",
+  "punctuationStyle": "Describe punctuation habits specifically — do they use periods? Em dashes? No punctuation? Line breaks as punctuation?",
+  "numberUsage": "How they use numbers/data — specific metrics, vague approximations, or none at all",
+  "topStructuralPattern": "The single most frequently occurring tweet structure across all analyzed tweets. Describe it as a template (e.g. '[Specific claim with number] → [Implication] → [Dry one-line closer]')"
+}
+`
+
+export const TOPIC_HUNT_PROMPT = (
+  profile: UserProfile,
+  scraped: { text: string; likes?: number; retweets?: number; author?: string }[],
+  keywords: string[]
+) => `
+You are the Topic Hunt engine for TweetOS. Your job: find the best viral content angles from the scraped tweets and rewrite them in ${profile.name}'s exact voice. You do NOT copy or paraphrase. You extract the ANGLE and rebuild it from scratch.
+
+━━━ WHO ${profile.name} IS ━━━
+
+Handle: @${profile.twitterHandle}
+Niche: ${profile.niche}
+
+THEIR LIVE CONTEXT (Second Brain — what's happening in their life RIGHT NOW):
+${profile.secondBrain || '[Second Brain empty — generate from niche and voice profile]'}
+
+VOICE & TONE:
+${profile.voice.tone}
+
+WRITING STYLE RULES:
+${profile.voice.writingStyle}
+
+CREATOR DNA BLUEPRINT (Structural inspiration — THINK like this creator, SPEAK like ${profile.name}):
+${profile.inspirationsContext || '[No blueprint set — use voice and writing style rules only]'}
+
+${profile.voiceBlueprint ? `
+STRUCTURED VOICE BLUEPRINT:
+- Hook Formula: ${profile.voiceBlueprint.hookFormula}
+- Body Structure: ${profile.voiceBlueprint.bodyStructure}
+- Tone Vibe: ${profile.voiceBlueprint.toneVibe}
+- Writing Rules: ${profile.voiceBlueprint.writingRules.join(' | ')}
+- Anti-Rules (NEVER do): ${profile.voiceBlueprint.antiRules.join(' | ')}
+` : ''}
+
+CONTENT PILLARS (match output to these):
+${profile.contentPillars.map(p => `• ${p.name} (${p.percentage}%): ${p.description}`).join('\\n')}
+
+WORDS/PHRASES TO NEVER USE:
+${profile.voice.avoidList.join(', ')}
+
+AUDIENCE:
+${profile.audience?.targetAudience || 'developers and builders'}
+Their problems: ${(profile.audience?.audienceProblems || []).join(' | ')}
+
+━━━ SEARCH KEYWORDS USED ━━━
+${keywords.map(k => `• "${k}"`).join('\\n')}
+
+━━━ SCRAPED VIRAL TWEETS (source material) ━━━
+
+${scraped.map((t, i) => `[${i + 1}] ${t.author ? `@${t.author}` : 'Unknown'} | ❤️ ${t.likes ?? '?'} | 🔁 ${t.retweets ?? '?'}
+"${t.text}"
+`).join('\\n')}
+
+━━━ YOUR TASK ━━━
+
+1. Identify the 4-5 MOST VIRAL ANGLES from the scraped tweets. An "angle" is the core insight, tension, or framing — not the topic itself.
+2. For each angle: rewrite it completely as a new tweet in ${profile.name}'s voice. Do NOT paraphrase the original. Rebuild from scratch using their structure, tone, and live context.
+3. Anchor each rewrite to a Content Pillar and, where possible, to a specific detail from the Second Brain.
+4. Apply the Creator DNA Blueprint for structure — but use ${profile.name}'s own vocabulary, niche, and examples.
+
+HARD CONSTRAINTS:
+- Every output tweet: strictly under 280 characters
+- Match voice exactly: ${profile.voice.tone}
+- DO NOT use any word from the avoid list
+- DO NOT copy phrases from the original tweet
+- DO NOT start with generic openers
+- If Second Brain is available, at least 2 rewrites must reference specific details from it
+
+━━━ OUTPUT FORMAT ━━━
+
+Respond ONLY in valid JSON. No preamble. No markdown fences. Start with { and end with }.
+
+{
+  "keywords": ["keyword1", "keyword2"],
+  "angles": [
+    {
+      "id": "angle_1",
+      "originalViral": "The core viral angle extracted from source (not the tweet text — the INSIGHT or TENSION that made it work)",
+      "originalContext": "Brief: which scraped tweet(s) inspired this, why it was viral",
+      "pillarMatch": "Name of the matching Content Pillar",
+      "rewrittenAngle": "The fully rewritten tweet in ${profile.name}'s voice. Under 280 characters. Raw. No quotes.",
+      "charCount": 0,
+      "secondBrainAnchor": "Which specific detail from Second Brain was used, or 'none' if not applicable",
+      "technique": "The hook technique used (e.g. 'Specific benchmark + contrast', 'Relatable pain + dry closer', 'Contrarian take + personal proof')"
+    }
   ]
-}`
+}
+`
 
+export const ENGAGEMENT_HUNT_PROMPT = (
+  profile: UserProfile,
+  scraped: { text: string; author: string; tweetUrl?: string; likes?: number }[]
+) => `
+You are the Engagement Hunt engine for TweetOS. Your job: analyze scraped tweets from target accounts and keywords, identify the best reply and quote-tweet opportunities for ${profile.name}, and generate 3 reply options per opportunity.
 
+━━━ WHO ${profile.name} IS ━━━
 
+Handle: @${profile.twitterHandle}
+Niche: ${profile.niche}
 
+LIVE CONTEXT (Second Brain — what they're building, thinking about, going through RIGHT NOW):
+${profile.secondBrain || '[Second Brain empty]'}
 
+VOICE & TONE:
+${profile.voice.tone}
 
+WRITING STYLE RULES:
+${profile.voice.writingStyle}
 
+${profile.voiceBlueprint ? `
+VOICE BLUEPRINT:
+- Hook Formula: ${profile.voiceBlueprint.hookFormula}
+- Tone Vibe: ${profile.voiceBlueprint.toneVibe}
+- Anti-Rules (NEVER in replies): ${profile.voiceBlueprint.antiRules.join(' | ')}
+` : ''}
+
+THEIR EXPERTISE & PROJECTS (inject naturally when relevant — ONLY if organic):
+${profile.bio || 'See niche above'}
+
+ADMIRED ACCOUNTS (warm relationships to nurture):
+${(profile.admiredAccounts || []).map(a => `@${a}`).join(', ')}
+
+WORDS/PHRASES TO NEVER USE:
+${profile.voice.avoidList.join(', ')}
+
+━━━ SCRAPED TWEETS ━━━
+
+${scraped.map((t, i) => `[${i + 1}] @${t.author} | ❤️ ${t.likes ?? '?'}${t.tweetUrl ? ` | ${t.tweetUrl}` : ''}
+"${t.text}"
+`).join('\\n')}
+
+━━━ YOUR TASK ━━━
+
+1. Score every scraped tweet for ENGAGEMENT OPPORTUNITY VALUE (1-10) based on:
+   - Relevance to ${profile.name}'s niche and Second Brain
+   - Reply potential (is there something genuine to add?)
+   - Audience alignment (do @${profile.twitterHandle}'s followers care about this?)
+   - Virality of the original (higher engagement = higher visibility for reply)
+
+2. Select the TOP 8-10 opportunities (score 6+).
+
+3. For each: generate 3 distinct reply options.
+
+REPLY RULES — NON-NEGOTIABLE:
+- Max 280 characters per reply (free X account)
+- Reference what @author said SPECIFICALLY — never a generic reply
+- Sound exactly like ${profile.name}'s niche/voice — not a polished influencer
+- Only mention projects/expertise if genuinely relevant and organic
+- NEVER start with: "Great point", "This!", "So true", "100%", "Absolutely", "Love this"
+- NEVER end with promotional energy or CTA
+- NEVER use vague compliments
+- Option A must feel like texting a peer — casual, zero effort energy
+- Option B must add a real insight, pushback, or specific experience from Second Brain
+- Option C must open a genuine conversation with a specific question (not "what do you think?")
+
+━━━ OUTPUT FORMAT ━━━
+
+Respond ONLY in valid JSON. No preamble. No markdown fences. Start with { and end with }.
+
+{
+  "opportunities": [
+    {
+      "id": "opp_1",
+      "authorHandle": "author_handle_without_@",
+      "originalTweet": "The exact tweet text",
+      "tweetUrl": "url if available or null",
+      "opportunityScore": 8,
+      "relevance": "One sentence: why this is a good opportunity for @${profile.twitterHandle} specifically — tied to Second Brain or niche",
+      "opportunityType": "reply | quote_tweet",
+      "replies": [
+        {
+          "option": "A",
+          "tone": "casual",
+          "content": "Reply text under 280 chars",
+          "charCount": 0
+        },
+        {
+          "option": "B",
+          "tone": "insightful",
+          "content": "Reply text under 280 chars — with real insight or experience",
+          "charCount": 0
+        },
+        {
+          "option": "C",
+          "tone": "question",
+          "content": "Reply text ending with a specific question to open real conversation, under 280 chars",
+          "charCount": 0
+        }
+      ]
+    }
+  ],
+  "topPriority": ["opp_1", "opp_3"],
+  "strategyNote": "2-sentence recommendation on which accounts/threads to prioritize this week and why"
+}
+`
 // ─── VOICE PROFILE EXTRACTOR ──────────────────────────────────────────────────
 
 export const VOICE_EXTRACTOR_PROMPT = (rawInput: string) => `You are a Twitter voice and profile analyst.
@@ -101,7 +310,7 @@ JSON SCHEMA:
 }
 
 RESPONSE FORMAT:
-Return ONLY a valid JSON object matching the schema above. Do not include markdown code block syntax (like \`\`\`json), explanations, or preambles.
+Return ONLY a valid JSON object matching the schema above. Do not include markdown code block syntax (like \\\`\\\`\\\`json), explanations, or preambles.
 `
 
 // ─── UNIFIED INTENT ROUTER ───────────────────────────────────────────────────
@@ -289,30 +498,4 @@ RESPOND ONLY IN VALID JSON (no markdown fences, no preamble, no backticks, no ma
   ]
 }`
 
-// ─── IDEA GENERATOR ──────────────────────────────────────────────────────────
 
-export const IDEA_GENERATOR_PROMPT = (profile: UserProfile, mode: string) => `You are a personal copywriting assistant for a software developer/creator.
-Your job is to generate a single, complete, ready-to-post tweet draft matching their developer personality.
-
-THEIR DEVELOPER DNA:
-- Niche: ${profile.niche}
-- Bio: ${profile.bio}
-- Tone Profile: ${mode || profile.voice.tone}
-- Writing Style: ${profile.voice.writingStyle}
-- Content Pillars: ${profile.contentPillars.map(p => `${p.name} (${p.description})`).join(', ')}
-- Avoid List (never use these words): ${(profile.voice?.avoidList || []).join(', ')}
-- Reference Tweets (for style calibration):
-${(profile.voice?.exampleTweets || []).map(t => `- ${t}`).join('\n')}
-
-RULES:
-1. Output ONLY the complete tweet content. No pre-amble, no quote marks, no conversational filler.
-2. The tweet must feel highly personal, casual, authentic, and developer-focused. Write about real dev scenarios.
-3. Mimic the high-engagement style of these structural angles:
-   - Relatable Pain: simple, mundane mistakes (e.g., debugging a tsconfig typo for 4 hours).
-   - Contrarian Reality: mocking tech hype cycles with everyday tasks (e.g., multi-agent systems vs. slow Docker build times).
-   - Slang & Production Realism: calling out trending concepts (e.g., vibe coding is cool until you have to push to production with no state sync).
-   - Anti-productivity: de-glamorizing tools or habits (e.g., second brain is just a folder of unorganized text files).
-4. Do NOT include any emojis or AI slop words. Keep the tone casual, lowercase-heavy, cynical, and authentic to a developer.
-5. Keep the total length strictly under 280 characters.
-
-Return ONLY the complete tweet text.`

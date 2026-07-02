@@ -1,7 +1,7 @@
 "use client"
 
 import * as React from "react"
-import { LayoutDashboard, Layers, Settings, BarChart2 } from "lucide-react"
+import { LayoutDashboard, Layers, Settings, MessageCircle } from "lucide-react"
 import { usePathname } from "next/navigation"
 import Link from "next/link"
 
@@ -23,7 +23,7 @@ const NAV_GROUPS = [
     title: "Workspace",
     items: [
       { title: "Dashboard", url: "/", icon: LayoutDashboard },
-      { title: "Analytics", url: "/analytics", icon: BarChart2 },
+      { title: "Engage", url: "/engagement", icon: MessageCircle },
     ],
   },
   {

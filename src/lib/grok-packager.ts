@@ -7,6 +7,24 @@ const DUMP_MODE_LABEL: Record<string, string> = {
 }
 
 export function buildIdentityBlock(profile: UserProfile): string {
+  const blueprintSection = profile.voiceBlueprint
+    ? `
+VOICE BLUEPRINT (AI-Extracted Creator DNA — structural rules to follow):
+Hook Formula: ${profile.voiceBlueprint.hookFormula}
+Body Structure: ${profile.voiceBlueprint.bodyStructure}
+Tone Vibe: ${profile.voiceBlueprint.toneVibe}
+Secret Sauce:
+${profile.voiceBlueprint.secretSauce.map(r => `  - ${r}`).join('\n')}
+Writing Rules:
+${profile.voiceBlueprint.writingRules.map(r => `  - ${r}`).join('\n')}
+Anti-Rules (NEVER do these):
+${profile.voiceBlueprint.antiRules.map(r => `  - ${r}`).join('\n')}
+Blueprint extracted from: ${profile.voiceBlueprint.extractedFrom}
+`.trim()
+    : profile.inspirationsContext
+    ? `INSPIRATIONS CONTEXT (Creator DNA — merge structural style with my voice):\n${profile.inspirationsContext}`
+    : '[No Voice Blueprint set — use Voice & Tone section only]'
+
   return `
 # IDENTITY BLOCK
 
@@ -21,22 +39,28 @@ ${profile.voice.tone}
 WRITING STYLE RULES:
 ${profile.voice.writingStyle || 'Follow inspiration context tone.'}
 
-SECOND BRAIN (LIVE CONTEXT):
-This is the live, daily version of who I am right now. Every output must anchor to this context.
+SECOND BRAIN (LIVE CONTEXT — what is happening RIGHT NOW in my life):
+This is not a bio. Every output must feel anchored to this specific moment.
 ${profile.secondBrain || '[Second Brain empty]'}
 
-INSPIRATIONS CONTEXT (CREATOR DNA):
-Merge their structural habits, psychological framing, and formatting habits with my voice.
-${profile.inspirationsContext || '[No inspiration context yet]'}
+${blueprintSection}
 
-AVOID LIST:
+CONTENT PILLARS:
+${profile.contentPillars.map(p => `• ${p.name} (${p.percentage}%): ${p.description}`).join('\n')}
+
+TARGET AUDIENCE:
+${profile.audience?.targetAudience || 'Developers and builders'}
+
+AVOID LIST (NEVER use these words/phrases):
 ${(profile.voice.avoidList || []).map(a => `- ${a}`).join('\n')}
 
-EXAMPLE TWEETS:
+EXAMPLE TWEETS (calibrate voice to this exact energy):
 ${(profile.voice.exampleTweets || []).map((t, i) => `${i + 1}. "${t}"`).join('\n\n')}
 
 CONSTRAINTS:
 - Do not assume anything not stated in this packet.
+- All outputs must be under 280 characters.
+- Match voice exactly — never default to generic AI tone.
 `.trim()
 }
 
@@ -147,8 +171,6 @@ ${(profile.admiredAccounts || []).map(a => `- @${a}`).join('\n')}
 # SEARCH KEYWORDS
 ${config.topicKeywords.map(k => `- "${k}"`).join('\n')}
 ${(profile.contentPillars || []).map(p => `- "${p.name}" niche content`).join('\n')}
-- Indian student dev life, CS placements
-- Vibe coding, solo dev frustrations
 
 # REQUIRED OUTPUT
 
@@ -210,10 +232,7 @@ Will not tweet about: Politics, Crypto, Celebrity drama.
 # FOCUS AREAS
 ${config.focusAreas.length > 0
     ? config.focusAreas.map(a => `- ${a}`).join('\n')
-    : `- AI models and ecosystem
-- AI developer tools
-- Developer culture and shipping
-- Indian student/dev market`
+    : (profile.contentPillars || []).map(p => `- ${p.name}`).join('\n') || '- Tech and Development'
   }
 
 # REQUIRED OUTPUT

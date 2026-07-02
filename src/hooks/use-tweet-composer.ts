@@ -2,7 +2,7 @@ import { useState } from "react"
 import { toast } from "sonner"
 import { UserProfile } from "@/types"
 import { geminiText } from "@/lib/gemini"
-import { UNIFIED_ROUTER_PROMPT, IDEA_GENERATOR_PROMPT } from "@/lib/prompts"
+import { UNIFIED_ROUTER_PROMPT, DAILY_INSPIRATION_PROMPT } from "@/lib/prompts"
 import {
   generateDraftPacket,
   generateTrendingPacket,
@@ -76,9 +76,20 @@ export function useTweetComposer(profile: UserProfile) {
   const handleGenerateIdea = async () => {
     setIsGeneratingIdea(true)
     try {
-      const prompt = IDEA_GENERATOR_PROMPT(profile, "auto")
-      const idea = (await geminiText(prompt)).trim()
-      setBrainDump(prev => prev.trim() ? `${prev}\n\n${idea}` : idea)
+      const prompt = DAILY_INSPIRATION_PROMPT(profile, "")
+      const res = await geminiText(prompt)
+      
+      try {
+        const parsed = JSON.parse(res)
+        if (parsed.inspirations && parsed.inspirations.length > 0) {
+          const idea = parsed.inspirations[0].tweet
+          setBrainDump(prev => prev.trim() ? `${prev}\\n\\n${idea}` : idea)
+        } else {
+          setBrainDump(prev => prev.trim() ? `${prev}\\n\\n${res}` : res)
+        }
+      } catch {
+        setBrainDump(prev => prev.trim() ? `${prev}\\n\\n${res}` : res)
+      }
       toast.success("Idea generated!")
     } catch (err: unknown) {
       toast.error(err instanceof Error ? err.message : "Failed to generate idea.")

@@ -8,6 +8,9 @@ import { PolishedDraftPreview } from "@/components/dashboard/polished-draft-prev
 import { SecondBrainNote } from "@/components/dashboard/second-brain-note"
 import { RecentTweets } from "@/components/dashboard/recent-tweets"
 import { PageHeader } from "@/components/ui/page-header"
+import { TopicHuntResults } from "@/components/dashboard/topic-hunt-results"
+import { HuntModal } from "@/components/ui/hunt-modal"
+import { TopicHuntAngle } from "@/types"
 import { motion, useReducedMotion } from "motion/react"
 import { containerVariants, itemVariants, reducedContainerVariants, reducedItemVariants } from "@/lib/motion-variants"
 
@@ -17,6 +20,64 @@ export default function Dashboard() {
   const tweetGen = useTweetComposer(profile)
   const hasInit = useRef(false)
   const prefersReduced = useReducedMotion()
+
+  // Hunt Modal State
+  const [huntModalOpen, setHuntModalOpen] = useState(false)
+  const [huntType, setHuntType] = useState<'topic' | 'engagement'>('topic')
+  const [isHunting, setIsHunting] = useState(false)
+  
+  // Topic Hunt Results State
+  const [topicResults, setTopicResults] = useState<TopicHuntAngle[]>([])
+  const [lastTopicKeywords, setLastTopicKeywords] = useState<string[]>([])
+
+  const openHuntModal = (type: 'topic' | 'engagement') => {
+    setHuntType(type)
+    setHuntModalOpen(true)
+  }
+
+  const handleRunApifyHunt = async (keywords: string[]) => {
+    setIsHunting(true)
+    
+    if (huntType === 'topic') {
+      try {
+        const response = await fetch('/api/topic-hunt', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'x-api-key': process.env.NEXT_PUBLIC_TWEETOS_API_KEY || ''
+          },
+          body: JSON.stringify({
+            keywords,
+            mode: 'apify',
+            profile
+          })
+        })
+
+        const data = await response.json()
+
+        if (!response.ok) {
+          throw new Error(data.error || 'Failed to run topic hunt')
+        }
+
+        setTopicResults(data.angles || [])
+        setLastTopicKeywords(keywords)
+      } catch (err: unknown) {
+        console.error(err)
+        alert('Hunt failed: ' + (err instanceof Error ? err.message : String(err)))
+      }
+    } else {
+      // For engagement hunt from dashboard, we just alert or ideally we'd navigate to /engagement
+      alert("Engagement results are best viewed on the dedicated Engagement page. Use the Engage tab.")
+      // Alternative: window.location.href = '/engagement'
+    }
+    
+    setIsHunting(false)
+  }
+
+  const handleLoadAngle = (angle: TopicHuntAngle) => {
+    tweetGen.setBrainDump(angle.rewrittenAngle)
+    setTopicResults([])
+  }
 
   useEffect(() => {
     if (hasInit.current) return
@@ -62,12 +123,21 @@ export default function Dashboard() {
             activeBrainstormAction={tweetGen.activeBrainstormAction}
             setActiveBrainstormAction={tweetGen.setActiveBrainstormAction}
             handleGenerateIdea={tweetGen.handleGenerateIdea}
-            handleCopyTrending={tweetGen.handleCopyTrending}
-            handleCopyEngagement={tweetGen.handleCopyEngagement}
+            handleCopyTrending={() => openHuntModal('topic')}
+            handleCopyEngagement={() => openHuntModal('engagement')}
             copiedTrending={tweetGen.copiedTrending}
             copiedEngagement={tweetGen.copiedEngagement}
             handlePolish={tweetGen.handlePolish}
           />
+
+          {topicResults.length > 0 && (
+            <TopicHuntResults
+              results={topicResults}
+              keywords={lastTopicKeywords}
+              onDismiss={() => setTopicResults([])}
+              onLoadIntoComposer={handleLoadAngle}
+            />
+          )}
 
           {tweetGen.polishedDraft ? (
             <PolishedDraftPreview
@@ -101,6 +171,15 @@ export default function Dashboard() {
       </motion.div>
 
       <RecentTweets profile={profile} />
+
+      <HuntModal
+        isOpen={huntModalOpen}
+        onClose={() => setHuntModalOpen(false)}
+        type={huntType}
+        profile={profile}
+        onRunApify={handleRunApifyHunt}
+        isLoading={isHunting}
+      />
     </div>
   )
 }

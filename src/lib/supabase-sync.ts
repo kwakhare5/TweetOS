@@ -24,7 +24,6 @@ export async function fetchProfileFromSupabase(): Promise<UserProfile | null> {
       postingFrequency: data.posting_frequency || '',
       secondBrain: data.second_brain || '',
       inspirationsContext: data.inspirations_context || '',
-      geminiApiKey: data.gemini_api_key || '',
       createdAt: data.created_at || new Date().toISOString(),
       updatedAt: data.updated_at || new Date().toISOString(),
     }
@@ -50,7 +49,6 @@ export async function saveProfileToSupabase(profile: UserProfile): Promise<void>
       posting_frequency: profile.postingFrequency,
       second_brain: profile.secondBrain,
       inspirations_context: profile.inspirationsContext,
-      gemini_api_key: profile.geminiApiKey,
       updated_at: new Date().toISOString()
     })
   } catch (err) {

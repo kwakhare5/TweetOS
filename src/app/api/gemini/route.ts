@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { GoogleGenAI } from '@google/genai'
 
+export const maxDuration = 60;
+
 // Cache the AI instance per API key for the lifetime of the server process
 const aiCache = new Map<string, GoogleGenAI>()
 
@@ -17,6 +19,12 @@ export async function POST(req: NextRequest) {
 
     if (!prompt?.trim()) {
       return NextResponse.json({ error: 'Missing prompt' }, { status: 400 })
+    }
+
+    // Check API Key for basic protection against credit drain
+    const authHeader = req.headers.get("x-api-key")
+    if (process.env.TWEETOS_API_KEY && authHeader !== process.env.TWEETOS_API_KEY) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
     }
 
     // Prefer server-side env key; fall back to user-provided key (their own key, sent over HTTPS)

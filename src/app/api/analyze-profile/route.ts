@@ -1,6 +1,11 @@
 import { NextRequest, NextResponse } from "next/server"
-import { ApifyClient } from "apify-client"
-import { GoogleGenAI } from "@google/genai"
+
+import { GoogleGenAI, Type, Schema } from "@google/genai"
+import { VOICE_BLUEPRINT_PROMPT } from "@/lib/prompts"
+import { VoiceBlueprint } from "@/types"
+import { runApifyScrape } from "@/lib/apify-scraper"
+
+export const maxDuration = 60;
 
 export async function POST(req: NextRequest) {
   try {
@@ -10,47 +15,24 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "X Handle is required" }, { status: 400 })
     }
 
-    const apifyClient = new ApifyClient({
-      token: process.env.APIFY_API_TOKEN,
+    // Validate environment variables
+    if (!process.env.APIFY_API_TOKEN || !process.env.GEMINI_API_KEY) {
+      return NextResponse.json({ error: "API configuration is missing on the server" }, { status: 500 })
+    }
+
+    // Check API Key for basic protection against credit drain
+    const authHeader = req.headers.get("x-api-key")
+    if (process.env.TWEETOS_API_KEY && authHeader !== process.env.TWEETOS_API_KEY) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
+    }
+
+    const cleanHandle = handle.trim().replace(/^@/, '')
+    const items = await runApifyScrape({
+      searchTerms: [`from:${cleanHandle} -filter:retweets`],
+      maxItems: 30,
+      sort: "Latest",
+      primaryActor: "61RPP7dywgiy0JPD0"
     })
-
-    interface TweetItem {
-      text?: string;
-      isRetweet?: boolean;
-      [key: string]: unknown;
-    }
-
-    const actorsToTry = ["61RPP7dywgiy0JPD0", "nfp1fpt5gUlBwPcor"]
-    let items: TweetItem[] = []
-    
-    for (const actorId of actorsToTry) {
-      try {
-        console.log(`Starting Apify scrape for @${handle} using actor ${actorId}...`)
-        
-        // We pass a few common input formats in case the backup actor expects a slightly different key
-        const run = await apifyClient.actor(actorId).call({
-          twitterHandles: [handle],
-          handles: [handle],
-          searchTerms: [`from:${handle}`],
-          maxItems: 30, // Get the 30 most recent tweets to build the voice blueprint
-          sort: "Latest",
-        })
-
-        console.log(`Apify scrape finished for ${actorId}. Fetching dataset...`)
-        const dataset = await apifyClient.dataset(run.defaultDatasetId).listItems()
-        
-        if (dataset.items && dataset.items.length > 0) {
-          items = dataset.items as TweetItem[]
-          console.log(`Successfully extracted ${items.length} tweets using ${actorId}.`)
-          break // Success! Exit the fallback loop
-        } else {
-          console.log(`Actor ${actorId} returned 0 items. Trying backup...`)
-        }
-      } catch (err: unknown) {
-        const msg = err instanceof Error ? err.message : String(err)
-        console.error(`Actor ${actorId} failed:`, msg)
-      }
-    }
 
     if (!items || items.length === 0) {
       return NextResponse.json({ error: "No tweets found for this handle using any scraper." }, { status: 404 })
@@ -58,36 +40,54 @@ export async function POST(req: NextRequest) {
 
     // 2. Format the tweets into a massive context block
     const tweetsText = items
-      .filter(item => item.text && !item.isRetweet) // Filter out pure retweets
       .map(item => `Tweet: ${item.text}`)
-      .join("\n\n")
+      .join("\\n\\n")
 
     console.log(`Extracted ${items.length} tweets. Passing to Gemini...`)
 
     // 3. Pass to Gemini API for Blueprint Extraction
     const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY })
+    
+    const prompt = VOICE_BLUEPRINT_PROMPT(handle, tweetsText)
 
-    const prompt = `Analyze the following recent tweets from the X (Twitter) account @${handle}. 
-I need you to extract their "Creator DNA Blueprint".
-
-Do NOT just describe what they talk about. I need their structural habits, psychological framing, and formatting habits. Extract the exact framework of how they think and structure a tweet so I can apply it to my own content.
-
-Provide the blueprint in this exact format:
-- The Hook Formula (How they grab attention)
-- The Body Structure (How they build the argument or story)
-- The Tone/Vibe (The emotional resonance)
-- The Secret Sauce (The 3 unwritten rules they follow to make their content hit)
-
-Here are their recent tweets:
-${tweetsText}
-`
+    const responseSchema: Schema = {
+      type: Type.OBJECT,
+      properties: {
+        extractedFrom: { type: Type.STRING },
+        extractedAt: { type: Type.STRING },
+        hookFormula: { type: Type.STRING },
+        bodyStructure: { type: Type.STRING },
+        toneVibe: { type: Type.STRING },
+        secretSauce: { type: Type.ARRAY, items: { type: Type.STRING } },
+        writingRules: { type: Type.ARRAY, items: { type: Type.STRING } },
+        antiRules: { type: Type.ARRAY, items: { type: Type.STRING } },
+        sentencePatterns: { type: Type.ARRAY, items: { type: Type.STRING } },
+        avgTweetLength: { type: Type.STRING },
+        punctuationStyle: { type: Type.STRING },
+        numberUsage: { type: Type.STRING },
+        topStructuralPattern: { type: Type.STRING },
+      },
+      required: [
+        "extractedFrom", "extractedAt", "hookFormula", "bodyStructure", "toneVibe",
+        "secretSauce", "writingRules", "antiRules", "sentencePatterns",
+        "avgTweetLength", "punctuationStyle", "numberUsage", "topStructuralPattern"
+      ]
+    }
 
     const response = await ai.models.generateContent({
       model: "gemini-2.5-flash",
       contents: prompt,
+      config: {
+        responseMimeType: "application/json",
+        responseSchema: responseSchema
+      }
     })
 
-    const blueprint = response.text
+    if (!response.text) {
+      throw new Error("No response from Gemini")
+    }
+
+    const blueprint: VoiceBlueprint = JSON.parse(response.text)
 
     return NextResponse.json({ blueprint })
   } catch (error: unknown) {

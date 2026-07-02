@@ -13,7 +13,7 @@ export interface UserProfile {
   postingFrequency: string
   secondBrain?: string
   inspirationsContext?: string
-  geminiApiKey?: string
+  voiceBlueprint?: VoiceBlueprint
   avatarUrl?: string
   createdAt: string
   updatedAt: string
@@ -97,4 +97,49 @@ export interface EngagementPacketConfig {
   topicKeywords: string[]
   opportunityTypes: string[]
   customRequest?: string
+}
+
+// ─── HUNT SYSTEMS (NEW) ───────────────────────────────────────────────────────
+
+export interface VoiceBlueprint {
+  hookFormula: string
+  bodyStructure: string
+  toneVibe: string
+  secretSauce: string[]
+  writingRules: string[]
+  antiRules: string[]
+  sentencePatterns: string[]
+  avgTweetLength: string
+  punctuationStyle: string
+  numberUsage: string
+  topStructuralPattern: string
+  extractedFrom: string
+  extractedAt: string
+}
+
+export interface TopicHuntAngle {
+  id: string
+  originalViral: string
+  originalContext: string
+  pillarMatch: string
+  rewrittenAngle: string
+  charCount: number
+  secondBrainAnchor: string
+  technique: string
+}
+
+export interface EngagementOpportunity {
+  id: string
+  authorHandle: string
+  originalTweet: string
+  tweetUrl: string | null
+  opportunityScore: number
+  relevance: string
+  opportunityType: 'reply' | 'quote_tweet'
+  replies: {
+    option: 'A' | 'B' | 'C'
+    tone: 'casual' | 'insightful' | 'question'
+    content: string
+    charCount: number
+  }[]
 }

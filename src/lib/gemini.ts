@@ -18,7 +18,10 @@ function getUserApiKey(): string | null {
 export async function geminiText(prompt: string): Promise<string> {
   const res = await fetch('/api/gemini', {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
+    headers: {
+      'Content-Type': 'application/json',
+      'x-api-key': process.env.NEXT_PUBLIC_TWEETOS_API_KEY || ''
+    },
     body: JSON.stringify({
       prompt,
       apiKey: getUserApiKey(), // sent over HTTPS; server prefers its own env key
