@@ -31,13 +31,15 @@ export function TopicHuntResults({ results, keywords, onDismiss, onLoadIntoCompo
             Found {results.length} viral angles for: {keywords.join(', ')}
           </div>
         </div>
-        <button 
+        <Button 
+          variant="ghost"
+          size="icon"
           onClick={onDismiss}
           aria-label="Dismiss results"
-          className="p-1 text-muted-foreground hover:text-foreground rounded-full hover:bg-muted transition-colors focus-visible:outline-hidden focus-visible:ring-1 focus-visible:ring-ring"
+          className="h-6 w-6 rounded-full text-muted-foreground hover:text-foreground hover:bg-muted"
         >
           <X size={16} />
-        </button>
+        </Button>
       </div>
 
       <div className="p-4 grid grid-cols-1 md:grid-cols-2 gap-4">

@@ -56,7 +56,7 @@ export default function EngagementPage() {
   }
 
   return (
-    <div className="flex flex-col gap-6 w-full max-w-4xl mx-auto h-[calc(100vh-2rem)]">
+    <div className="flex flex-col gap-6 w-full max-w-4xl mx-auto">
       <motion.div
         initial={{ opacity: 0, y: -10 }}
         animate={{ opacity: 1, y: 0 }}
@@ -75,7 +75,7 @@ export default function EngagementPage() {
         />
       </motion.div>
 
-      <div className="flex-1 overflow-y-auto pr-2 pb-20 space-y-6">
+      <div className="space-y-6 pt-4 pb-20">
         <AnimatePresence mode="wait">
           {!hasRun && !isHunting && (
             <motion.div

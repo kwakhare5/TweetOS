@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from "react"
 import { Paperclip } from "@/components/ui/paperclip"
 import { RefreshCw, Check } from "lucide-react"
 import { MacOsWindowDots } from "@/components/ui/mac-window-dots"
+import { Textarea } from "@/components/ui/textarea"
 
 interface SecondBrainNoteProps {
   initialText: string
@@ -77,7 +78,7 @@ export function SecondBrainNote({ initialText, onSave }: SecondBrainNoteProps) {
 
       {/* Writing area */}
       <div className="p-5 flex-1 flex flex-col">
-        <textarea
+        <Textarea
           id="second-brain"
           aria-label="Second Brain Sticky Note"
           value={text}

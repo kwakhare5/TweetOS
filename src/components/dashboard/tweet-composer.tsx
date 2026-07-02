@@ -2,6 +2,7 @@ import { TweetActionFooter } from "@/components/ui/tweet-action-footer"
 import { XLogoIcon } from "@/components/icons"
 import { TweetAuthor } from "@/components/ui/tweet-author"
 import { Button } from "@/components/ui/button"
+import { Textarea } from "@/components/ui/textarea"
 import {
   Sparkles,
   Compass,
@@ -95,13 +96,13 @@ export function TweetComposer({
 
         {/* Draft textarea + action bar */}
         <div className="flex-1 flex flex-col gap-2">
-          <textarea
+          <Textarea
             id="raw-tweet"
             aria-label="Raw Tweet Draft"
             value={brainDump}
             onChange={(e) => setBrainDump(e.target.value)}
             placeholder="What's happening? Dump raw thoughts or rough drafts…"
-            className="w-full bg-transparent border-0 outline-hidden rounded px-0 py-1 resize-none text-sm text-foreground placeholder:text-muted-foreground leading-normal flex-1 font-normal min-h-36"
+            className="w-full bg-transparent border-0 outline-hidden focus:outline-hidden focus:ring-0 focus-visible:ring-0 focus-visible:outline-hidden rounded px-0 py-1 resize-none text-sm text-foreground placeholder:text-muted-foreground leading-normal flex-1 font-normal min-h-36"
           />
 
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-t border-border/40 pt-2 mb-1">

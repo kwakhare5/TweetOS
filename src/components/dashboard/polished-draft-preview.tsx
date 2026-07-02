@@ -2,6 +2,7 @@ import { Sparkles, Send } from "lucide-react"
 import { MacOsWindowDots } from "@/components/ui/mac-window-dots"
 import { CopyButton } from "@/components/ui/copy-button"
 import { FieldLabel } from "@/components/ui/field-label"
+import { Button } from "@/components/ui/button"
 
 interface PolishedDraftPreviewProps {
   polishedDraft: string
@@ -46,20 +47,22 @@ export function PolishedDraftPreview({
             {/* Tone style pill selector */}
             <div className="flex items-center gap-1 bg-muted/80 px-1 py-0.5 rounded border border-border/50 select-none">
               {(["auto", "dev", "shitpost", "personal"] as const).map((t) => (
-                <button
+                <Button
                   key={t}
                   type="button"
+                  variant={activeStyle === t ? "outline" : "ghost"}
+                  size="sm"
                   aria-label={`Select ${t} style`}
                   onClick={() => handlePolish(t)}
                   disabled={isPolishing}
-                  className={`text-xs font-bold px-2 py-0.5 rounded cursor-pointer focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-amber-500 transition-all ${
+                  className={`h-6 px-2 text-xs font-bold transition-all ${
                     activeStyle === t
-                      ? "bg-sticky-200 text-yellow-950 border border-yellow-300/40 shadow-sm"
-                      : "text-muted-foreground border border-transparent"
+                      ? "bg-sticky-200 text-yellow-950 border-yellow-300/40 shadow-sm hover:bg-sticky-200 hover:text-yellow-950"
+                      : "text-muted-foreground border-transparent hover:text-foreground"
                   }`}
                 >
                   {t === "auto" ? "Auto" : t.toUpperCase()}
-                </button>
+                </Button>
               ))}
             </div>
 

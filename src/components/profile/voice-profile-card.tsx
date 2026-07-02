@@ -3,6 +3,7 @@ import { Copy } from "lucide-react"
 import { toast } from "sonner"
 import { Paperclip } from "@/components/ui/paperclip"
 import { MacOsWindowDots } from "@/components/ui/mac-window-dots"
+import { Textarea } from "@/components/ui/textarea"
 
 // Ruled-paper line texture — matches second-brain-note exactly
 const RULED_PAPER_STYLE: React.CSSProperties = {
@@ -28,14 +29,14 @@ export function VoiceProfileCard({ inspirationsContext, setInspirationsContext }
       {/* Top bar — matches second-brain-note exactly */}
       <div className="flex items-center justify-between px-4 py-2.5 bg-sticky-200/60 border-b border-yellow-200/60 rounded-t-xl select-none">
         <MacOsWindowDots />
-        <span className="text-xs font-bold text-yellow-800/80 uppercase tracking-widest font-mono">
+        <span className="text-xs font-bold text-muted-foreground uppercase tracking-widest font-mono">
           Voice Blueprint
         </span>
         <Button
           variant="outline"
           size="sm"
           onClick={copyPrompt}
-          className="h-6 px-2 text-xs border-yellow-300/40 bg-sticky-100/80 hover:bg-sticky-200 text-yellow-900 font-semibold"
+          className="h-6 px-2 text-xs border-border bg-sticky-100/80 hover:bg-sticky-200 text-foreground font-semibold"
         >
           <Copy className="h-2.5 w-2.5 mr-1" />
           Prompt
@@ -44,13 +45,13 @@ export function VoiceProfileCard({ inspirationsContext, setInspirationsContext }
 
       {/* Writing area */}
       <div className="p-5 flex-1 flex flex-col">
-        <textarea
+        <Textarea
           id="inspiration"
           aria-label="Inspiration Context"
           value={inspirationsContext}
           onChange={(e) => setInspirationsContext(e.target.value)}
           placeholder="Paste tweet structures, copywriting hooks, formatting styles or blueprints from creators you admire to define your voice blueprint…"
-          className="w-full bg-transparent border-0 outline-hidden focus:outline-hidden focus:ring-0 focus-visible:ring-0 focus-visible:outline-hidden resize-none flex-1 min-h-56 text-base font-normal text-yellow-950/95 placeholder:text-yellow-600/50 placeholder:font-handwriting leading-relaxed font-handwriting px-1 py-0"
+          className="w-full bg-transparent border-0 outline-hidden focus:outline-hidden focus:ring-0 focus-visible:ring-0 focus-visible:outline-hidden resize-none flex-1 min-h-56 text-base font-normal text-foreground placeholder:text-muted-foreground placeholder:font-handwriting leading-relaxed font-handwriting px-1 py-0"
           style={RULED_PAPER_STYLE}
         />
       </div>
